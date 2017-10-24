@@ -773,6 +773,13 @@ enum RBACPermissions
     RBAC_PERM_COMMAND_NPC_SHOWLOOT                           = 865,
     RBAC_PERM_COMMAND_LIST_SPAWNPOINTS                       = 866,
 
+    //Arena Spectator
+    RBAC_PERM_COMMAND_SPECTATE                               = 1000,
+    RBAC_PERM_COMMAND_SPECTATE_PLAYER                        = 1001,
+    RBAC_PERM_COMMAND_SPECTATE_VIEW                          = 1002,
+    RBAC_PERM_COMMAND_SPECTATE_RESET                         = 1003,
+    RBAC_PERM_COMMAND_SPECTATE_LEAVE                         = 1004,
+
     // custom permissions 1000+
     RBAC_PERM_MAX
 };
