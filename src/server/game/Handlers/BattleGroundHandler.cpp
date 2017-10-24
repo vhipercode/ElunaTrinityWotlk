@@ -39,6 +39,7 @@
 #include "Player.h"
 #include "World.h"
 #include "WorldPacket.h"
+#include "../../scripts/Custom/1v1/1v1.h"
 
 void WorldSession::HandleBattlemasterHelloOpcode(WorldPacket& recvData)
 {
@@ -639,6 +640,9 @@ void WorldSession::HandleBattlemasterJoinArena(WorldPacket& recvData)
         case 2:
             arenatype = ARENA_TYPE_5v5;
             break;
+		case 3:
+			arenatype = ARENA_TYPE_3v3_SOLO;
+			break;
         default:
             TC_LOG_ERROR("network", "Unknown arena slot %u at HandleBattlemasterJoinArena()", arenaslot);
             return;

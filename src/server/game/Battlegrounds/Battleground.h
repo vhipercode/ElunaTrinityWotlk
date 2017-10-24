@@ -183,6 +183,7 @@ enum ArenaType
 {
     ARENA_TYPE_2v2          = 2,
     ARENA_TYPE_3v3          = 3,
+    ARENA_TYPE_3v3_SOLO		= 4, // 3v3 soloqueue
     ARENA_TYPE_5v5          = 5
 };
 
@@ -404,6 +405,11 @@ class TC_GAME_API Battleground
         uint32 GetArenaTeamIdByIndex(uint32 index) const { return m_ArenaTeamIds[index]; }
         void SetArenaMatchmakerRating(uint32 Team, uint32 MMR){ m_ArenaTeamMMR[GetTeamIndexByTeamId(Team)] = MMR; }
         uint32 GetArenaMatchmakerRating(uint32 Team) const          { return m_ArenaTeamMMR[GetTeamIndexByTeamId(Team)]; }
+		uint32 GetArenaMatchmakerRatingByIndex(uint32 index) const  { return m_ArenaTeamMMR[index]; }
+		void CheckArenaAfterTimerConditions();
+		void CheckArenaWinConditions();
+		void UpdateArenaWorldState();
+		void CheckStartSolo3v3Arena();
 
         // Triggers handle
         // must be implemented in BG subclass

@@ -4034,3 +4034,62 @@ Anticheat.MaxReportsForDailyReport = 70
 
 #
 ###################################################################################################
+
+###################################################################################################
+#        Solo.3v3.Enable
+#	     Description: Defines is the world chat enabled or disabled, default : Enabled
+#		 Usage: 0 = Disabled, 1 = Enabled
+#
+
+Solo.3v3.Enable = 1
+
+#
+#
+#
+#  3v3 Soloqueue Cost
+#        Solo.3v3.Costs
+#	     Description: Gives value cost; 400000 is 40g
+#		 Usage: 0 = Disabled, 1 = Enabled
+#
+
+Solo.3v3.Costs = 0
+
+#        Solo.3v3.MinLevel
+#	     Description: Change player level requirement to join 3v3 soloqueue arena
+#		 Usage: 1-255
+#
+
+Solo.3v3.MinLevel = 80
+
+#
+#
+###################################################################################################
+
+###################################################################################################
+#        Arena.1v1.Enable
+#	     Description: Defines is the world chat enabled or disabled, default : Enabled
+#		 Usage: 0 = Disabled, 1 = Enabled
+#
+
+Arena.1v1.Enable = 1
+
+
+#        Arena.1v1.Enable
+#	     Description: Gives value cost; 400000 is 40g
+#		 Usage: 0 = Disabled, 1 = Enabled
+#
+
+Arena.1v1.Costs = 0
+
+#        Arena.1v1.MinLevel
+#	     Description: Change player level requirement to join 1v1 arena
+#		 Usage: 1-255
+#
+
+Arena.1v1.MinLevel = 80
+
+#
+#
+#
+#
+###################################################################################################

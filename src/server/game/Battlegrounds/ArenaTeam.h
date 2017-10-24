@@ -82,6 +82,7 @@ enum ArenaTeamTypes
 {
     ARENA_TEAM_2v2      = 2,
     ARENA_TEAM_3v3      = 3,
+    ARENA_TEAM_SOLO_3v3 = 4, // 3v3 soloqueue
     ARENA_TEAM_5v5      = 5
 };
 
@@ -118,6 +119,11 @@ class TC_GAME_API ArenaTeam
     public:
         ArenaTeam();
         ~ArenaTeam();
+
+		// arena solo 3v3 queue
+		void CreateTempForSolo3v3(Player* plr[], uint8 team);
+		uint32 GetAverageMMR();
+		void SaveToDBHelper();
 
         bool Create(ObjectGuid captainGuid, uint8 type, std::string const& teamName, uint32 backgroundColor, uint8 emblemStyle, uint32 emblemColor, uint8 borderStyle, uint32 borderColor);
         void Disband(WorldSession* session);

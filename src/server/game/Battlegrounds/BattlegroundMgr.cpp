@@ -16,6 +16,7 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "ArenaTeam.h"
 #include "ArenaTeamMgr.h"
 #include "BattlegroundMgr.h"
 #include "BattlegroundAV.h"
@@ -38,6 +39,7 @@
 #include "GameEventMgr.h"
 #include "Map.h"
 #include "MapManager.h"
+#include "MapInstanced.h"
 #include "SharedDefines.h"
 #include "ObjectMgr.h"
 #include "Opcodes.h"
@@ -438,8 +440,11 @@ Battleground* BattlegroundMgr::CreateNewBattleground(BattlegroundTypeId original
             case ARENA_TYPE_3v3:
                 maxPlayersPerTeam = 3;
                 break;
+            case ARENA_TYPE_3v3_SOLO:
+                maxPlayersPerTeam = 3; // 3v3 soloqeueue
+                break;
             case ARENA_TYPE_5v5:
-                maxPlayersPerTeam = 5;
+                maxPlayersPerTeam = 1; // 1v1
                 break;
         }
 
@@ -773,6 +778,8 @@ BattlegroundQueueTypeId BattlegroundMgr::BGQueueTypeId(BattlegroundTypeId bgType
                     return BATTLEGROUND_QUEUE_2v2;
                 case ARENA_TYPE_3v3:
                     return BATTLEGROUND_QUEUE_3v3;
+                case ARENA_TYPE_3v3_SOLO:
+                    return BATTLEGROUND_QUEUE_3v3_SOLO;
                 case ARENA_TYPE_5v5:
                     return BATTLEGROUND_QUEUE_5v5;
                 default:
@@ -804,6 +811,7 @@ BattlegroundTypeId BattlegroundMgr::BGTemplateId(BattlegroundQueueTypeId bgQueue
         case BATTLEGROUND_QUEUE_2v2:
         case BATTLEGROUND_QUEUE_3v3:
         case BATTLEGROUND_QUEUE_5v5:
+        case BATTLEGROUND_QUEUE_3v3_SOLO:
             return BATTLEGROUND_AA;
         default:
             return BattlegroundTypeId(0);                   // used for unknown template (it exists and does nothing)
@@ -818,6 +826,8 @@ uint8 BattlegroundMgr::BGArenaType(BattlegroundQueueTypeId bgQueueTypeId)
             return ARENA_TYPE_2v2;
         case BATTLEGROUND_QUEUE_3v3:
             return ARENA_TYPE_3v3;
+        case BATTLEGROUND_QUEUE_3v3_SOLO:
+            return ARENA_TYPE_3v3_SOLO;
         case BATTLEGROUND_QUEUE_5v5:
             return ARENA_TYPE_5v5;
         default:

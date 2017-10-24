@@ -38,6 +38,8 @@
 #include "Transport.h"
 #include "Util.h"
 #include "WorldPacket.h"
+#include "ArenaTeamMgr.h"
+#include "../../../src/server/scripts/custom/3v3/npc_solo3v3.h"
 #include <cstdarg>
 
 void BattlegroundScore::AppendToPacket(WorldPacket& data)
@@ -223,6 +225,26 @@ Battleground::~Battleground()
 
     for (BattlegroundScoreMap::const_iterator itr = PlayerScores.begin(); itr != PlayerScores.end(); ++itr)
         delete itr->second;
+
+	// Cleanup temp arena teams for solo 3v3
+	if (isArena() && isRated() && GetArenaType() == ARENA_TYPE_3v3_SOLO)
+	{
+		ArenaTeam *tempAlliArenaTeam = sArenaTeamMgr->GetArenaTeamById(GetArenaTeamIdForTeam(ALLIANCE));
+		ArenaTeam *tempHordeArenaTeam = sArenaTeamMgr->GetArenaTeamById(GetArenaTeamIdForTeam(HORDE));
+
+		if (tempAlliArenaTeam && tempAlliArenaTeam->GetId() >= 0xFFF00000)
+		{
+			sArenaTeamMgr->RemoveArenaTeam(tempAlliArenaTeam->GetId());
+			delete tempAlliArenaTeam;
+		}
+
+		if (tempHordeArenaTeam && tempHordeArenaTeam->GetId() >= 0xFFF00000)
+		{
+			sArenaTeamMgr->RemoveArenaTeam(tempHordeArenaTeam->GetId());
+			delete tempHordeArenaTeam;
+		}
+
+	}
 }
 
 void Battleground::Update(uint32 diff)
@@ -491,6 +513,8 @@ inline void Battleground::_ProcessJoin(uint32 diff)
         // First start warning - 2 or 1 minute
         SendMessageToAll(StartMessageIds[BG_STARTING_EVENT_FIRST], CHAT_MSG_BG_SYSTEM_NEUTRAL);
     }
+    if(GetArenaType() == ARENA_TYPE_5v5 && GetStartDelayTime() > StartDelayTimes[BG_STARTING_EVENT_THIRD] && (m_PlayersCount[0] + m_PlayersCount[1]) == 2)
+        SetStartDelayTime(StartDelayTimes[BG_STARTING_EVENT_THIRD]);
     // After 1 minute or 30 seconds, warning is signaled
     else if (GetStartDelayTime() <= StartDelayTimes[BG_STARTING_EVENT_SECOND] && !(m_Events & BG_STARTING_EVENT_2))
     {
@@ -546,6 +570,7 @@ inline void Battleground::_ProcessJoin(uint32 diff)
                 }
 
             CheckWinConditions();
+            CheckStartSolo3v3Arena();
         }
         else
         {
@@ -1825,6 +1850,49 @@ int32 Battleground::GetObjectType(ObjectGuid guid)
     TC_LOG_ERROR("bg.battleground", "Battleground::GetObjectType: player used gameobject (%s) which is not in internal data for BG (map: %u, instance id: %u), cheating?",
         guid.ToString().c_str(), m_MapId, m_InstanceID);
     return -1;
+}
+
+void Battleground::CheckStartSolo3v3Arena()
+{
+	if (GetArenaType() != ARENA_TYPE_3v3_SOLO)
+		return;
+ 
+	if (GetStatus() != STATUS_IN_PROGRESS)
+		return;  // if CheckArenaWinConditions ends the game
+
+	bool someoneNotInArena = false;
+
+	ArenaTeam* team[2];
+	team[0] = sArenaTeamMgr->GetArenaTeamById(GetArenaTeamIdForTeam(ALLIANCE));
+	team[1] = sArenaTeamMgr->GetArenaTeamById(GetArenaTeamIdForTeam(HORDE));
+
+	ASSERT(team[0] && team[1]);
+
+	for (int i = 0; i < 2; i++)
+	{
+		for (ArenaTeam::MemberList::iterator itr = team[i]->m_membersBegin(); itr != team[i]->m_membersEnd(); itr++)
+		{
+			Player* plr = sObjectAccessor->FindPlayer(itr->Guid);
+			if (!plr)
+			{
+				someoneNotInArena = true;
+				continue;
+			}
+
+			if (plr->GetInstanceId() != GetInstanceID())
+			{
+				if (sWorld->getBoolConfig(CONFIG_SOLO_3V3_CAST_DESERTER_ON_AFK))
+					plr->CastSpell(plr, 26013, true); // Deserter
+				someoneNotInArena = true;
+			}
+		}
+	}
+
+	if (someoneNotInArena && sWorld->getBoolConfig(CONFIG_SOLO_3V3_STOP_GAME_INCOMPLETE))
+	{
+		SetRated(false);
+		EndBattleground(LANG_BG_A_WINS);
+	}
 }
 
 void Battleground::SetBgRaid(uint32 TeamID, Group* bg_raid)

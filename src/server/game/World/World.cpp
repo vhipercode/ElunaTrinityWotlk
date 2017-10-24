@@ -474,6 +474,16 @@ void World::LoadConfigSettings(bool reload)
     ///- Read ticket system setting from the config file
     m_bool_configs[CONFIG_ALLOW_TICKETS] = sConfigMgr->GetBoolDefault("AllowTickets", true);
     m_bool_configs[CONFIG_DELETE_CHARACTER_TICKET_TRACE] = sConfigMgr->GetBoolDefault("DeletedCharacterTicketTrace", false);
+    
+    ///- 1v1
+    m_bool_configs[CONFIG_REPLACE_5V5_ARENA] = sConfigMgr->GetBoolDefault("Custom.Replace5v5Arena", false);
+    m_bool_configs[CONFIG_ARENA_1V1_ENABLE]                             = sConfigMgr->GetBoolDefault("Arena.1v1.Enable", true);
+    m_bool_configs[CONFIG_ARENA_1V1_ANNOUNCER]                         = sConfigMgr->GetBoolDefault("Arena.1v1.Announcer", false);
+    m_int_configs[CONFIG_ARENA_1V1_MIN_LEVEL]                         = sConfigMgr->GetIntDefault("Arena.1v1.MinLevel", 80);
+    m_int_configs[CONFIG_ARENA_1V1_COSTS]                             = sConfigMgr->GetIntDefault("Arena.1v1.Costs", 400000);
+    m_bool_configs[CONFIG_ARENA_1V1_VENDOR_RATING]                     = sConfigMgr->GetBoolDefault("Arena.1v1.VendorRating", false);
+    m_float_configs[CONFIG_ARENA_1V1_ARENAPOINTS_MULTI]                 = sConfigMgr->GetFloatDefault("Arena.1v1.ArenaPointsMulti", 0.64f);
+    m_bool_configs[CONFIG_ARENA_1V1_BLOCK_FORBIDDEN_TALENTS]         = sConfigMgr->GetBoolDefault("Arena.1v1.BlockForbiddenTalents", true);
 
     ///- Get string for new logins (newly created characters)
     SetNewCharString(sConfigMgr->GetStringDefault("PlayerStart.String", ""));
@@ -1131,6 +1141,19 @@ void World::LoadConfigSettings(bool reload)
     m_float_configs[CONFIG_LISTEN_RANGE_SAY]       = sConfigMgr->GetFloatDefault("ListenRange.Say", 25.0f);
     m_float_configs[CONFIG_LISTEN_RANGE_TEXTEMOTE] = sConfigMgr->GetFloatDefault("ListenRange.TextEmote", 25.0f);
     m_float_configs[CONFIG_LISTEN_RANGE_YELL]      = sConfigMgr->GetFloatDefault("ListenRange.Yell", 300.0f);
+
+	// soloqueue 3v3
+	m_bool_configs[CONFIG_SOLO_3V3_ENABLE] = sConfigMgr->GetBoolDefault("Solo.3v3.Enable", true);
+	m_int_configs[CONFIG_SOLO_3V3_MIN_LEVEL] = sConfigMgr->GetIntDefault("Solo.3v3.MinLevel", 80);
+	m_int_configs[CONFIG_SOLO_3V3_COSTS] = sConfigMgr->GetIntDefault("Solo.3v3.Costs", 400000);
+	m_float_configs[CONFIG_SOLO_3V3_ARENAPOINTS_MULTI] = sConfigMgr->GetFloatDefault("Solo.3v3.ArenaPointsMulti", 0.64f);
+	m_bool_configs[CONFIG_SOLO_3V3_FILTER_TALENTS] = sConfigMgr->GetBoolDefault("Solo.3v3.FilterTalents", true);
+	m_bool_configs[CONFIG_SOLO_3V3_VENDOR_RATING] = sConfigMgr->GetBoolDefault("Solo.3v3.VendorRating", true);
+	m_bool_configs[CONFIG_ARENA_1V1_BLOCK_FORBIDDEN_TALENTS] = sConfigMgr->GetBoolDefault("Arena.1v1.BlockForbiddenTalents", true);
+	m_bool_configs[CONFIG_ARENA_CHECK_EQUIP_AND_TALENTS] = sConfigMgr->GetBoolDefault("Arena.CheckEquipAndTalents", true);
+	m_bool_configs[CONFIG_SOLO_3V3_CAST_DESERTER_ON_AFK] = sConfigMgr->GetBoolDefault("Solo.3v3.CastDeserterOnAfk", true);
+	m_bool_configs[CONFIG_SOLO_3V3_CAST_DESERTER_ON_LEAVE] = sConfigMgr->GetBoolDefault("Solo.3v3.CastDeserterOnLeave", true);
+	m_bool_configs[CONFIG_SOLO_3V3_STOP_GAME_INCOMPLETE] = sConfigMgr->GetBoolDefault("Solo.3v3.StopGameIncomplete", true);
 
     m_bool_configs[CONFIG_BATTLEGROUND_CAST_DESERTER]                = sConfigMgr->GetBoolDefault("Battleground.CastDeserter", true);
     m_bool_configs[CONFIG_BATTLEGROUND_QUEUE_ANNOUNCER_ENABLE]       = sConfigMgr->GetBoolDefault("Battleground.QueueAnnouncer.Enable", false);
