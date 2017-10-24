@@ -95,6 +95,7 @@
 #include "World.h"
 #include "WorldPacket.h"
 #include "WorldSession.h"
+#include "AnticheatMgr.h"
 #ifdef ELUNA
 #include "LuaEngine.h"
 #endif
@@ -19411,6 +19412,9 @@ void Player::SaveToDB(bool create /*=false*/)
         _SaveStats(trans);
 
     CharacterDatabase.CommitTransaction(trans);
+    
+    // we save the data here to prevent spamming
+    sAnticheatMgr->SavePlayerData(this);
 
     // save pet (hunter pet level and experience and all type pets health/mana).
     if (Pet* pet = GetPet())
