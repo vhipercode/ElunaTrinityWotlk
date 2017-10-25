@@ -11,6 +11,21 @@
 #include "Player.h"
 #include "Pet.h"
 #include "BattlegroundQueue.h"
+#include "Log.h"
+#include "CharacterDatabase.h"
+#include "DatabaseWorker.h"
+#include "MapManager.h"
+#include "Player.h"
+#include "DatabaseEnv.h"
+#include "Item.h"
+#include "DBCStores.h"
+#include "ScriptedGossip.h"
+#include "GossipDef.h"
+#include "Player.h"
+#include "WorldSession.h"
+#include "SpellAuras.h"
+#include "SpellAuraEffects.h"
+#include "SpellMgr.h"
 
 
 enum professionmenu
@@ -47,24 +62,27 @@ class npc_professions : public CreatureScript
 {
 public:
     npc_professions() : CreatureScript("npc_professions") { } // to alliance from horde
-
-    bool OnGossipHello(Player* player, Creature* creature) override
+    class TrintyRetardsAI : public ScriptedAI
     {
-        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TABARD, "Tailoring", GOSSIP_SENDER_MAIN, OPTION_TAILORING);
-        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TABARD, "Jewelcrafting", GOSSIP_SENDER_MAIN, OPTION_JEWELCRAFTING);
-        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TABARD, "Engineering", GOSSIP_SENDER_MAIN, OPTION_ENGINEERING);
-        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TABARD, "Blacksmithing", GOSSIP_SENDER_MAIN, OPTION_BLACKSMITHING);
-        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TABARD, "Alchemy", GOSSIP_SENDER_MAIN, OPTION_ALCHEMY);
-        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TABARD, "Inscription", GOSSIP_SENDER_MAIN, OPTION_INSCRIPTION);
-        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TABARD, "Enchanting", GOSSIP_SENDER_MAIN, OPTION_ENCHANTING);
-        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TABARD, "Leatherworking", GOSSIP_SENDER_MAIN, OPTION_LEATHERWORKING);
-        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TABARD, "Cooking", GOSSIP_SENDER_MAIN, OPTION_COOKING);
-        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TABARD, "First Aid", GOSSIP_SENDER_MAIN, OPTION_FIRST_AID);
-        player->SEND_GOSSIP_MENU(TEXT_PROFESSION_MAIN, creature->GetGUID());
+    public:
+        TrintyRetardsAI(Creature* creature) : ScriptedAI(creature) {}
+    bool OnGossipHello(Player* player, Creature* creature)
+    {
+        AddGossipItemFor(player, GOSSIP_ICON_TABARD, "Tailoring", GOSSIP_SENDER_MAIN, OPTION_TAILORING);
+        AddGossipItemFor(player, GOSSIP_ICON_TABARD, "Jewelcrafting", GOSSIP_SENDER_MAIN, OPTION_JEWELCRAFTING);
+        AddGossipItemFor(player, GOSSIP_ICON_TABARD, "Engineering", GOSSIP_SENDER_MAIN, OPTION_ENGINEERING);
+        AddGossipItemFor(player, GOSSIP_ICON_TABARD, "Blacksmithing", GOSSIP_SENDER_MAIN, OPTION_BLACKSMITHING);
+        AddGossipItemFor(player, GOSSIP_ICON_TABARD, "Alchemy", GOSSIP_SENDER_MAIN, OPTION_ALCHEMY);
+        AddGossipItemFor(player, GOSSIP_ICON_TABARD, "Inscription", GOSSIP_SENDER_MAIN, OPTION_INSCRIPTION);
+        AddGossipItemFor(player, GOSSIP_ICON_TABARD, "Enchanting", GOSSIP_SENDER_MAIN, OPTION_ENCHANTING);
+        AddGossipItemFor(player, GOSSIP_ICON_TABARD, "Leatherworking", GOSSIP_SENDER_MAIN, OPTION_LEATHERWORKING);
+        AddGossipItemFor(player, GOSSIP_ICON_TABARD, "Cooking", GOSSIP_SENDER_MAIN, OPTION_COOKING);
+        AddGossipItemFor(player, GOSSIP_ICON_TABARD, "First Aid", GOSSIP_SENDER_MAIN, OPTION_FIRST_AID);
+        SendGossipMenuFor(player, TEXT_PROFESSION_MAIN, creature->GetGUID());
         return true;
     }
 
-    bool OnGossipSelect(Player* player, Creature* creature, uint32 sender, uint32 action) override
+    bool OnGossipSelect(Player* player, Creature* creature, uint32 sender, uint32 action)
     {
         player->PlayerTalkClass->ClearMenus();
         switch (sender)
@@ -74,61 +92,61 @@ public:
                 {
                     case OPTION_TAILORING:
                         //if (player->HasSkill(SKILL_TAILORING))
-                            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TABARD,"|TInterface/ICONS/inv_fabric_linen_01:40:40:-18:0|tLearn the skill Tailoring", ACTION_LEARN_PROFESSION, SKILL_TAILORING);
-                        //player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TABARD,"|TInterface/ICONS/inv_fabric_linen_01:40:40:-18:0|tTailoring Materials", ACTION_PURCHASE_MATERIALS, SORT_TAILORING);
+                            AddGossipItemFor(player, GOSSIP_ICON_TABARD,"|TInterface/ICONS/inv_fabric_linen_01:40:40:-18:0|tLearn the skill Tailoring", ACTION_LEARN_PROFESSION, SKILL_TAILORING);
+                        //AddGossipItemFor(player, GOSSIP_ICON_TABARD,"|TInterface/ICONS/inv_fabric_linen_01:40:40:-18:0|tTailoring Materials", ACTION_PURCHASE_MATERIALS, SORT_TAILORING);
                         break;
                     case OPTION_JEWELCRAFTING:
                         //if (player->HasSkill(SKILL_JEWELCRAFTING))
-                            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TABARD,"|TInterface/ICONS/inv_jewelcrafting_nightseye_02:40:40:-18:0|tLearn the skill Jewelcrafting", ACTION_LEARN_PROFESSION, SKILL_JEWELCRAFTING);
-                        //player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TABARD,"|TInterface/ICONS/inv_jewelcrafting_nightseye_02:40:40:-18:0|tJewelcrafting Materials", ACTION_PURCHASE_MATERIALS, SORT_JEWELCRAFTING);
+                            AddGossipItemFor(player, GOSSIP_ICON_TABARD,"|TInterface/ICONS/inv_jewelcrafting_nightseye_02:40:40:-18:0|tLearn the skill Jewelcrafting", ACTION_LEARN_PROFESSION, SKILL_JEWELCRAFTING);
+                        //AddGossipItemFor(player, GOSSIP_ICON_TABARD,"|TInterface/ICONS/inv_jewelcrafting_nightseye_02:40:40:-18:0|tJewelcrafting Materials", ACTION_PURCHASE_MATERIALS, SORT_JEWELCRAFTING);
                         break;
                     case OPTION_ENGINEERING:
                         //if (player->HasSkill(SKILL_ENGINEERING))
-                            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TABARD,"|TInterface/ICONS/inv_misc_gear_06:40:40:-18:0|tLearn the skill Engineering", ACTION_LEARN_PROFESSION, SKILL_ENGINEERING);
-                        //player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TABARD,"|TInterface/ICONS/inv_misc_gear_06:40:40:-18:0|tEngineering Materials", ACTION_PURCHASE_MATERIALS, SORT_ENGINEERING);
+                            AddGossipItemFor(player, GOSSIP_ICON_TABARD,"|TInterface/ICONS/inv_misc_gear_06:40:40:-18:0|tLearn the skill Engineering", ACTION_LEARN_PROFESSION, SKILL_ENGINEERING);
+                        //AddGossipItemFor(player, GOSSIP_ICON_TABARD,"|TInterface/ICONS/inv_misc_gear_06:40:40:-18:0|tEngineering Materials", ACTION_PURCHASE_MATERIALS, SORT_ENGINEERING);
                         break;
                     case OPTION_BLACKSMITHING:
                         //if (player->HasSkill(SKILL_BLACKSMITHING))
-                            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TABARD,"|TInterface/ICONS/inv_ingot_02:40:40:-18:0|tLearn the skill Blacksmithing", ACTION_LEARN_PROFESSION, SKILL_BLACKSMITHING);
-                        //player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TABARD,"|TInterface/ICONS/inv_ingot_02:40:40:-18:0|tBlacksmithing Materials", ACTION_PURCHASE_MATERIALS, SORT_BLACKSMITHING);
+                            AddGossipItemFor(player, GOSSIP_ICON_TABARD,"|TInterface/ICONS/inv_ingot_02:40:40:-18:0|tLearn the skill Blacksmithing", ACTION_LEARN_PROFESSION, SKILL_BLACKSMITHING);
+                        //AddGossipItemFor(player, GOSSIP_ICON_TABARD,"|TInterface/ICONS/inv_ingot_02:40:40:-18:0|tBlacksmithing Materials", ACTION_PURCHASE_MATERIALS, SORT_BLACKSMITHING);
                         break;
                     case OPTION_ALCHEMY:
                         //if (player->HasSkill(SKILL_ALCHEMY))
-                            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TABARD,"|TInterface/ICONS/inv_misc_flower_02:40:40:-18:0|tLearn the skill Alchemy", ACTION_LEARN_PROFESSION, SKILL_ALCHEMY);
-                        //player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TABARD,"|TInterface/ICONS/inv_misc_flower_02:40:40:-18:0|tAlchemy Materials", ACTION_PURCHASE_MATERIALS, SORT_ALCHEMY);
+                            AddGossipItemFor(player, GOSSIP_ICON_TABARD,"|TInterface/ICONS/inv_misc_flower_02:40:40:-18:0|tLearn the skill Alchemy", ACTION_LEARN_PROFESSION, SKILL_ALCHEMY);
+                        //AddGossipItemFor(player, GOSSIP_ICON_TABARD,"|TInterface/ICONS/inv_misc_flower_02:40:40:-18:0|tAlchemy Materials", ACTION_PURCHASE_MATERIALS, SORT_ALCHEMY);
                         break;
                     case OPTION_INSCRIPTION:
                         //if (player->HasSkill(SKILL_INSCRIPTION))
-                            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TABARD,"|TInterface/ICONS/inv_inscription_papyrus:40:40:-18:0|tLearn the skill Inscription", ACTION_LEARN_PROFESSION, SKILL_INSCRIPTION);
-                        //player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TABARD,"|TInterface/ICONS/inv_inscription_papyrus:40:40:-18:0|tInscription Materials", ACTION_PURCHASE_MATERIALS, SORT_INSCRIPTION);
+                            AddGossipItemFor(player, GOSSIP_ICON_TABARD,"|TInterface/ICONS/inv_inscription_papyrus:40:40:-18:0|tLearn the skill Inscription", ACTION_LEARN_PROFESSION, SKILL_INSCRIPTION);
+                        //AddGossipItemFor(player, GOSSIP_ICON_TABARD,"|TInterface/ICONS/inv_inscription_papyrus:40:40:-18:0|tInscription Materials", ACTION_PURCHASE_MATERIALS, SORT_INSCRIPTION);
                         break;
                     case OPTION_ENCHANTING:
                         //if (player->HasSkill(SKILL_ENCHANTING))
-                            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TABARD,"|TInterface/ICONS/inv_misc_dust_infinite:40:40:-18:0|tLearn the skill Enchanting", ACTION_LEARN_PROFESSION, SKILL_ENCHANTING);
-                        //player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TABARD,"|TInterface/ICONS/inv_misc_dust_infinite:40:40:-18:0|tEnchanting Materials", ACTION_PURCHASE_MATERIALS, SORT_ENCHANTING);
+                            AddGossipItemFor(player, GOSSIP_ICON_TABARD,"|TInterface/ICONS/inv_misc_dust_infinite:40:40:-18:0|tLearn the skill Enchanting", ACTION_LEARN_PROFESSION, SKILL_ENCHANTING);
+                        //AddGossipItemFor(player, GOSSIP_ICON_TABARD,"|TInterface/ICONS/inv_misc_dust_infinite:40:40:-18:0|tEnchanting Materials", ACTION_PURCHASE_MATERIALS, SORT_ENCHANTING);
                         break;
                     case OPTION_LEATHERWORKING:
                         //if (player->HasSkill(SKILL_LEATHERWORKING))
-                            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TABARD,"|TInterface/ICONS/inv_misc_leatherscrap_03:40:40:-18:0|tLearn the skill Leatherworking", ACTION_LEARN_PROFESSION, SKILL_LEATHERWORKING);
-                        //player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TABARD,"|TInterface/ICONS/inv_misc_leatherscrap_03:40:40:-18:0|tLeatherworking Materials", ACTION_PURCHASE_MATERIALS, SORT_LEATHERWORKING);
+                            AddGossipItemFor(player, GOSSIP_ICON_TABARD,"|TInterface/ICONS/inv_misc_leatherscrap_03:40:40:-18:0|tLearn the skill Leatherworking", ACTION_LEARN_PROFESSION, SKILL_LEATHERWORKING);
+                        //AddGossipItemFor(player, GOSSIP_ICON_TABARD,"|TInterface/ICONS/inv_misc_leatherscrap_03:40:40:-18:0|tLeatherworking Materials", ACTION_PURCHASE_MATERIALS, SORT_LEATHERWORKING);
                         break;
                     case OPTION_COOKING:
                         //if (player->HasSkill(SKILL_COOKING))
-                            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TABARD,"|TInterface/ICONS/inv_misc_food_16:40:40:-18:0|tLearn the skill Cooking", ACTION_LEARN_PROFESSION, SKILL_COOKING);
-                        //player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TABARD,"|TInterface/ICONS/inv_misc_food_16:40:40:-18:0|tCooking Materials", ACTION_PURCHASE_MATERIALS, SORT_COOKING);
+                            AddGossipItemFor(player, GOSSIP_ICON_TABARD,"|TInterface/ICONS/inv_misc_food_16:40:40:-18:0|tLearn the skill Cooking", ACTION_LEARN_PROFESSION, SKILL_COOKING);
+                        //AddGossipItemFor(player, GOSSIP_ICON_TABARD,"|TInterface/ICONS/inv_misc_food_16:40:40:-18:0|tCooking Materials", ACTION_PURCHASE_MATERIALS, SORT_COOKING);
                         break;
                     case OPTION_FIRST_AID:
                         //if(player->HasSkill(SKILL_FIRST_AID))
-                            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TABARD,"|TInterface/ICONS/inv_misc_bandage_15:40:40:-18:0|tLearn the skill First Aid", ACTION_LEARN_PROFESSION, SKILL_FIRST_AID);
-                        //player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TABARD,"|TInterface/ICONS/inv_misc_bandage_15:40:40:-18:0|tFirst Aid Materials", ACTION_PURCHASE_MATERIALS, SORT_FIRST_AID);
+                            AddGossipItemFor(player, GOSSIP_ICON_TABARD,"|TInterface/ICONS/inv_misc_bandage_15:40:40:-18:0|tLearn the skill First Aid", ACTION_LEARN_PROFESSION, SKILL_FIRST_AID);
+                        //AddGossipItemFor(player, GOSSIP_ICON_TABARD,"|TInterface/ICONS/inv_misc_bandage_15:40:40:-18:0|tFirst Aid Materials", ACTION_PURCHASE_MATERIALS, SORT_FIRST_AID);
                         break;
                     case OPTION_MAIN_MENU:
                         OnGossipHello(player, creature);
-                        player->SEND_GOSSIP_MENU(TEXT_PROFESSION_MAIN, creature->GetGUID());
+                        SendGossipMenuFor(player, TEXT_PROFESSION_MAIN, creature->GetGUID());
                         return true;
                 }
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TABARD,"Back", GOSSIP_SENDER_MAIN, OPTION_MAIN_MENU);
-                player->SEND_GOSSIP_MENU(TEXT_PROFESSION_MAIN, creature->GetGUID());
+                AddGossipItemFor(player, GOSSIP_ICON_TABARD,"Back", GOSSIP_SENDER_MAIN, OPTION_MAIN_MENU);
+                SendGossipMenuFor(player, TEXT_PROFESSION_MAIN, creature->GetGUID());
                 break;
             case ACTION_LEARN_PROFESSION:
                 //if (!CheckSkill(player, action))
@@ -228,9 +246,15 @@ public:
             if (!spellInfo || !SpellMgr::IsSpellValid(spellInfo))
                 continue;
 
-            player->learnSpell(skillLine->spellId);
+            player->LearnSpell(skillLine->spellId, false);
         }
     }
+        };
+
+        CreatureAI* GetAI(Creature* creature) const override
+        {
+            return  new TrintyRetardsAI(creature);
+        }
 };
 
 void AddSC_ProfessionsNPC()

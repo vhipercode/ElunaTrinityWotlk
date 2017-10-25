@@ -1,5 +1,7 @@
 #ifndef ARENA_1V1_H
 #define ARENA_1V1_H
+#include "DBCStores.h"
+#include "Chat.h"
 
 // TalentTab.dbc -> TalentTabID
 const uint32 FORBIDDEN_TALENTS_IN_1V1_ARENA[] =
@@ -24,9 +26,6 @@ static bool Arena1v1CheckTalents(Player* player)
 {
 	if (!player)
 		return false;
-
-	if (sWorld->getBoolConfig(CONFIG_ARENA_1V1_BLOCK_FORBIDDEN_TALENTS) == false)
-		return true;
 
 	uint32 count = 0;
 	for (uint32 talentId = 0; talentId < sTalentStore.GetNumRows(); ++talentId)

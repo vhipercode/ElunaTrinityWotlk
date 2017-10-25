@@ -817,7 +817,7 @@ bool BattlegroundQueue::CheckSolo3v3Arena(BattlegroundBracketId bracket_id)
 			std::map<ObjectGuid, PlayerQueueInfo*> *grpPlr = &(*itr)->Players;
 			for (std::map<ObjectGuid, PlayerQueueInfo*>::iterator grpPlrItr = grpPlr->begin(); grpPlrItr != grpPlr->end(); grpPlrItr++)
 			{
-				Player* plr = sObjectAccessor->FindPlayer(grpPlrItr->first);
+				Player* plr = ObjectAccessor::FindPlayer(grpPlrItr->first);
 				if (!plr)
 					continue;
 
@@ -888,7 +888,7 @@ void BattlegroundQueue::CreateTempArenaTeamForQueue(ArenaTeam *arenaTeams[])
 
 			for (std::map<ObjectGuid, PlayerQueueInfo*>::iterator itr = (*citr)->Players.begin(); itr != (*citr)->Players.end(); ++itr)
 			{
-				if (Player* pPlr = sObjectAccessor->FindPlayer(itr->first))
+				if (Player* pPlr = ObjectAccessor::FindPlayer(itr->first))
 					atPlr[atPlrItr++] = pPlr;
 				break;
 			}

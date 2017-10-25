@@ -23,6 +23,7 @@
 #include "Opcodes.h"
 #include "WorldPacket.h"
 #include "WorldSession.h"
+#include "SpellMgr.h"
 
 SpectatorAddonMsg::SpectatorAddonMsg()
 {

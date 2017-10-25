@@ -26774,7 +26774,7 @@ void Player::SetSpectate(bool on)
         spectatorFlag = true;
 
         m_ExtraFlags |= PLAYER_EXTRA_GM_ON;
-        setFaction(35);
+        SetFaction(35);
 
         if (Pet* pet = GetPet())
         {
@@ -26823,7 +26823,7 @@ void Player::SetSpectate(bool on)
         spectateCanceled = false;
         spectatorFlag = false;
         RestoreDisplayId();
-        UpdateSpeed(MOVE_RUN, true);
+        UpdateSpeed(MOVE_RUN);
     }
     UpdateObjectVisibility();
 }

@@ -6,14 +6,22 @@
 #include "Battleground.h"
 #include "ArenaTeam.h"
 #include "Language.h"
-#include "npc_arena1v1.h"
+#include "1v1.h"
+#include "World.h"
+#include "ScriptedGossip.h"
+#include "WorldSession.h"
+#include "Log.h"
+#include "Chat.h"
 
 
 class npc_1v1arena : public CreatureScript
 {
 public:
     npc_1v1arena() : CreatureScript("npc_1v1arena") { }
-
+    class TrintyRetardsAI : public ScriptedAI
+    {
+    public:
+        TrintyRetardsAI(Creature* creature) : ScriptedAI(creature) {}
     bool JoinQueueArena(Player* player, Creature* me, bool isRated)
     {
         if (!player || !me)
@@ -165,25 +173,24 @@ public:
         }
 
         if (player->InBattlegroundQueueForBattlegroundQueueType(BATTLEGROUND_QUEUE_5v5))
-            player->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_CHAT, "Leave queue 1v1 Arena", GOSSIP_SENDER_MAIN, 3, "Are you sure?", 0, false);
+            AddGossipItemFor(player, GOSSIP_ICON_CHAT, "Leave queue 1v1 Arena", GOSSIP_SENDER_MAIN, 3, "Are you sure?", 0, false);
         else
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Sign up 1v1 Arena (unrated)", GOSSIP_SENDER_MAIN, 20);
+            AddGossipItemFor(player, GOSSIP_ICON_CHAT, "Sign up 1v1 Arena (unrated)", GOSSIP_SENDER_MAIN, 20);
 
         if (player->GetArenaTeamId(ArenaTeam::GetSlotByType(ARENA_TEAM_5v5)) == 0)
-            player->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_CHAT, "Create new 1v1 Arenateam", GOSSIP_SENDER_MAIN, 1, "Create 1v1 arenateam?", sWorld->getIntConfig(CONFIG_ARENA_1V1_COSTS), false);
+            AddGossipItemFor(player, GOSSIP_ICON_CHAT, "Create new 1v1 Arenateam", GOSSIP_SENDER_MAIN, 1, "Create 1v1 arenateam?", sWorld->getIntConfig(CONFIG_ARENA_1V1_COSTS), false);
         else
         {
             if (player->InBattlegroundQueueForBattlegroundQueueType(BATTLEGROUND_QUEUE_5v5) == false)
             {
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Sign up 1v1 Arena (rated)", GOSSIP_SENDER_MAIN, 2);
-                player->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_CHAT, "Disband arenateam", GOSSIP_SENDER_MAIN, 5, "Are you sure?", 0, false);
+                AddGossipItemFor(player, GOSSIP_ICON_CHAT, "Sign up 1v1 Arena (rated)", GOSSIP_SENDER_MAIN, 2);
+                AddGossipItemFor(player, GOSSIP_ICON_CHAT, "Disband arenateam", GOSSIP_SENDER_MAIN, 5, "Are you sure?", 0, false);
             }
 
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Show statistics", GOSSIP_SENDER_MAIN, 4);
+            AddGossipItemFor(player, GOSSIP_ICON_CHAT, "Show statistics", GOSSIP_SENDER_MAIN, 4);
         }
 
-        //player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Script Info", GOSSIP_SENDER_MAIN, 8);
-        player->SEND_GOSSIP_MENU(68, me->GetGUID());
+        CloseGossipMenuFor(player);
         return true;
     }
 
@@ -208,7 +215,7 @@ public:
             else
             {
                 ChatHandler(player->GetSession()).PSendSysMessage("You need level %u+ to create an 1v1 arenateam.", sWorld->getIntConfig(CONFIG_ARENA_1V1_MIN_LEVEL));
-                player->CLOSE_GOSSIP_MENU();
+                CloseGossipMenuFor(player);
                 return true;
             }
         }
@@ -219,7 +226,7 @@ public:
             if (Arena1v1CheckTalents(player) && JoinQueueArena(player, me, true) == false)
                 ChatHandler(player->GetSession()).SendSysMessage("Something went wrong while join queue.");
 
-            player->CLOSE_GOSSIP_MENU();
+            CloseGossipMenuFor(player);
             return true;
         }
         break;
@@ -229,7 +236,7 @@ public:
             if (Arena1v1CheckTalents(player) && JoinQueueArena(player, me, false) == false)
                 ChatHandler(player->GetSession()).SendSysMessage("Something went wrong while join queue.");
 
-            player->CLOSE_GOSSIP_MENU();
+            CloseGossipMenuFor(player);
             return true;
         }
         break;
@@ -239,7 +246,7 @@ public:
             WorldPacket Data;
             Data << (uint8)0x1 << (uint8)0x0 << (uint32)BATTLEGROUND_AA << (uint16)0x0 << (uint8)0x0;
             player->GetSession()->HandleBattleFieldPortOpcode(Data);
-            player->CLOSE_GOSSIP_MENU();
+            CloseGossipMenuFor(player);
             return true;
         }
         break;
@@ -269,18 +276,7 @@ public:
             Data << (uint32)player->GetArenaTeamId(ArenaTeam::GetSlotByType(ARENA_TEAM_5v5));
             player->GetSession()->HandleArenaTeamLeaveOpcode(Data);
             ChatHandler(player->GetSession()).SendSysMessage("Arenateam deleted!");
-            player->CLOSE_GOSSIP_MENU();
-            return true;
-        }
-        break;
-
-        case 8: // Script Info
-        {
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Developer: Teiby", GOSSIP_SENDER_MAIN, uiAction);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Website: www.teiby.de", GOSSIP_SENDER_MAIN, uiAction);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Version: 2.1", GOSSIP_SENDER_MAIN, uiAction);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "<-- Back", GOSSIP_SENDER_MAIN, 7);
-            player->SEND_GOSSIP_MENU(68, me->GetGUID());
+            CloseGossipMenuFor(player);
             return true;
         }
         break;
@@ -289,6 +285,13 @@ public:
 
         OnGossipHello(player, me);
         return true;
+    }
+
+    };
+
+    CreatureAI* GetAI(Creature* creature) const override
+    {
+        return  new TrintyRetardsAI(creature);
     }
 };
 

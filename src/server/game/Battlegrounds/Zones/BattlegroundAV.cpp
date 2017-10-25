@@ -185,21 +185,21 @@ void BattlegroundAV::HandleQuestComplete(uint32 questid, Player* player)
         case AV_QUEST_A_COMMANDER1:
         case AV_QUEST_H_COMMANDER1:
             m_Team_QuestStatus[team][1]++;
-            RewardReputationToTeam(team, CFSteam, 1, player->GetTeam());
+            //RewardReputationToTeam(team, CFSteam, player->GetTeam());
             if (m_Team_QuestStatus[team][1] == 30)
                 TC_LOG_DEBUG("bg.battleground", "BG_AV Quest %i completed (need to implement some events here", questid);
             break;
         case AV_QUEST_A_COMMANDER2:
         case AV_QUEST_H_COMMANDER2:
             m_Team_QuestStatus[team][2]++;
-            RewardReputationToTeam(team, CFSteam, player->GetTeam());
+            //RewardReputationToTeam(team, CFSteam, player->GetTeam());
             if (m_Team_QuestStatus[team][2] == 60)
                 TC_LOG_DEBUG("bg.battleground", "BG_AV Quest %i completed (need to implement some events here", questid);
             break;
         case AV_QUEST_A_COMMANDER3:
         case AV_QUEST_H_COMMANDER3:
             m_Team_QuestStatus[team][3]++;
-            RewardReputationToTeam(team, CFSteam, player->GetTeam());
+            //RewardReputationToTeam(team, CFSteam, player->GetTeam());
             if (m_Team_QuestStatus[team][3] == 120)
                 TC_LOG_DEBUG("bg.battleground", "BG_AV Quest %i completed (need to implement some events here", questid);
             break;

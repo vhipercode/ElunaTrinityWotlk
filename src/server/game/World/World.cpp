@@ -477,7 +477,6 @@ void World::LoadConfigSettings(bool reload)
     m_bool_configs[CONFIG_DELETE_CHARACTER_TICKET_TRACE] = sConfigMgr->GetBoolDefault("DeletedCharacterTicketTrace", false);
     
     ///- 1v1
-    m_bool_configs[CONFIG_REPLACE_5V5_ARENA]                            = sConfigMgr->GetBoolDefault("Custom.Replace5v5Arena", false);
     m_bool_configs[CONFIG_ARENA_1V1_ENABLE]                             = sConfigMgr->GetBoolDefault("Arena.1v1.Enable", true);
     m_bool_configs[CONFIG_ARENA_1V1_ANNOUNCER]                          = sConfigMgr->GetBoolDefault("Arena.1v1.Announcer", false);
     m_int_configs[CONFIG_ARENA_1V1_MIN_LEVEL]                           = sConfigMgr->GetIntDefault("Arena.1v1.MinLevel", 80);

@@ -1,0 +1,34 @@
+    class TrintyRetardsAI : public ScriptedAI
+    {
+        public:
+        TrintyRetardsAI(Creature* creature) : ScriptedAI(creature) {}
+				
+                
+                
+    };
+    
+	CreatureAI* GetAI(Creature* creature) const override
+	{
+		return  new TrintyRetardsAI(creature);
+	}
+    
+    
+    
+    
+    
+    
+    
+    
+    class TrintyRetardsAI : public GameObjectAI
+    {
+        public:
+        TrintyRetardsAI(GameObject* go) : GameObjectAI(go) {}
+				
+                
+                
+    };
+    
+	GameObjectAI* GetAI(GameObject* go) const override
+	{
+		return  new TrintyRetardsAI(go);
+	}

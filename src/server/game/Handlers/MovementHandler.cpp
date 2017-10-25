@@ -32,6 +32,7 @@
 #include "ObjectMgr.h"
 #include "Vehicle.h"
 #include "GameTime.h"
+#include "AntiCheatMgr.h"
 
 #define MOVEMENT_PACKET_TIME_DELAY 0
 

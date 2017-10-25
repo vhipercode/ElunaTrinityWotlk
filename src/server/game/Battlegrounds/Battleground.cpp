@@ -40,6 +40,7 @@
 #include "WorldPacket.h"
 #include "ArenaTeamMgr.h"
 #include "../../../src/server/scripts/custom/3v3/npc_solo3v3.h"
+#include "ObjectAccessor.h"
 #include <cstdarg>
 
 void BattlegroundScore::AppendToPacket(WorldPacket& data)
@@ -1906,7 +1907,7 @@ void Battleground::CheckStartSolo3v3Arena()
 	{
 		for (ArenaTeam::MemberList::iterator itr = team[i]->m_membersBegin(); itr != team[i]->m_membersEnd(); itr++)
 		{
-			Player* plr = sObjectAccessor->FindPlayer(itr->Guid);
+			Player* plr = ObjectAccessor::FindPlayer(itr->Guid);
 			if (!plr)
 			{
 				someoneNotInArena = true;
