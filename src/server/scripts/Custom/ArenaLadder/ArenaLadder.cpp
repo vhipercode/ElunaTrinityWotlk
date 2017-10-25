@@ -43,20 +43,34 @@ enum ArenaGossipText {
 class ArenaTeamRanks : public CreatureScript
 {
     public:
-        bool OnGossipHello(Player *player, Creature *creature) {
-            AddGossipItemFor(player, GOSSIP_ICON_INTERACT_1, "|TInterface\\icons\\Achievement_Arena_2v2_7:35:35:-30:0|tTop teams in 2vs2 bracket", GOSSIP_SENDER_MAIN, ARENA_2V2_LADDER);
-            AddGossipItemFor(player, GOSSIP_ICON_INTERACT_1, "|TInterface\\icons\\Achievement_Arena_3v3_7:35:35:-30:0|tTop teams in 3vs3 bracket", GOSSIP_SENDER_MAIN, ARENA_3V3_LADDER);
-			AddGossipItemFor(player, GOSSIP_ICON_INTERACT_1, "|TInterface\\icons\\Achievement_Arena_5v5_7:35:35:-30:0|tTop teams in Solo 3vs3 / 1vs1 bracket", GOSSIP_SENDER_MAIN, ARENA_5V5_LADDER);
-            
-            SendGossipMenuFor(player, ARENA_GOSSIP_HELLO, creature->GetGUID());
-            
-            return true;
-        }
 		ArenaTeamRanks() : CreatureScript("ArenaTeamRanks"){}
         class TrintyRetardsAI : public ScriptedAI
         {
         public:
             TrintyRetardsAI(Creature* creature) : ScriptedAI(creature) {}
+
+
+            bool GossipHello(Player* player) override
+            {
+                return OnGossipHello(player, me);
+            }
+
+            bool GossipSelect(Player* player, uint32 /*menu_id*/, uint32 gossipListId) override
+            {
+                uint32 sender = player->PlayerTalkClass->GetGossipOptionSender(gossipListId);
+                uint32 action = player->PlayerTalkClass->GetGossipOptionAction(gossipListId);
+                return OnGossipSelect(player, me, sender, action);
+            }
+
+            bool OnGossipHello(Player *player, Creature *creature) {
+                AddGossipItemFor(player, GOSSIP_ICON_INTERACT_1, "|TInterface\\icons\\Achievement_Arena_2v2_7:35:35:-30:0|tTop teams in 2vs2 bracket", GOSSIP_SENDER_MAIN, ARENA_2V2_LADDER);
+                AddGossipItemFor(player, GOSSIP_ICON_INTERACT_1, "|TInterface\\icons\\Achievement_Arena_3v3_7:35:35:-30:0|tTop teams in 3vs3 bracket", GOSSIP_SENDER_MAIN, ARENA_3V3_LADDER);
+                AddGossipItemFor(player, GOSSIP_ICON_INTERACT_1, "|TInterface\\icons\\Achievement_Arena_5v5_7:35:35:-30:0|tTop teams in Solo 3vs3 / 1vs1 bracket", GOSSIP_SENDER_MAIN, ARENA_5V5_LADDER);
+
+                SendGossipMenuFor(player, ARENA_GOSSIP_HELLO, creature->GetGUID());
+
+                return true;
+            }
 
             uint32 optionToTeamType(uint32 option) {
                 uint32 teamType;

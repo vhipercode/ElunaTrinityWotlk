@@ -202,8 +202,7 @@ public:
 
             AddGossipItemFor(player, GOSSIP_ICON_CHAT, "Show statistics", GOSSIP_SENDER_MAIN, 4);
         }
-
-        CloseGossipMenuFor(player);
+        SendGossipMenuFor(player, 0, me->GetGUID());
         return true;
     }
 
