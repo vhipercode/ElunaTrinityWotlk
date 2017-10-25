@@ -50,6 +50,9 @@
 #include "SocialMgr.h"
 #include "QueryHolder.h"
 #include "World.h"
+#include "Battleground.h"
+#include "ArenaTeamMgr.h"
+#include "AccountMgr.h"
 #ifdef ELUNA
 #include "LuaEngine.h"
 #endif
@@ -997,6 +1000,10 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder* holder)
     sScriptMgr->OnPlayerLogin(pCurrChar, firstLogin);
 
     TC_METRIC_EVENT("player_events", "Login", pCurrChar->GetName());
+    
+	if (pCurrChar->GetTeam() != pCurrChar->getCFSRace())
+        pCurrChar->FitPlayerInTeam(pCurrChar->GetBattleground() && !pCurrChar->GetBattleground()->isArena() ? true : false, pCurrChar->GetBattleground());
+	pCurrChar->RemoveAurasDueToSpell(44311);
 
     delete holder;
 }

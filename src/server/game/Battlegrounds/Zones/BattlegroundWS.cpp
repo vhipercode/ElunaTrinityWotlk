@@ -317,7 +317,6 @@ void BattlegroundWS::EventPlayerCapturedFlag(Player* player)
         if (GetTeamScore(TEAM_ALLIANCE) < BG_WS_MAX_TEAM_SCORE)
             AddPoint(ALLIANCE, 1);
         PlaySoundToAll(BG_WS_SOUND_FLAG_CAPTURED_ALLIANCE);
-        RewardReputationToTeam(890, m_ReputationCapture, ALLIANCE);
     }
     else
     {
@@ -336,9 +335,9 @@ void BattlegroundWS::EventPlayerCapturedFlag(Player* player)
         if (GetTeamScore(TEAM_HORDE) < BG_WS_MAX_TEAM_SCORE)
             AddPoint(HORDE, 1);
         PlaySoundToAll(BG_WS_SOUND_FLAG_CAPTURED_HORDE);
-        RewardReputationToTeam(889, m_ReputationCapture, HORDE);
     }
     //for flag capture is reward 2 honorable kills
+    RewardReputationToTeam(890, 889, m_ReputationCapture, player->GetTeam());
     RewardHonorToTeam(GetBonusHonorFromKill(2), player->GetTeam());
 
     SpawnBGObject(BG_WS_OBJECT_H_FLAG, BG_WS_FLAG_RESPAWN_TIME);

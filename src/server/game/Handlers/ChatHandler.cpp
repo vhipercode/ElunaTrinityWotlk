@@ -72,35 +72,38 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recvData)
     //TC_LOG_DEBUG("CHAT: packet received. type %u, lang %u", type, lang);
 
     // prevent talking at unknown language (cheating)
-    LanguageDesc const* langDesc = GetLanguageDescByID(lang);
-    if (!langDesc)
+    if (!sender->IsPlayingNative())
     {
-        SendNotification(LANG_UNKNOWN_LANGUAGE);
-        recvData.rfinish();
-        return;
-    }
-
-    if (langDesc->skill_id != 0 && !sender->HasSkill(langDesc->skill_id))
-    {
-        // also check SPELL_AURA_COMPREHEND_LANGUAGE (client offers option to speak in that language)
-        Unit::AuraEffectList const& langAuras = sender->GetAuraEffectsByType(SPELL_AURA_COMPREHEND_LANGUAGE);
-        bool foundAura = false;
-        for (Unit::AuraEffectList::const_iterator i = langAuras.begin(); i != langAuras.end(); ++i)
+        LanguageDesc const* langDesc = GetLanguageDescByID(lang);
+        if (!langDesc)
         {
-            if ((*i)->GetMiscValue() == int32(lang))
-            {
-                foundAura = true;
-                break;
-            }
-        }
-        if (!foundAura)
-        {
-            SendNotification(LANG_NOT_LEARNED_LANGUAGE);
+            SendNotification(LANG_UNKNOWN_LANGUAGE);
             recvData.rfinish();
             return;
         }
-    }
 
+        if (langDesc->skill_id != 0 && !sender->HasSkill(langDesc->skill_id))
+        {
+            // also check SPELL_AURA_COMPREHEND_LANGUAGE (client offers option to speak in that language)
+            Unit::AuraEffectList const& langAuras = sender->GetAuraEffectsByType(SPELL_AURA_COMPREHEND_LANGUAGE);
+            bool foundAura = false;
+            for (Unit::AuraEffectList::const_iterator i = langAuras.begin(); i != langAuras.end(); ++i)
+            {
+                if ((*i)->GetMiscValue() == int32(lang))
+                {
+                    foundAura = true;
+                    break;
+                }
+            }
+            if (!foundAura)
+            {
+                SendNotification(LANG_NOT_LEARNED_LANGUAGE);
+                recvData.rfinish();
+                return;
+            }
+        }
+    }
+    
     if (lang == LANG_ADDON)
     {
         // LANG_ADDON is only valid for the following message types
@@ -253,6 +256,10 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recvData)
             if (!sender->IsAlive())
                 return;
 
+			if (!sender->IsGameMaster())
+                if (sender->SendBattleGroundChat(type, msg))
+                    return;
+
             if (sender->getLevel() < sWorld->getIntConfig(CONFIG_CHAT_SAY_LEVEL_REQ))
             {
                 SendNotification(GetTrinityString(LANG_SAY_REQ), sWorld->getIntConfig(CONFIG_CHAT_SAY_LEVEL_REQ));
@@ -273,6 +280,13 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recvData)
             if (!sender->IsAlive())
                 return;
 
+            if (!sender->IsGameMaster())
+			    if (sender->SendBattleGroundChat(type, msg))
+			        return;
+            if (!GetPlayer()->IsGameMaster())
+                if (GetPlayer()->SendBattleGroundChat(type, msg))
+                    return;
+
             if (sender->getLevel() < sWorld->getIntConfig(CONFIG_CHAT_EMOTE_LEVEL_REQ))
             {
                 SendNotification(GetTrinityString(LANG_SAY_REQ), sWorld->getIntConfig(CONFIG_CHAT_EMOTE_LEVEL_REQ));
@@ -292,6 +306,10 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recvData)
             // Prevent cheating
             if (!sender->IsAlive())
                 return;
+
+			if (!sender->IsGameMaster())
+                if (sender->SendBattleGroundChat(type, msg))
+                    return;
 
             if (sender->getLevel() < sWorld->getIntConfig(CONFIG_CHAT_YELL_LEVEL_REQ))
             {
