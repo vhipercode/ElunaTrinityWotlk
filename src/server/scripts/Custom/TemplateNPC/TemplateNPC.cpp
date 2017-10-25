@@ -612,8 +612,7 @@ public:
             }
             break;
             }
-            SendGossipMenuFor(player, 0, creature->GetGUID());
-            CloseGossipMenuFor(player);
+            SendGossipMenuFor(player, DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
             return true;
         }
 

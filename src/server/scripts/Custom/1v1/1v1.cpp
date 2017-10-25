@@ -174,9 +174,9 @@ public:
         }
         
     
-    bool OnGossipHello(Player* player, Creature* me)
+    bool OnGossipHello(Player* player, Creature* creature)
     {
-        if (!player || !me)
+        if (!player || !creature)
             return true;
 
         if (sWorld->getBoolConfig(CONFIG_ARENA_1V1_ENABLE) == false)
@@ -202,7 +202,7 @@ public:
 
             AddGossipItemFor(player, GOSSIP_ICON_CHAT, "Show statistics", GOSSIP_SENDER_MAIN, 4);
         }
-        SendGossipMenuFor(player, 0, me->GetGUID());
+        SendGossipMenuFor(player, DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
         return true;
     }
 
