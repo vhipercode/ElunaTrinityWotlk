@@ -16,6 +16,12 @@ class FastArenaCrystal : public GameObjectScript
         {
         public:
             TrintyRetardsAI(GameObject* go) : GameObjectAI(go) {}
+            
+        
+        bool GossipHello(Player* player) override
+        {
+            return OnGossipHello(player, me);
+        }
 
         bool OnGossipHello(Player* player, GameObject* go)
         {

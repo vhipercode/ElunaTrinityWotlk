@@ -367,6 +367,18 @@ public:
     public:
         TrintyRetardsAI(Creature* creature) : ScriptedAI(creature) {}
 
+        bool GossipHello(Player* player) override
+        {
+            return OnGossipHello(player, me);
+        }
+        
+        bool GossipSelect(Player* player, uint32 /*menu_id*/, uint32 gossipListId) override
+        {
+            uint32 sender = player->PlayerTalkClass->GetGossipOptionSender(gossipListId);
+            uint32 action = player->PlayerTalkClass->GetGossipOptionAction(gossipListId);
+            return OnGossipSelect(player, me, sender, action);
+        }
+        
     bool OnGossipHello(Player* player, Creature* pCreature)
     {
         AddGossipItemFor(player, GOSSIP_ICON_CHAT, "|TInterface\\icons\\Achievement_Arena_2v2_7:35:35:-30:0|tGames: 2v2", GOSSIP_SENDER_MAIN, NPC_SPECTATOR_ACTION_2V2_GAMES);

@@ -522,6 +522,20 @@ public:
     {
     public:
         TrintyRetardsAI(Creature* creature) : ScriptedAI(creature) {}
+        
+        
+        bool GossipHello(Player* player) override
+        {
+            return OnGossipHello(player, me);
+        }
+        
+        bool GossipSelect(Player* player, uint32 /*menu_id*/, uint32 gossipListId) override
+        {
+            uint32 sender = player->PlayerTalkClass->GetGossipOptionSender(gossipListId);
+            uint32 action = player->PlayerTalkClass->GetGossipOptionAction(gossipListId);
+            return OnGossipSelect(player, me, sender, action);
+        }
+        
 
         bool OnGossipHello(Player* player, Creature* creature)
         {
