@@ -162,12 +162,12 @@ public:
                 SendGossipMenuFor(player, TEXT_PROFESSION_MAIN, creature->GetGUID());
                 break;
             case ACTION_LEARN_PROFESSION:
-                //if (!CheckSkill(player, action))
-                //{
-                    //player->GetSession()->SendNotification("You already have two professions or already know this skill");
+                if (!CheckSkill(player, action))
+                {
+                    player->GetSession()->SendNotification("You already have two professions or already know this skill");
                     OnGossipHello(player, creature);
-                    //break;
-                //}
+                    break;
+                }
                 HandleLearnSkillRecipesHelper(player, action);
                 player->SetSkill(action, player->GetSkillStep(action), 450, 450);
                 break;
