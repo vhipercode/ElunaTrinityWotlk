@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -22,7 +22,7 @@
 #include "DatabaseEnvFwd.h"
 #include <vector>
 
-class TC_DATABASE_API ResultSet
+class WH_DATABASE_API ResultSet
 {
     public:
         ResultSet(MySQLResult* result, MySQLField* fields, uint64 rowCount, uint32 fieldCount);
@@ -51,7 +51,7 @@ class TC_DATABASE_API ResultSet
         ResultSet& operator=(ResultSet const& right) = delete;
 };
 
-class TC_DATABASE_API PreparedResultSet
+class WH_DATABASE_API PreparedResultSet
 {
     public:
         PreparedResultSet(MySQLStmt* stmt, MySQLResult* result, uint64 rowCount, uint32 fieldCount);

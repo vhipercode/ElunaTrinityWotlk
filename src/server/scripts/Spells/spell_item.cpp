@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -27,6 +27,7 @@
 #include "Creature.h"
 #include "CreatureAIImpl.h"
 #include "DBCStores.h"
+#include "GameLocale.h"
 #include "LootMgr.h"
 #include "Map.h"
 #include "ObjectMgr.h"
@@ -330,7 +331,7 @@ class spell_item_aura_of_madness : public AuraScript
             SPELL_NARCISSISM,
             SPELL_MARTYR_COMPLEX,
             SPELL_DEMENTIA
-        }) && sObjectMgr->GetBroadcastText(SAY_MADNESS);
+        }) && sGameLocale->GetBroadcastText(SAY_MADNESS);
     }
 
     void HandleProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
@@ -365,7 +366,7 @@ class spell_item_aura_of_madness : public AuraScript
 
         PreventDefaultAction();
         Unit* caster = eventInfo.GetActor();
-        uint32 spellId = Trinity::Containers::SelectRandomContainerElement(triggeredSpells[caster->GetClass()]);
+        uint32 spellId = Warhead::Containers::SelectRandomContainerElement(triggeredSpells[caster->GetClass()]);
         caster->CastSpell(caster, spellId, aurEff);
 
         if (roll_chance_i(10))
@@ -428,7 +429,7 @@ class spell_item_brittle_armor : public SpellScript
 // 64411 - Blessing of Ancient Kings (Val'anyr, Hammer of Ancient Kings)
 enum BlessingOfAncientKings
 {
-    SPELL_PROTECTION_OF_ANCIENT_KINGS   = 64413
+    SPELL_PROTECTION_OF_ANCIENT_KINGS = 64413
 };
 
 class spell_item_blessing_of_ancient_kings : public AuraScript
@@ -618,7 +619,7 @@ class spell_item_deathbringers_will : public SpellScriptLoader
                 if (randomSpells.empty())
                     return;
 
-                uint32 spellId = Trinity::Containers::SelectRandomContainerElement(randomSpells);
+                uint32 spellId = Warhead::Containers::SelectRandomContainerElement(randomSpells);
                 caster->CastSpell(caster, spellId, aurEff);
             }
 
@@ -646,7 +647,7 @@ class spell_item_decahedral_dwarven_dice : public SpellScript
 
     bool Validate(SpellInfo const* /*spellInfo*/) override
     {
-        if (!sObjectMgr->GetBroadcastText(TEXT_DECAHEDRAL_DWARVEN_DICE))
+        if (!sGameLocale->GetBroadcastText(TEXT_DECAHEDRAL_DWARVEN_DICE))
             return false;
         return true;
     }
@@ -792,6 +793,7 @@ enum DeviateFishSpells
     SPELL_SHRINK            = 8066,
     SPELL_PARTY_TIME        = 8067,
     SPELL_HEALTHY_SPIRIT    = 8068,
+    SPELL_REJUVENATION      = 8070
 };
 
 class spell_item_deviate_fish : public SpellScript
@@ -805,19 +807,62 @@ class spell_item_deviate_fish : public SpellScript
 
     bool Validate(SpellInfo const* /*spellInfo*/) override
     {
-        return ValidateSpellInfo({ SPELL_SLEEPY, SPELL_INVIGORATE, SPELL_SHRINK, SPELL_PARTY_TIME, SPELL_HEALTHY_SPIRIT });
+        return ValidateSpellInfo({ SPELL_SLEEPY, SPELL_INVIGORATE, SPELL_SHRINK, SPELL_PARTY_TIME, SPELL_HEALTHY_SPIRIT, SPELL_REJUVENATION });
     }
 
     void HandleDummy(SpellEffIndex /*effIndex*/)
     {
         Unit* caster = GetCaster();
-        uint32 spellId = urand(SPELL_SLEEPY, SPELL_HEALTHY_SPIRIT);
+        uint32 spellId = RAND(SPELL_SLEEPY, SPELL_INVIGORATE, SPELL_SHRINK, SPELL_PARTY_TIME, SPELL_HEALTHY_SPIRIT, SPELL_REJUVENATION);
         caster->CastSpell(caster, spellId, true);
     }
 
     void Register() override
     {
         OnEffectHit += SpellEffectFn(spell_item_deviate_fish::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+    }
+};
+
+class PartyTimeEmoteEvent : public BasicEvent
+{
+public:
+    PartyTimeEmoteEvent(Player* player) : _player(player) { }
+
+    bool Execute(uint64 /*time*/, uint32 /*diff*/) override
+    {
+        if (!_player->HasAura(SPELL_PARTY_TIME))
+            return true;
+
+        if (_player->isMoving())
+            _player->HandleEmoteCommand(RAND(EMOTE_ONESHOT_APPLAUD, EMOTE_ONESHOT_LAUGH, EMOTE_ONESHOT_CHEER, EMOTE_ONESHOT_CHICKEN));
+        else
+            _player->HandleEmoteCommand(RAND(EMOTE_ONESHOT_APPLAUD, EMOTE_ONESHOT_DANCESPECIAL, EMOTE_ONESHOT_LAUGH, EMOTE_ONESHOT_CHEER, EMOTE_ONESHOT_CHICKEN));
+
+        _player->m_Events.AddEventAtOffset(this, RAND(5s, 10s, 15s));
+
+        return false; // do not delete re-added event in EventProcessor::Update
+    }
+
+private:
+    Player* _player;
+};
+
+class spell_item_party_time : public AuraScript
+{
+    PrepareAuraScript(spell_item_party_time);
+
+    void HandleEffectApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    {
+        Player* player = GetOwner()->ToPlayer();
+        if (!player)
+            return;
+
+        player->m_Events.AddEventAtOffset(new PartyTimeEmoteEvent(player), RAND(5s, 10s, 15s));
+    }
+
+    void Register() override
+    {
+        OnEffectApply += AuraEffectApplyFn(spell_item_party_time::HandleEffectApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -858,7 +903,7 @@ class spell_item_echoes_of_light : public SpellScript
         if (targets.size() < 2)
             return;
 
-        targets.sort(Trinity::HealthPctOrderPred());
+        targets.sort(Warhead::HealthPctOrderPred());
 
         WorldObject* target = targets.front();
         targets.clear();
@@ -2305,7 +2350,7 @@ class spell_item_worn_troll_dice : public SpellScript
 
     bool Validate(SpellInfo const* /*spellInfo*/) override
     {
-        if (!sObjectMgr->GetBroadcastText(TEXT_WORN_TROLL_DICE))
+        if (!sGameLocale->GetBroadcastText(TEXT_WORN_TROLL_DICE))
             return false;
         return true;
     }
@@ -2729,7 +2774,6 @@ enum ReindeerTransformation
     SPELL_REINDEER_100                          = 25859,
     SPELL_REINDEER_60                           = 25858,
 };
-
 
 class spell_item_reindeer_transformation : public SpellScript
 {
@@ -3925,7 +3969,7 @@ class spell_item_taunt_flag_targeting : public SpellScript
     bool Validate(SpellInfo const* /*spellInfo*/) override
     {
         return ValidateSpellInfo({ SPELL_TAUNT_FLAG }) &&
-            sObjectMgr->GetBroadcastText(EMOTE_PLANTS_FLAG);
+            sGameLocale->GetBroadcastText(EMOTE_PLANTS_FLAG);
     }
 
     void FilterTargets(std::list<WorldObject*>& targets)
@@ -3941,7 +3985,7 @@ class spell_item_taunt_flag_targeting : public SpellScript
             return;
         }
 
-        Trinity::Containers::RandomResize(targets, 1);
+        Warhead::Containers::RandomResize(targets, 1);
     }
 
     void HandleDummy(SpellEffIndex /*effIndex*/)
@@ -4183,7 +4227,7 @@ class spell_item_mad_alchemists_potion : public SpellScript
         if (target->GetPowerType() == POWER_MANA)
             availableElixirs.push_back(28509); // Elixir of Major Mageblood (22840)
 
-        uint32 chosenElixir = Trinity::Containers::SelectRandomContainerElement(availableElixirs);
+        uint32 chosenElixir = Warhead::Containers::SelectRandomContainerElement(availableElixirs);
 
         bool useElixir = true;
 
@@ -4246,7 +4290,7 @@ class spell_item_crazy_alchemists_potion : public SpellScript
         if (target->GetPowerType() == POWER_MANA)
             availableElixirs.push_back(43186); // Runic Mana Potion(33448)
 
-        uint32 chosenElixir = Trinity::Containers::SelectRandomContainerElement(availableElixirs);
+        uint32 chosenElixir = Warhead::Containers::SelectRandomContainerElement(availableElixirs);
 
         target->CastSpell(target, chosenElixir, GetCastItem());
     }
@@ -4318,6 +4362,7 @@ void AddSC_item_spell_scripts()
     new spell_item_defibrillate("spell_item_gnomish_army_knife", 33);
     RegisterSpellScript(spell_item_desperate_defense);
     RegisterSpellScript(spell_item_deviate_fish);
+    RegisterSpellScript(spell_item_party_time);
     RegisterSpellScript(spell_item_discerning_eye_beast_dummy);
     RegisterSpellScript(spell_item_echoes_of_light);
     RegisterSpellScript(spell_item_extract_gas);

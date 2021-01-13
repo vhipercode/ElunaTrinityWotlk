@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -15,8 +15,8 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TRINITY_CHATCOMMANDHELPERS_H
-#define TRINITY_CHATCOMMANDHELPERS_H
+#ifndef WARHEAD_CHATCOMMANDHELPERS_H
+#define WARHEAD_CHATCOMMANDHELPERS_H
 
 #include "Define.h"
 #include "Language.h"
@@ -29,7 +29,7 @@
 
 class ChatHandler;
 
-namespace Trinity::Impl::ChatCommands
+namespace Warhead::Impl::ChatCommands
 {
     /***************** HELPERS *************************\
     |* These really aren't for outside use...          *|
@@ -120,12 +120,12 @@ namespace Trinity::Impl::ChatCommands
             std::variant<std::monostate, std::string_view, std::string> _storage;
     };
 
-    TC_GAME_API void SendErrorMessageToHandler(ChatHandler* handler, std::string_view str);
-    TC_GAME_API char const* GetTrinityString(ChatHandler const* handler, TrinityStrings which);
+    WH_GAME_API void SendErrorMessageToHandler(ChatHandler* handler, std::string_view str);
+    WH_GAME_API char const* GetWarheadString(ChatHandler const* handler, WarheadStrings which);
     template <typename... Ts>
-    std::string FormatTrinityString(ChatHandler const* handler, TrinityStrings which, Ts&&... args)
+    std::string FormatWarheadString(ChatHandler const* handler, WarheadStrings which, Ts&&... args)
     {
-        return Trinity::StringFormat(GetTrinityString(handler, which), std::forward<Ts>(args)...);
+        return Warhead::StringFormat(GetWarheadString(handler, which), std::forward<Ts>(args)...);
     }
 }
 

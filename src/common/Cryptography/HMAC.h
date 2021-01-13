@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -15,8 +15,8 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TRINITY_HMAC_H
-#define TRINITY_HMAC_H
+#ifndef WARHEAD_HMAC_H
+#define WARHEAD_HMAC_H
 
 #include "CryptoConstants.h"
 #include "Define.h"
@@ -28,7 +28,7 @@
 
 class BigNumber;
 
-namespace Trinity::Impl
+namespace Warhead::Impl
 {
     struct HMACImpl
     {
@@ -122,9 +122,9 @@ namespace Trinity::Impl
     };
 }
 
-namespace Trinity::Crypto
+namespace Warhead::Crypto
 {
-    using HMAC_SHA1 = Trinity::Impl::GenericHMAC<EVP_sha1, Constants::SHA1_DIGEST_LENGTH_BYTES>;
-    using HMAC_SHA256 = Trinity::Impl::GenericHMAC<EVP_sha256, Constants::SHA256_DIGEST_LENGTH_BYTES>;
+    using HMAC_SHA1 = Warhead::Impl::GenericHMAC<EVP_sha1, Constants::SHA1_DIGEST_LENGTH_BYTES>;
+    using HMAC_SHA256 = Warhead::Impl::GenericHMAC<EVP_sha256, Constants::SHA256_DIGEST_LENGTH_BYTES>;
 }
 #endif

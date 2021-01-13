@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -18,15 +18,16 @@
 #include "GameTime.h"
 #include "ScriptMgr.h"
 #include "Util.h"
-#include "World.h"
+#include "GameConfig.h"
+#include "Timer.h"
 
 namespace
 {
     bool IsXPBoostActive()
     {
         time_t time = GameTime::GetGameTime();
-        tm localTm = TimeBreakdown(time);
-        uint32 weekdayMaskBoosted = sWorld->getIntConfig(CONFIG_XP_BOOST_DAYMASK);
+        tm localTm = Warhead::Time::TimeBreakdown(time);
+        uint32 weekdayMaskBoosted = CONF_GET_INT("XP.Boost.Daymask");
         uint32 weekdayMask = (1 << localTm.tm_wday);
         bool currentDayBoosted = (weekdayMask & weekdayMaskBoosted) != 0;
         return currentDayBoosted;
@@ -41,7 +42,7 @@ public:
     void OnGiveXP(Player* /*player*/, uint32& amount, Unit* /*unit*/) override
     {
         if (IsXPBoostActive())
-            amount *= sWorld->getRate(RATE_XP_BOOST);
+            amount *= sGameConfig->GetOption<float>("XP.Boost.Rate");
     }
 };
 

@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -15,8 +15,8 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TRINITY_OBJECTGRIDLOADER_H
-#define TRINITY_OBJECTGRIDLOADER_H
+#ifndef WARHEAD_OBJECTGRIDLOADER_H
+#define WARHEAD_OBJECTGRIDLOADER_H
 
 #include "TypeList.h"
 #include "Define.h"
@@ -26,7 +26,7 @@
 
 class ObjectWorldLoader;
 
-class TC_GAME_API ObjectGridLoader
+class WH_GAME_API ObjectGridLoader
 {
     friend class ObjectWorldLoader;
 
@@ -54,7 +54,7 @@ class TC_GAME_API ObjectGridLoader
 };
 
 //Stop the creatures before unloading the NGrid
-class TC_GAME_API ObjectGridStoper
+class WH_GAME_API ObjectGridStoper
 {
     public:
         void Visit(CreatureMapType &m);
@@ -62,7 +62,7 @@ class TC_GAME_API ObjectGridStoper
 };
 
 //Move the foreign creatures back to respawn positions before unloading the NGrid
-class TC_GAME_API ObjectGridEvacuator
+class WH_GAME_API ObjectGridEvacuator
 {
     public:
         void Visit(CreatureMapType &m);

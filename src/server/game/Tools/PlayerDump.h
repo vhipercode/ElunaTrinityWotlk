@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -37,12 +37,6 @@ enum DumpTableType
 
     DTT_INVENTORY,      //    -> item guids collection      // character_inventory
 
-    DTT_MAIL,           //    -> mail ids collection        // mail
-                        //    -> item_text
-
-    DTT_MAIL_ITEM,      // <- mail ids                      // mail_items
-                        //    -> item guids collection
-
     DTT_ITEM,           // <- item guids                    // item_instance
                         //    -> item_text
 
@@ -65,7 +59,7 @@ struct DumpTable;
 struct TableStruct;
 class StringTransaction;
 
-class TC_GAME_API PlayerDump
+class WH_GAME_API PlayerDump
 {
     public:
         static void InitializeTables();
@@ -74,7 +68,7 @@ class TC_GAME_API PlayerDump
         PlayerDump() { }
 };
 
-class TC_GAME_API PlayerDumpWriter : public PlayerDump
+class WH_GAME_API PlayerDumpWriter : public PlayerDump
 {
     public:
         PlayerDumpWriter() { }
@@ -88,13 +82,12 @@ class TC_GAME_API PlayerDumpWriter : public PlayerDump
         void PopulateGuids(ObjectGuid::LowType guid);
 
         std::set<ObjectGuid::LowType> _pets;
-        std::set<ObjectGuid::LowType> _mails;
         std::set<ObjectGuid::LowType> _items;
 
         std::set<uint64> _itemSets;
 };
 
-class TC_GAME_API PlayerDumpReader : public PlayerDump
+class WH_GAME_API PlayerDumpReader : public PlayerDump
 {
     public:
         PlayerDumpReader() { }

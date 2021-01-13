@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -15,8 +15,8 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TRINITY_CREATUREAI_H
-#define TRINITY_CREATUREAI_H
+#ifndef WARHEAD_CREATUREAI_H
+#define WARHEAD_CREATUREAI_H
 
 #include "Common.h"
 #include "ObjectDefines.h"
@@ -76,7 +76,7 @@ enum SCEquip
     EQUIP_UNEQUIP   = 0
 };
 
-class TC_GAME_API CreatureAI : public UnitAI
+class WH_GAME_API CreatureAI : public UnitAI
 {
     protected:
         Creature* const me;

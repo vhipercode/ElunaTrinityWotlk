@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -27,6 +27,7 @@ EndScriptData */
 #include "Config.h"
 #include "DatabaseEnv.h"
 #include "DatabaseLoader.h"
+#include "GameConfig.h"
 #include "GameTime.h"
 #include "GitRevision.h"
 #include "Language.h"
@@ -37,20 +38,19 @@ EndScriptData */
 #include "RBAC.h"
 #include "Realm.h"
 #include "ServerMotd.h"
+#include "Timer.h"
 #include "UpdateTime.h"
 #include "Util.h"
 #include "VMapFactory.h"
 #include "VMapManager2.h"
 #include "World.h"
 #include "WorldSession.h"
-
 #include <numeric>
-
 #include <boost/filesystem/operations.hpp>
 #include <openssl/crypto.h>
 #include <openssl/opensslv.h>
 
-#if TRINITY_COMPILER == TRINITY_COMPILER_GNU
+#if WARHEAD_COMPILER == WARHEAD_COMPILER_GNU
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #endif
 
@@ -125,7 +125,7 @@ public:
 
     static bool HandleServerDebugCommand(ChatHandler* handler, char const* /*args*/)
     {
-        uint16 worldPort = uint16(sWorld->getIntConfig(CONFIG_PORT_WORLD));
+        uint16 worldPort = uint16(CONF_GET_INT("WorldServerPort"));
         std::string dbPortOutput;
 
         {
@@ -134,9 +134,9 @@ public:
                 dbPort = (*res)[0].GetUInt16();
 
             if (dbPort)
-                dbPortOutput = Trinity::StringFormat("Realmlist (Realm Id: %u) configured in port %" PRIu16, realm.Id.Realm, dbPort);
+                dbPortOutput = Warhead::StringFormat("Realmlist (Realm Id: %u) configured in port %" PRIu16, realm.Id.Realm, dbPort);
             else
-                dbPortOutput = Trinity::StringFormat("Realm Id: %u not found in `realmlist` table. Please check your setup", realm.Id.Realm);
+                dbPortOutput = Warhead::StringFormat("Realm Id: %u not found in `realmlist` table. Please check your setup", realm.Id.Realm);
         }
 
         handler->PSendSysMessage("%s", GitRevision::GetFullVersion());
@@ -176,11 +176,11 @@ public:
         handler->PSendSysMessage("Worldserver listening connections on port %" PRIu16, worldPort);
         handler->PSendSysMessage("%s", dbPortOutput.c_str());
 
-        bool vmapIndoorCheck = sWorld->getBoolConfig(CONFIG_VMAP_INDOOR_CHECK);
+        bool vmapIndoorCheck = CONF_GET_BOOL("vmap.enableIndoorCheck");
         bool vmapLOSCheck = VMAP::VMapFactory::createOrGetVMapManager()->isLineOfSightCalcEnabled();
         bool vmapHeightCheck = VMAP::VMapFactory::createOrGetVMapManager()->isHeightCalcEnabled();
 
-        bool mmapEnabled = sWorld->getBoolConfig(CONFIG_ENABLE_MMAPS);
+        bool mmapEnabled = CONF_GET_BOOL("mmap.enablePathFinding");
 
         std::string dataDir = sWorld->GetDataPath();
         std::vector<std::string> subDirs;
@@ -261,7 +261,7 @@ public:
         uint32 queuedClientsNum     = sWorld->GetQueuedSessionCount();
         uint32 maxActiveClientsNum  = sWorld->GetMaxActiveSessionCount();
         uint32 maxQueuedClientsNum  = sWorld->GetMaxQueuedSessionCount();
-        std::string uptime          = secsToTimeString(GameTime::GetUptime());
+        std::string uptime          = Warhead::Time::ToTimeString<Seconds>(GameTime::GetUptime(), TimeOutput::Seconds, TimeFormat::FullText);
         uint32 updateTime           = sWorldUpdateTime.GetLastUpdateTime();
 
         handler->PSendSysMessage("%s", GitRevision::GetFullVersion());
@@ -269,9 +269,10 @@ public:
         handler->PSendSysMessage(LANG_CONNECTED_USERS, activeClientsNum, maxActiveClientsNum, queuedClientsNum, maxQueuedClientsNum);
         handler->PSendSysMessage(LANG_UPTIME, uptime.c_str());
         handler->PSendSysMessage(LANG_UPDATE_DIFF, updateTime);
+
         // Can't use sWorld->ShutdownMsg here in case of console command
         if (sWorld->IsShuttingDown())
-            handler->PSendSysMessage(LANG_SHUTDOWN_TIMELEFT, secsToTimeString(sWorld->GetShutDownTimeLeft()).c_str());
+            handler->PSendSysMessage(LANG_SHUTDOWN_TIMELEFT, Warhead::Time::ToTimeString<Seconds>(sWorld->GetShutDownTimeLeft(), TimeOutput::Seconds, TimeFormat::FullText).c_str());
 
         return true;
     }
@@ -432,7 +433,7 @@ public:
         if (name.empty() || level < 0 || (type != "a" && type != "l"))
             return false;
 
-        sLog->SetLogLevel(name, level, type == "l");
+        // sLog->SetLogLevel(name, level, type == "l");
         return true;
     }
 
@@ -477,7 +478,7 @@ private:
         }
         else
         {
-            delay = TimeStringToSecs(std::string(delayStr));
+            delay = Warhead::Time::TimeStringTo<Seconds>(delayStr);
 
             if (delay == 0)
                 return false;
@@ -509,9 +510,9 @@ private:
                 return false;
 
         // Override parameter "delay" with the configuration value if there are still players connected and "force" parameter was not specified
-        if (delay < (int32)sWorld->getIntConfig(CONFIG_FORCE_SHUTDOWN_THRESHOLD) && !(shutdownMask & SHUTDOWN_MASK_FORCE) && !IsOnlyUser(handler->GetSession()))
+        if (delay < (int32)CONF_GET_INT("GM.ForceShutdownThreshold") && !(shutdownMask & SHUTDOWN_MASK_FORCE) && !IsOnlyUser(handler->GetSession()))
         {
-            delay = (int32)sWorld->getIntConfig(CONFIG_FORCE_SHUTDOWN_THRESHOLD);
+            delay = (int32)CONF_GET_INT("GM.ForceShutdownThreshold");
             handler->PSendSysMessage(LANG_SHUTDOWN_DELAYED, delay);
         }
 

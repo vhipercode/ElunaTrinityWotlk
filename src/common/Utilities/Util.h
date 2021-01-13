@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -21,7 +21,6 @@
 #include "Define.h"
 #include "Errors.h"
 #include "Optional.h"
-
 #include <array>
 #include <string>
 #include <string_view>
@@ -30,16 +29,9 @@
 #include <utility>
 #include <vector>
 
-enum class TimeFormat : uint8
+namespace Warhead
 {
-    FullText,       // 1 Days 2 Hours 3 Minutes 4 Seconds
-    ShortText,      // 1d 2h 3m 4s
-    Numeric         // 1:2:3:4
-};
-
-namespace Trinity
-{
-    TC_COMMON_API std::vector<std::string_view> Tokenize(std::string_view str, char sep, bool keepEmpty);
+    WH_COMMON_API std::vector<std::string_view> Tokenize(std::string_view str, char sep, bool keepEmpty);
 
     /* this would return string_view into temporary otherwise */
     std::vector<std::string_view> Tokenize(std::string&&, char, bool) = delete;
@@ -49,17 +41,7 @@ namespace Trinity
     inline std::vector<std::string_view> Tokenize(char const* str, char sep, bool keepEmpty) { return Tokenize(std::string_view(str ? str : ""), sep, keepEmpty); }
 }
 
-TC_COMMON_API Optional<int32> MoneyStringToMoney(std::string const& moneyString);
-
-TC_COMMON_API struct tm* localtime_r(time_t const* time, struct tm *result);
-TC_COMMON_API time_t LocalTimeToUTCTime(time_t time);
-TC_COMMON_API time_t GetLocalHourTimestamp(time_t time, uint8 hour, bool onlyAfterTime = true);
-TC_COMMON_API tm TimeBreakdown(time_t t);
-
-TC_COMMON_API std::string secsToTimeString(uint64 timeInSecs, TimeFormat timeFormat = TimeFormat::FullText, bool hoursOnly = false);
-TC_COMMON_API uint32 TimeStringToSecs(std::string const& timestring);
-TC_COMMON_API std::string TimeToTimestampStr(time_t t);
-TC_COMMON_API std::string TimeToHumanReadable(time_t t);
+WH_COMMON_API Optional<int32> MoneyStringToMoney(std::string const& moneyString);
 
 // Percentage calculation
 template <class T, class U>
@@ -90,23 +72,23 @@ template <class T>
 inline T square(T x) { return x*x; }
 
 // UTF8 handling
-TC_COMMON_API bool Utf8toWStr(std::string_view utf8str, std::wstring& wstr);
+WH_COMMON_API bool Utf8toWStr(std::string_view utf8str, std::wstring& wstr);
 
 // in wsize==max size of buffer, out wsize==real string size
-TC_COMMON_API bool Utf8toWStr(char const* utf8str, size_t csize, wchar_t* wstr, size_t& wsize);
+WH_COMMON_API bool Utf8toWStr(char const* utf8str, size_t csize, wchar_t* wstr, size_t& wsize);
 
 inline bool Utf8toWStr(std::string_view utf8str, wchar_t* wstr, size_t& wsize)
 {
     return Utf8toWStr(utf8str.data(), utf8str.size(), wstr, wsize);
 }
 
-TC_COMMON_API bool WStrToUtf8(std::wstring_view wstr, std::string& utf8str);
+WH_COMMON_API bool WStrToUtf8(std::wstring_view wstr, std::string& utf8str);
 // size==real string size
-TC_COMMON_API bool WStrToUtf8(wchar_t const* wstr, size_t size, std::string& utf8str);
+WH_COMMON_API bool WStrToUtf8(wchar_t const* wstr, size_t size, std::string& utf8str);
 
 // set string to "" if invalid utf8 sequence
-TC_COMMON_API size_t utf8length(std::string& utf8str);
-TC_COMMON_API void utf8truncate(std::string& utf8str, size_t len);
+WH_COMMON_API size_t utf8length(std::string& utf8str);
+WH_COMMON_API void utf8truncate(std::string& utf8str, size_t len);
 
 inline bool isBasicLatinCharacter(wchar_t wchar)
 {
@@ -278,41 +260,41 @@ inline wchar_t wcharToLower(wchar_t wchar)
 inline char charToUpper(char c) { return std::toupper(c); }
 inline char charToLower(char c) { return std::tolower(c); }
 
-TC_COMMON_API void wstrToUpper(std::wstring& str);
-TC_COMMON_API void wstrToLower(std::wstring& str);
-TC_COMMON_API void strToUpper(std::string& str);
-TC_COMMON_API void strToLower(std::string& str);
+WH_COMMON_API void wstrToUpper(std::wstring& str);
+WH_COMMON_API void wstrToLower(std::wstring& str);
+WH_COMMON_API void strToUpper(std::string& str);
+WH_COMMON_API void strToLower(std::string& str);
 
-TC_COMMON_API std::wstring GetMainPartOfName(std::wstring const& wname, uint32 declension);
+WH_COMMON_API std::wstring GetMainPartOfName(std::wstring const& wname, uint32 declension);
 
-TC_COMMON_API bool utf8ToConsole(std::string_view utf8str, std::string& conStr);
-TC_COMMON_API bool consoleToUtf8(std::string_view conStr, std::string& utf8str);
-TC_COMMON_API bool Utf8FitTo(std::string_view str, std::wstring_view search);
-TC_COMMON_API void utf8printf(FILE* out, const char *str, ...);
-TC_COMMON_API void vutf8printf(FILE* out, const char *str, va_list* ap);
-TC_COMMON_API bool Utf8ToUpperOnlyLatin(std::string& utf8String);
+WH_COMMON_API bool utf8ToConsole(std::string_view utf8str, std::string& conStr);
+WH_COMMON_API bool consoleToUtf8(std::string_view conStr, std::string& utf8str);
+WH_COMMON_API bool Utf8FitTo(std::string_view str, std::wstring_view search);
+WH_COMMON_API void utf8printf(FILE* out, const char *str, ...);
+WH_COMMON_API void vutf8printf(FILE* out, const char *str, va_list* ap);
+WH_COMMON_API bool Utf8ToUpperOnlyLatin(std::string& utf8String);
 
-TC_COMMON_API bool IsIPAddress(char const* ipaddress);
+WH_COMMON_API bool IsIPAddress(char const* ipaddress);
 
-TC_COMMON_API uint32 CreatePIDFile(std::string const& filename);
-TC_COMMON_API uint32 GetPID();
+WH_COMMON_API uint32 CreatePIDFile(std::string const& filename);
+WH_COMMON_API uint32 GetPID();
 
-namespace Trinity::Impl
+namespace Warhead::Impl
 {
-    TC_COMMON_API std::string ByteArrayToHexStr(uint8 const* bytes, size_t length, bool reverse = false);
-    TC_COMMON_API void HexStrToByteArray(std::string_view str, uint8* out, size_t outlen, bool reverse = false);
+    WH_COMMON_API std::string ByteArrayToHexStr(uint8 const* bytes, size_t length, bool reverse = false);
+    WH_COMMON_API void HexStrToByteArray(std::string_view str, uint8* out, size_t outlen, bool reverse = false);
 }
 
 template <typename Container>
 std::string ByteArrayToHexStr(Container const& c, bool reverse = false)
 {
-    return Trinity::Impl::ByteArrayToHexStr(std::data(c), std::size(c), reverse);
+    return Warhead::Impl::ByteArrayToHexStr(std::data(c), std::size(c), reverse);
 }
 
 template <size_t Size>
 void HexStrToByteArray(std::string_view str, std::array<uint8, Size>& buf, bool reverse = false)
 {
-    Trinity::Impl::HexStrToByteArray(str, buf.data(), Size, reverse);
+    Warhead::Impl::HexStrToByteArray(str, buf.data(), Size, reverse);
 }
 template <size_t Size>
 std::array<uint8, Size> HexStrToByteArray(std::string_view str, bool reverse = false)
@@ -327,20 +309,20 @@ inline std::vector<uint8> HexStrToByteVector(std::string_view str, bool reverse 
     std::vector<uint8> buf;
     size_t const sz = (str.size() / 2);
     buf.resize(sz);
-    Trinity::Impl::HexStrToByteArray(str, buf.data(), sz, reverse);
+    Warhead::Impl::HexStrToByteArray(str, buf.data(), sz, reverse);
     return buf;
 }
 
-TC_COMMON_API bool StringEqualI(std::string_view str1, std::string_view str2);
+WH_COMMON_API bool StringEqualI(std::string_view str1, std::string_view str2);
 inline bool StringStartsWith(std::string_view haystack, std::string_view needle) { return (haystack.substr(0, needle.length()) == needle); }
 inline bool StringStartsWithI(std::string_view haystack, std::string_view needle) { return StringEqualI(haystack.substr(0, needle.length()), needle); }
-TC_COMMON_API bool StringContainsStringI(std::string_view haystack, std::string_view needle);
+WH_COMMON_API bool StringContainsStringI(std::string_view haystack, std::string_view needle);
 template <typename T>
 inline bool ValueContainsStringI(std::pair<T, std::string_view> const& haystack, std::string_view needle)
 {
     return StringContainsStringI(haystack.second, needle);
 }
-TC_COMMON_API bool StringCompareLessI(std::string_view a, std::string_view b);
+WH_COMMON_API bool StringCompareLessI(std::string_view a, std::string_view b);
 
 struct StringCompareLessI_T {
     bool operator()(std::string_view a, std::string_view b) const { return StringCompareLessI(a, b); }
@@ -380,7 +362,7 @@ class HookList final
         }
 };
 
-class TC_COMMON_API flag96
+class WH_COMMON_API flag96
 {
 private:
     uint32 part[3];
@@ -550,7 +532,7 @@ Ret* Coalesce(T1* first, T*... rest)
         return static_cast<Ret*>(first);
 }
 
-TC_COMMON_API std::string GetTypeName(std::type_info const&);
+WH_COMMON_API std::string GetTypeName(std::type_info const&);
 template <typename T>
 std::string GetTypeName() { return GetTypeName(typeid(T)); }
 template <typename T>

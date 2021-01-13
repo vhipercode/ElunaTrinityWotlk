@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -80,7 +80,7 @@ struct QueryResultFieldMetadata
     | SUM, AVG | DECIMAL           |
     | COUNT    | BIGINT            |
 */
-class TC_DATABASE_API Field
+class WH_DATABASE_API Field
 {
     friend class ResultSet;
     friend class PreparedResultSet;
@@ -115,7 +115,6 @@ class TC_DATABASE_API Field
             GetBinarySizeChecked(buf.data(), S);
             return buf;
         }
-
 
         bool IsNull() const
         {

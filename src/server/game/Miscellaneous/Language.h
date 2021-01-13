@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -15,8 +15,8 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __TRINITY_LANGUAGE_H
-#define __TRINITY_LANGUAGE_H
+#ifndef __WARHEAD_LANGUAGE_H
+#define __WARHEAD_LANGUAGE_H
 
 enum BroadcastTextIds
 {
@@ -25,7 +25,7 @@ enum BroadcastTextIds
     BROADCAST_TEXT_FLEE_FOR_ASSIST        = 1150
 };
 
-enum TrinityStrings
+enum WarheadStrings
 {
     // for chat commands
     LANG_SELECT_CHAR_OR_CREATURE          = 1,
@@ -738,7 +738,7 @@ enum TrinityStrings
     LANG_ARENA_TESTING                    = 785,
     LANG_AUTO_ANN                         = 786,
     LANG_ANNOUNCE_COLOR                   = 787,
-    // 788-799 - free
+    // 790-799 - free
 
     // in game strings
     LANG_PET_INVALID_NAME                 = 800,
@@ -767,7 +767,9 @@ enum TrinityStrings
     // Pinfo commands
     LANG_PINFO_PLAYER                     = 453,
     LANG_PINFO_GM_ACTIVE                  = 548,
-    LANG_PINFO_BANNED                     = 549,
+    LANG_PINFO_BANNED_IP                  = 549,
+    LANG_PINFO_BANNED_ACCOUNT             = 788,
+    LANG_PINFO_BANNED_CHARACTER           = 789,
     LANG_PINFO_MUTED                      = 550,
     LANG_PINFO_ACC_ACCOUNT                = 714,
     LANG_PINFO_ACC_LASTLOGIN              = 716,
@@ -1030,7 +1032,7 @@ enum TrinityStrings
     LANG_COMMAND_TICKETLISTRESPONSE       = 2029,
     LANG_COMMAND_TICKETCOMPLETED          = 2030,
 
-    // Trinity strings                      5000-9999
+    // Warhead strings                      5000-9999
     LANG_COMMAND_FREEZE                   = 5000,
     LANG_COMMAND_FREEZE_ERROR             = 5001,
     LANG_COMMAND_FREEZE_WRONG             = 5002,
@@ -1128,7 +1130,7 @@ enum TrinityStrings
     LANG_NPCINFO_UNIT_FIELD_FLAGS_3       = 5085, // master branch ONLY
     LANG_NPCINFO_NPC_FLAGS                = 5086, // master branch ONLY
 
-    // Room for more Trinity strings        5084-6603
+    // Room for more Warhead strings        5084-6603
 
     // Level requirement notifications
     LANG_SAY_REQ                          = 6604,
@@ -1190,17 +1192,7 @@ enum TrinityStrings
     LANG_AUTO_BROADCAST                   = 11000,
     LANG_INVALID_REALMID                  = 11001,
 
-    // Show Kick in world
-    LANG_COMMAND_KICKMESSAGE_WORLD        = 11002,
-
-    // Show Mute in world
-    LANG_COMMAND_MUTEMESSAGE_WORLD        = 11003,
-
-    // Show Ban in world
-    LANG_BAN_CHARACTER_YOUBANNEDMESSAGE_WORLD     = 11004,
-    LANG_BAN_CHARACTER_YOUPERMBANNEDMESSAGE_WORLD = 11005,
-    LANG_BAN_ACCOUNT_YOUBANNEDMESSAGE_WORLD       = 11006,
-    LANG_BAN_ACCOUNT_YOUPERMBANNEDMESSAGE_WORLD   = 11007,
+    // 11002-11003 - free
 
     LANG_NPCINFO_MOVEMENT_DATA                    = 11008,
     LANG_NPCINFO_FLAGS_EXTRA                      = 11009,
@@ -1213,6 +1205,22 @@ enum TrinityStrings
     LANG_CREATURE_NOT_AI_ENABLED                  = 11015,
     LANG_SELECT_PLAYER_OR_PET                     = 11016,
     LANG_SHUTDOWN_DELAYED                         = 11017,
-    LANG_SHUTDOWN_CANCELLED                       = 11018
+    LANG_SHUTDOWN_CANCELLED                       = 11018,
+
+    // Kick, Mute, Ban in world
+
+    // Show Kick in world
+    LANG_COMMAND_KICKMESSAGE_WORLD                = 11100,
+
+    // Show Mute in world
+    LANG_COMMAND_MUTEMESSAGE_WORLD                = 11101,
+
+    // Show Ban in world
+    LANG_BAN_CHARACTER_MESSAGE_WORLD              = 11102,
+    LANG_BAN_CHARACTER_PERM_MESSAGE_WORLD         = 11103,
+    LANG_BAN_ACCOUNT_MESSAGE_WORLD                = 11104,
+    LANG_BAN_ACCOUNT_PERM_MESSAGE_WORLD           = 11105,
+    LANG_BAN_IP_MESSAGE_WORLD                     = 11106,
+    LANG_BAN_IP_PERM_MESSAGE_WORLD                = 11107
 };
 #endif

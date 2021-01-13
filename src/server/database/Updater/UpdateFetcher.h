@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -33,7 +33,7 @@ namespace boost
     }
 }
 
-struct TC_DATABASE_API UpdateResult
+struct WH_DATABASE_API UpdateResult
 {
     UpdateResult()
         : updated(0), recent(0), archived(0) { }
@@ -46,7 +46,7 @@ struct TC_DATABASE_API UpdateResult
     size_t archived;
 };
 
-class TC_DATABASE_API UpdateFetcher
+class WH_DATABASE_API UpdateFetcher
 {
     typedef boost::filesystem::path Path;
 

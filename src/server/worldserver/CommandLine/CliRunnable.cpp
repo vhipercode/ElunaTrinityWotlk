@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -15,7 +15,7 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/// \addtogroup Trinityd
+/// \addtogroup Warheadd
 /// @{
 /// \file
 
@@ -29,7 +29,7 @@
 #include "Log.h"
 #include "Util.h"
 
-#if TRINITY_PLATFORM != TRINITY_PLATFORM_WINDOWS
+#if WARHEAD_PLATFORM != WARHEAD_PLATFORM_WINDOWS
 #include "Chat.h"
 #include "ChatCommand.h"
 #include <cstring>
@@ -44,8 +44,8 @@ static inline void PrintCliPrefix()
     printf("%s", CLI_PREFIX);
 }
 
-#if TRINITY_PLATFORM != TRINITY_PLATFORM_WINDOWS
-namespace Trinity::Impl::Readline
+#if WARHEAD_PLATFORM != WARHEAD_PLATFORM_WINDOWS
+namespace Warhead::Impl::Readline
 {
     static std::vector<std::string> vec;
     char* cli_unpack_vector(char const*, int state)
@@ -62,7 +62,7 @@ namespace Trinity::Impl::Readline
     char** cli_completion(char const* text, int /*start*/, int /*end*/)
     {
         ::rl_attempted_completion_over = 1;
-        vec = Trinity::ChatCommands::GetAutoCompletionsFor(CliHandler(nullptr,nullptr), text);
+        vec = Warhead::ChatCommands::GetAutoCompletionsFor(CliHandler(nullptr,nullptr), text);
         return ::rl_completion_matches(text, &cli_unpack_vector);
     }
 
@@ -77,7 +77,7 @@ namespace Trinity::Impl::Readline
 
 void utf8print(void* /*arg*/, std::string_view str)
 {
-#if TRINITY_PLATFORM == TRINITY_PLATFORM_WINDOWS
+#if WARHEAD_PLATFORM == WARHEAD_PLATFORM_WINDOWS
     std::wstring wbuf;
     if (!Utf8toWStr(str, wbuf))
         return;
@@ -115,17 +115,17 @@ int kb_hit_return()
 /// %Thread start
 void CliThread()
 {
-#if TRINITY_PLATFORM == TRINITY_PLATFORM_WINDOWS
+#if WARHEAD_PLATFORM == WARHEAD_PLATFORM_WINDOWS
     // print this here the first time
     // later it will be printed after command queue updates
     PrintCliPrefix();
 #else
-    ::rl_attempted_completion_function = &Trinity::Impl::Readline::cli_completion;
+    ::rl_attempted_completion_function = &Warhead::Impl::Readline::cli_completion;
     {
         static char BLANK = '\0';
         ::rl_completer_word_break_characters = &BLANK;
     }
-    ::rl_event_hook = &Trinity::Impl::Readline::cli_hook_func;
+    ::rl_event_hook = &Warhead::Impl::Readline::cli_hook_func;
 #endif
 
     if (sConfigMgr->GetBoolDefault("BeepAtStart", true))
@@ -138,7 +138,7 @@ void CliThread()
 
         std::string command;
 
-#if TRINITY_PLATFORM == TRINITY_PLATFORM_WINDOWS
+#if WARHEAD_PLATFORM == WARHEAD_PLATFORM_WINDOWS
         wchar_t commandbuf[256];
         if (fgetws(commandbuf, sizeof(commandbuf), stdin))
         {
@@ -165,7 +165,7 @@ void CliThread()
             {
                 if (nextLineIndex == 0)
                 {
-#if TRINITY_PLATFORM == TRINITY_PLATFORM_WINDOWS
+#if WARHEAD_PLATFORM == WARHEAD_PLATFORM_WINDOWS
                     PrintCliPrefix();
 #endif
                     continue;
@@ -176,7 +176,7 @@ void CliThread()
 
             fflush(stdout);
             sWorld->QueueCliCommand(new CliCommandHolder(nullptr, command.c_str(), &utf8print, &commandFinished));
-#if TRINITY_PLATFORM != TRINITY_PLATFORM_WINDOWS
+#if WARHEAD_PLATFORM != WARHEAD_PLATFORM_WINDOWS
             add_history(command.c_str());
 #endif
         }

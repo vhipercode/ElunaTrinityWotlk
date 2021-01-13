@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -20,18 +20,19 @@
 #include "Common.h"
 #include "DBCStores.h"
 #include "Errors.h"
+#include "GameConfig.h"
+#include "GameLocale.h"
 #include "ObjectMgr.h"
 #include "SharedDefines.h"
 #include "SpellInfo.h"
 #include "SpellMgr.h"
 #include "QuestDef.h"
-#include "World.h"
 
-using namespace Trinity::Hyperlinks;
+using namespace Warhead::Hyperlinks;
 
 inline uint8 toHex(char c) { return (c >= '0' && c <= '9') ? c - '0' + 0x10 : (c >= 'a' && c <= 'f') ? c - 'a' + 0x1a : 0x00; }
 // Validates a single hyperlink
-HyperlinkInfo Trinity::Hyperlinks::ParseSingleHyperlink(std::string_view str)
+HyperlinkInfo Warhead::Hyperlinks::ParseSingleHyperlink(std::string_view str)
 {
     uint32 color = 0;
     std::string_view tag;
@@ -130,7 +131,7 @@ struct LinkValidator<LinkTags::item>
 {
     static bool IsTextValid(ItemLinkData const& data, std::string_view text)
     {
-        ItemLocale const* locale = sObjectMgr->GetItemLocale(data.Item->ItemId);
+        ItemLocale const* locale = sGameLocale->GetItemLocale(data.Item->ItemId);
 
         std::array<char const*, 16> const* randomSuffixes = nullptr;
         if (data.RandomProperty)
@@ -145,7 +146,7 @@ struct LinkValidator<LinkTags::item>
         {
             if (!locale && i != DEFAULT_LOCALE)
                 continue;
-            std::string_view name = (i == DEFAULT_LOCALE) ? data.Item->Name1 : ObjectMgr::GetLocaleString(locale->Name, i);
+            std::string_view name = (i == DEFAULT_LOCALE) ? data.Item->Name1 : sGameLocale->GetLocaleString(locale->Name, i);
             if (name.empty())
                 continue;
             if (randomSuffixes)
@@ -183,7 +184,7 @@ struct LinkValidator<LinkTags::quest>
         if (text == data.Quest->GetTitle())
             return true;
 
-        QuestLocale const* locale = sObjectMgr->GetQuestLocale(data.Quest->GetQuestId());
+        QuestLocale const* locale = sGameLocale->GetQuestLocale(data.Quest->GetQuestId());
         if (!locale)
             return false;
 
@@ -192,7 +193,7 @@ struct LinkValidator<LinkTags::quest>
             if (i == DEFAULT_LOCALE)
                 continue;
 
-            std::string_view name = ObjectMgr::GetLocaleString(locale->Title, i);
+            std::string_view name = sGameLocale->GetLocaleString(locale->Title, i);
             if (!name.empty() && (text == name))
                 return true;
         }
@@ -320,7 +321,7 @@ static bool ValidateAs(HyperlinkInfo const& info)
     if (!TAG::StoreTo(t, info.data))
         return false;
 
-    int32 const severity = static_cast<int32>(sWorld->getIntConfig(CONFIG_CHAT_STRICT_LINK_CHECKING_SEVERITY));
+    int32 const severity = static_cast<int32>(CONF_GET_INT("ChatStrictLinkChecking.Severity"));
     if (severity >= 0)
     {
         if (!LinkValidator<TAG>::IsColorValid(t, info.color))
@@ -364,7 +365,7 @@ static bool ValidateLinkInfo(HyperlinkInfo const& info)
 }
 
 // Validates all hyperlinks and control sequences contained in str
-bool Trinity::Hyperlinks::CheckAllLinks(std::string_view str)
+bool Warhead::Hyperlinks::CheckAllLinks(std::string_view str)
 {
     // Step 1: Disallow all control sequences except ||, |H, |h, |c and |r
     {

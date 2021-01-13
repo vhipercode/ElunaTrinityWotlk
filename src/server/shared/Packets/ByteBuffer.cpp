@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -20,7 +20,7 @@
 #include "MessageBuffer.h"
 #include "Common.h"
 #include "Log.h"
-#include "Util.h"
+#include "Timer.h"
 #include <utf8.h>
 #include <sstream>
 #include <ctime>
@@ -55,7 +55,7 @@ ByteBufferSourceException::ByteBufferSourceException(size_t pos, size_t size,
 
 ByteBufferInvalidValueException::ByteBufferInvalidValueException(char const* type, char const* value)
 {
-    message().assign(Trinity::StringFormat("Invalid %s value (%s) found in ByteBuffer", type, value));
+    message().assign(Warhead::StringFormat("Invalid %s value (%s) found in ByteBuffer", type, value));
 }
 
 ByteBuffer& ByteBuffer::operator>>(float& value)
@@ -147,7 +147,7 @@ void ByteBuffer::put(size_t pos, uint8 const* src, size_t cnt)
 
 void ByteBuffer::print_storage() const
 {
-    if (!sLog->ShouldLog("network", LOG_LEVEL_TRACE)) // optimize disabled trace output
+    if (!sLog->ShouldLog("network", LogLevel::LOG_LEVEL_TRACE)) // optimize disabled trace output
         return;
 
     std::ostringstream o;
@@ -156,12 +156,12 @@ void ByteBuffer::print_storage() const
         o << read<uint8>(i) << " - ";
     o << " ";
 
-    TC_LOG_TRACE("network", "%s", o.str().c_str());
+    LOG_TRACE("network", "%s", o.str().c_str());
 }
 
 void ByteBuffer::textlike() const
 {
-    if (!sLog->ShouldLog("network", LOG_LEVEL_TRACE)) // optimize disabled trace output
+    if (!sLog->ShouldLog("network", LogLevel::LOG_LEVEL_TRACE)) // optimize disabled trace output
         return;
 
     std::ostringstream o;
@@ -173,12 +173,12 @@ void ByteBuffer::textlike() const
         o << buf;
     }
     o << " ";
-    TC_LOG_TRACE("network", "%s", o.str().c_str());
+    LOG_TRACE("network", "%s", o.str().c_str());
 }
 
 void ByteBuffer::hexlike() const
 {
-    if (!sLog->ShouldLog("network", LOG_LEVEL_TRACE)) // optimize disabled trace output
+    if (!sLog->ShouldLog("network", LogLevel::LOG_LEVEL_TRACE)) // optimize disabled trace output
         return;
 
     uint32 j = 1, k = 1;
@@ -205,5 +205,5 @@ void ByteBuffer::hexlike() const
         o << buf;
     }
     o << " ";
-    TC_LOG_TRACE("network", "%s", o.str().c_str());
+    LOG_TRACE("network", "%s", o.str().c_str());
 }

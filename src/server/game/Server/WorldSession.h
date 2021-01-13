@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -151,15 +151,17 @@ namespace WorldPackets
 
     namespace Mail
     {
-        class MailCreateTextItem;
-        class MailDelete;
-        class MailGetList;
-        class MailMarkAsRead;
+        /*
         class MailQueryNextMailTime;
+        */
+        class SendMailClient;
+        class MailMarkAsRead;
+        class MailDelete;
         class MailReturnToSender;
         class MailTakeItem;
         class MailTakeMoney;
-        class SendMail;
+        class MailGetList;
+        class MailCreateTextItem;
     }
 
     namespace Misc
@@ -394,10 +396,10 @@ struct PacketCounter
 };
 
 /// Player session in the World
-class TC_GAME_API WorldSession
+class WH_GAME_API WorldSession
 {
     public:
-        WorldSession(uint32 id, std::string&& name, std::shared_ptr<WorldSocket> sock, AccountTypes sec, uint8 expansion, time_t mute_time, LocaleConstant locale, uint32 recruiter, bool isARecruiter);
+        WorldSession(uint32 id, std::string&& name, std::shared_ptr<WorldSocket> sock, AccountTypes sec, uint8 expansion, LocaleConstant locale, uint32 recruiter, bool isARecruiter);
         ~WorldSession();
 
         bool PlayerLoading() const { return m_playerLoading; }
@@ -438,6 +440,9 @@ class TC_GAME_API WorldSession
         Player* GetPlayer() const { return _player; }
         std::string const& GetPlayerName() const;
         std::string GetPlayerInfo() const;
+
+        uint32 GetCurrentVendor() const { return m_currentVendorEntry; }
+        void SetCurrentVendor(uint32 vendorEntry) { m_currentVendorEntry = vendorEntry; }
 
         ObjectGuid::LowType GetGUIDLow() const;
         void SetSecurity(AccountTypes security) { _security = security; }
@@ -487,7 +492,7 @@ class TC_GAME_API WorldSession
         void SendNameQueryOpcode(ObjectGuid guid);
 
         void SendTrainerList(Creature* npc);
-        void SendListInventory(ObjectGuid guid);
+        void SendListInventory(ObjectGuid guid, uint32 vendorEntry = 0);
         void SendShowBank(ObjectGuid guid);
         bool CanOpenMailBox(ObjectGuid guid);
         void SendShowMailBox(ObjectGuid guid);
@@ -560,12 +565,11 @@ class TC_GAME_API WorldSession
 
         // Account mute time
         bool CanSpeak() const;
-        time_t m_muteTime;
 
         // Locales
         LocaleConstant GetSessionDbcLocale() const { return m_sessionDbcLocale; }
         LocaleConstant GetSessionDbLocaleIndex() const { return m_sessionDbLocaleIndex; }
-        char const* GetTrinityString(uint32 entry) const;
+        char const* GetWarheadString(uint32 entry) const;
 
         uint32 GetLatency() const { return m_latency; }
         void SetLatency(uint32 latency) { m_latency = latency; }
@@ -833,7 +837,7 @@ class TC_GAME_API WorldSession
         void HandleBuyBankSlotOpcode(WorldPackets::Bank::BuyBankSlot& buyBankSlot);
 
         void HandleGetMailList(WorldPackets::Mail::MailGetList& getList);
-        void HandleSendMail(WorldPackets::Mail::SendMail& sendMail);
+        void HandleSendMail(WorldPackets::Mail::SendMailClient& sendMail);
         void HandleMailTakeMoney(WorldPackets::Mail::MailTakeMoney& takeMoney);
         void HandleMailTakeItem(WorldPackets::Mail::MailTakeItem& takeItem);
         void HandleMailMarkAsRead(WorldPackets::Mail::MailMarkAsRead& markAsRead);
@@ -841,7 +845,7 @@ class TC_GAME_API WorldSession
         void HandleMailDelete(WorldPackets::Mail::MailDelete& mailDelete);
         void HandleItemTextQuery(WorldPacket& recvData);
         void HandleMailCreateTextItem(WorldPackets::Mail::MailCreateTextItem& createTextItem);
-        void HandleQueryNextMailTime(WorldPackets::Mail::MailQueryNextMailTime& queryNextMailTime);
+        void HandleQueryNextMailTime(WorldPacket& recvData);
 
         void HandleSplitItemOpcode(WorldPacket& recvPacket);
         void HandleSwapInvItemOpcode(WorldPacket& recvPacket);
@@ -1227,6 +1231,7 @@ class TC_GAME_API WorldSession
         rbac::RBACData* _RBACData;
         uint32 expireTime;
         bool forceExit;
+        uint32 m_currentVendorEntry = 0;
         ObjectGuid m_currentBankerGUID;
 
         boost::circular_buffer<std::pair<int64, uint32>> _timeSyncClockDeltaQueue; // first member: clockDelta. Second member: latency of the packet exchange that was used to compute that clockDelta.
@@ -1239,7 +1244,6 @@ class TC_GAME_API WorldSession
 
         // Packets cooldown
         time_t _calendarEventCreationCooldown;
-
 
         WorldSession(WorldSession const& right) = delete;
         WorldSession& operator=(WorldSession const& right) = delete;

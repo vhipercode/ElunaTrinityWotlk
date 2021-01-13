@@ -1,4 +1,4 @@
-# This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+# This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
 #
 # This file is free software; as a special exception the author gives
 # unlimited permission to copy and/or distribute it, with or without
@@ -29,7 +29,7 @@ endif(USE_COREPCH)
 
 GroupSources(${CMAKE_CURRENT_SOURCE_DIR})
 
-add_definitions(-DTRINITY_API_EXPORT_COMMON)
+add_definitions(-DWARHEAD_API_EXPORT_COMMON)
 
 add_library(common
   ${PRIVATE_SOURCES}
@@ -60,10 +60,11 @@ target_include_directories(common
 
 target_link_libraries(common
   PRIVATE
-    trinity-core-interface
+    warhead-core-interface
   PUBLIC
     argon2
     boost
+    Poco::Foundation
     fmt
     g3dlib
     Detour

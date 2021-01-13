@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -34,9 +34,9 @@ namespace VMAP
 
 // Set of helper macros for extractors (VMAP and MMAP)
 #ifndef NO_CORE_FUNCS
-#define VMAP_ERROR_LOG(FILTER, ...) TC_LOG_ERROR(FILTER, __VA_ARGS__)
-#define VMAP_DEBUG_LOG(FILTER, ...) TC_LOG_DEBUG(FILTER, __VA_ARGS__)
-#define VMAP_INFO_LOG(FILTER, ...) TC_LOG_INFO(FILTER, __VA_ARGS__)
+#define VMAP_ERROR_LOG(FILTER, ...) LOG_ERROR(FILTER, __VA_ARGS__)
+#define VMAP_DEBUG_LOG(FILTER, ...) LOG_DEBUG(FILTER, __VA_ARGS__)
+#define VMAP_INFO_LOG(FILTER, ...) LOG_INFO(FILTER, __VA_ARGS__)
 #else
 #define VMAP_ERROR_LOG(FILTER, ...) (void)sizeof(FILTER)
 #define VMAP_DEBUG_LOG(FILTER, ...) (void)sizeof(FILTER)

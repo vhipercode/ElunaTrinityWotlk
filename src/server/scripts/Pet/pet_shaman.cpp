@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -49,7 +49,6 @@ class npc_pet_shaman_earth_elemental : public CreatureScript
         struct npc_pet_shaman_earth_elementalAI : public ScriptedAI
         {
             npc_pet_shaman_earth_elementalAI(Creature* creature) : ScriptedAI(creature) { }
-
 
             void Reset() override
             {

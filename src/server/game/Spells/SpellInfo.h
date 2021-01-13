@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -205,7 +205,7 @@ enum SpellCustomAttributes
 
 uint32 GetTargetFlagMask(SpellTargetObjectTypes objType);
 
-class TC_GAME_API SpellImplicitTargetInfo
+class WH_GAME_API SpellImplicitTargetInfo
 {
 private:
     Targets _target;
@@ -236,7 +236,7 @@ private:
     static std::array<StaticData, TOTAL_SPELL_TARGETS> _data;
 };
 
-class TC_GAME_API SpellEffectInfo
+class WH_GAME_API SpellEffectInfo
 {
     SpellInfo const* _spellInfo;
     uint8 _effIndex;
@@ -300,7 +300,7 @@ private:
     static std::array<StaticData, TOTAL_SPELL_EFFECTS> _data;
 };
 
-struct TC_GAME_API SpellDiminishInfo
+struct WH_GAME_API SpellDiminishInfo
 {
     DiminishingGroup DiminishGroup = DIMINISHING_NONE;
     DiminishingReturnsType DiminishReturnType = DRTYPE_NONE;
@@ -308,7 +308,7 @@ struct TC_GAME_API SpellDiminishInfo
     int32 DiminishDurationLimit = 0;
 };
 
-struct TC_GAME_API ImmunityInfo
+struct WH_GAME_API ImmunityInfo
 {
     uint32 SchoolImmuneMask = 0;
     uint32 ApplyHarmfulAuraImmuneMask = 0;
@@ -320,7 +320,7 @@ struct TC_GAME_API ImmunityInfo
     boost::container::flat_set<SpellEffects> SpellEffectImmune;
 };
 
-class TC_GAME_API SpellInfo
+class WH_GAME_API SpellInfo
 {
     friend class SpellMgr;
 

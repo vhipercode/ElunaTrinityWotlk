@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -24,6 +24,6 @@
 #define CONFIG_PROCESSOR_AFFINITY "UseProcessors"
 #define CONFIG_HIGH_PRIORITY "ProcessPriority"
 
-void TC_COMMON_API SetProcessPriority(std::string const& logChannel, uint32 affinity, bool highPriority);
+void WH_COMMON_API SetProcessPriority(std::string const& logChannel, uint32 affinity, bool highPriority);
 
 #endif

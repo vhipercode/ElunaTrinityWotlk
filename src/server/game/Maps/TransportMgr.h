@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -86,7 +86,7 @@ struct TransportTemplate
 typedef std::map<uint32, TransportAnimationEntry const*> TransportPathContainer;
 typedef std::map<uint32, TransportRotationEntry const*> TransportPathRotationContainer;
 
-struct TC_GAME_API TransportAnimation
+struct WH_GAME_API TransportAnimation
 {
     TransportAnimation() : TotalTime(0) { }
 
@@ -100,7 +100,7 @@ struct TC_GAME_API TransportAnimation
 
 typedef std::map<uint32, TransportAnimation> TransportAnimationContainer;
 
-class TC_GAME_API TransportMgr
+class WH_GAME_API TransportMgr
 {
     public:
         static TransportMgr* instance();

@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -24,13 +24,13 @@
 #include "GridDefines.h"
 #include "MapInstanced.h"
 #include "InstanceScript.h"
-#include "Config.h"
-#include "World.h"
+#include "GameConfig.h"
 #include "Corpse.h"
 #include "ObjectMgr.h"
 #include "WorldPacket.h"
 #include "Group.h"
 #include "Player.h"
+#include "World.h"
 #include "WorldSession.h"
 #include "Opcodes.h"
 #ifdef ELUNA
@@ -40,8 +40,8 @@
 MapManager::MapManager()
     : _nextInstanceId(0), _scheduledScripts(0)
 {
-    i_gridCleanUpDelay = sWorld->getIntConfig(CONFIG_INTERVAL_GRIDCLEAN);
-    i_timer.SetInterval(sWorld->getIntConfig(CONFIG_INTERVAL_MAPUPDATE));
+    i_gridCleanUpDelay = CONF_GET_INT("GridCleanUpDelay");
+    i_timer.SetInterval(CONF_GET_INT("MapUpdateInterval"));
 }
 
 MapManager::~MapManager() { }
@@ -50,7 +50,7 @@ void MapManager::Initialize()
 {
     Map::InitStateMachine();
 
-    int num_threads(sWorld->getIntConfig(CONFIG_NUMTHREADS));
+    int num_threads(CONF_GET_INT("MapUpdate.Threads"));
 #if ELUNA
     if (num_threads > 1)
     {
@@ -166,7 +166,7 @@ Map::EnterState MapManager::PlayerCannotEnter(uint32 mapid, Player* player, bool
 
     Group* group = player->GetGroup();
     if (entry->IsRaid()) // can only enter in a raid group
-        if ((!group || !group->isRaidGroup()) && !sWorld->getBoolConfig(CONFIG_INSTANCE_IGNORE_RAID))
+        if ((!group || !group->isRaidGroup()) && !CONF_GET_BOOL("Instance.IgnoreRaid"))
             return Map::CANNOT_ENTER_NOT_IN_RAID;
 
     if (!player->IsAlive())
@@ -187,10 +187,10 @@ Map::EnterState MapManager::PlayerCannotEnter(uint32 mapid, Player* player, bool
             if (!corpseMap)
                 return Map::CANNOT_ENTER_CORPSE_IN_DIFFERENT_INSTANCE;
 
-            TC_LOG_DEBUG("maps", "MAP: Player '%s' has corpse in instance '%s' and can enter.", player->GetName().c_str(), mapName);
+            LOG_DEBUG("maps", "MAP: Player '%s' has corpse in instance '%s' and can enter.", player->GetName().c_str(), mapName);
         }
         else
-            TC_LOG_DEBUG("maps", "Map::CanPlayerEnter - player '%s' is dead but does not have a corpse!", player->GetName().c_str());
+            LOG_DEBUG("maps", "Map::CanPlayerEnter - player '%s' is dead but does not have a corpse!", player->GetName().c_str());
     }
 
     //Get instance where player's group is bound & its map
@@ -245,7 +245,7 @@ void MapManager::DoDelayedMovesAndRemoves() { }
 
 bool MapManager::ExistMapAndVMap(uint32 mapid, float x, float y)
 {
-    GridCoord p = Trinity::ComputeGridCoord(x, y);
+    GridCoord p = Warhead::ComputeGridCoord(x, y);
 
     int gx = (MAX_NUMBER_OF_GRIDS - 1) - p.x_coord;
     int gy = (MAX_NUMBER_OF_GRIDS - 1) - p.y_coord;
@@ -343,7 +343,7 @@ uint32 MapManager::GenerateInstanceId()
 {
     if (_nextInstanceId == 0xFFFFFFFF)
     {
-        TC_LOG_ERROR("maps", "Instance ID overflow!! Can't continue, shutting down server. ");
+        LOG_ERROR("maps", "Instance ID overflow!! Can't continue, shutting down server. ");
         World::StopNow(ERROR_EXIT_CODE);
         return _nextInstanceId;
     }

@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -22,7 +22,6 @@
 #include "BoundingIntervalHierarchy.h"
 #include <unordered_map>
 
-
 namespace VMAP
 {
     class ModelInstance;
@@ -31,7 +30,7 @@ namespace VMAP
     enum class LoadResult : uint8;
     enum class ModelIgnoreFlags : uint32;
 
-    struct TC_COMMON_API LocationInfo
+    struct WH_COMMON_API LocationInfo
     {
         LocationInfo(): rootId(-1), hitInstance(nullptr), hitModel(nullptr), ground_Z(-G3D::finf()) { }
         int32 rootId;
@@ -40,7 +39,7 @@ namespace VMAP
         float ground_Z;
     };
 
-    class TC_COMMON_API StaticMapTree
+    class WH_COMMON_API StaticMapTree
     {
         typedef std::unordered_map<uint32, bool> loadedTileMap;
         typedef std::unordered_map<uint32, uint32> loadedSpawnMap;
@@ -90,7 +89,7 @@ namespace VMAP
             StaticMapTree& operator=(StaticMapTree const& right) = delete;
     };
 
-    struct TC_COMMON_API AreaInfo
+    struct WH_COMMON_API AreaInfo
     {
         AreaInfo(): result(false), ground_Z(-G3D::finf()), flags(0), adtId(0),
             rootId(0), groupId(0) { }

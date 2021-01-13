@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -15,10 +15,11 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "World.h"
+#include "GameConfig.h"
 
 // This is where scripts' loading functions should be declared:
 // world
+void AddSC_account_script();
 void AddSC_areatrigger_scripts();
 void AddSC_emerald_dragons();
 void AddSC_generic_creature();
@@ -40,6 +41,7 @@ void AddSC_action_ip_logger();
 // void Add${NameOfDirectory}Scripts()
 void AddWorldScripts()
 {
+    AddSC_account_script();
     AddSC_areatrigger_scripts();
     AddSC_emerald_dragons();
     AddSC_generic_creature();
@@ -54,9 +56,11 @@ void AddWorldScripts()
 
     // FIXME: This should be moved in a script validation hook.
     // To avoid duplicate code, we check once /*ONLY*/ if logging is permitted or not.
-    if (sWorld->getBoolConfig(CONFIG_IP_BASED_ACTION_LOGGING))
+    if (CONF_GET_BOOL("Allow.IP.Based.Action.Logging"))
         AddSC_action_ip_logger(); // location: scripts\World\action_ip_logger.cpp
+
     AddSC_duel_reset();
-    if (sWorld->getIntConfig(CONFIG_XP_BOOST_DAYMASK) != 0)
+
+    if (CONF_GET_INT("XP.Boost.Daymask"))
         AddSC_xp_boost();
 }

@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -32,7 +32,7 @@ namespace MMAP
     typedef std::unordered_map<uint32, dtNavMeshQuery*> NavMeshQuerySet;
 
     // dummy struct to hold map's mmap data
-    struct TC_COMMON_API MMapData
+    struct WH_COMMON_API MMapData
     {
         MMapData(dtNavMesh* mesh) : navMesh(mesh) { }
         ~MMapData()
@@ -51,12 +51,11 @@ namespace MMAP
         MMapTileSet loadedTileRefs;        // maps [map grid coords] to [dtTile]
     };
 
-
     typedef std::unordered_map<uint32, MMapData*> MMapDataSet;
 
     // singleton class
     // holds all all access to mmap loading unloading and meshes
-    class TC_COMMON_API MMapManager
+    class WH_COMMON_API MMapManager
     {
         public:
             MMapManager() : loadedTiles(0), thread_safe_environment(true) {}

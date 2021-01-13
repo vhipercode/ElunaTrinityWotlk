@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -15,8 +15,8 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TRINITY_STRINGCONVERT_H
-#define TRINITY_STRINGCONVERT_H
+#ifndef WARHEAD_STRINGCONVERT_H
+#define WARHEAD_STRINGCONVERT_H
 
 #include "Define.h"
 #include "Errors.h"
@@ -28,11 +28,11 @@
 #include <string_view>
 #include <type_traits>
 
-namespace Trinity::Impl::StringConvertImpl
+namespace Warhead::Impl::StringConvertImpl
 {
     template <typename T, typename = void> struct For
     {
-        static_assert(Trinity::dependant_false_v<T>, "Unsupported type used for ToString or StringTo");
+        static_assert(Warhead::dependant_false_v<T>, "Unsupported type used for ToString or StringTo");
         /*
         static Optional<T> FromString(std::string_view str, ...);
         static std::string ToString(T&& val, ...);
@@ -86,7 +86,7 @@ namespace Trinity::Impl::StringConvertImpl
         }
     };
 
-#ifdef TRINITY_NEED_CHARCONV_WORKAROUND
+#ifdef WARHEAD_NEED_CHARCONV_WORKAROUND
     /*
         If this is defined, std::from_chars will cause linkage errors for 64-bit types.
         (This is a bug in clang-7.)
@@ -171,7 +171,7 @@ namespace Trinity::Impl::StringConvertImpl
         }
     };
 
-#if TRINITY_COMPILER == TRINITY_COMPILER_MICROSOFT
+#if WARHEAD_COMPILER == WARHEAD_COMPILER_MICROSOFT
     template <typename T>
     struct For<T, std::enable_if_t<std::is_floating_point_v<T>>>
     {
@@ -257,18 +257,18 @@ namespace Trinity::Impl::StringConvertImpl
 #endif
 }
 
-namespace Trinity
+namespace Warhead
 {
     template <typename Result, typename... Params>
     Optional<Result> StringTo(std::string_view str, Params&&... params)
     {
-        return Trinity::Impl::StringConvertImpl::For<Result>::FromString(str, std::forward<Params>(params)...);
+        return Warhead::Impl::StringConvertImpl::For<Result>::FromString(str, std::forward<Params>(params)...);
     }
 
     template <typename Type, typename... Params>
     std::string ToString(Type&& val, Params&&... params)
     {
-        return Trinity::Impl::StringConvertImpl::For<std::decay_t<Type>>::ToString(std::forward<Type>(val), std::forward<Params>(params)...);
+        return Warhead::Impl::StringConvertImpl::For<std::decay_t<Type>>::ToString(std::forward<Type>(val), std::forward<Params>(params)...);
     }
 }
 

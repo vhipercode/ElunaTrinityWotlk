@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -28,6 +28,8 @@ EndScriptData */
 #include "CreatureGroups.h"
 #include "DatabaseEnv.h"
 #include "FollowMovementGenerator.h"
+#include "GameConfig.h"
+#include "GameLocale.h"
 #include "GameTime.h"
 #include "Language.h"
 #include "Log.h"
@@ -40,11 +42,12 @@ EndScriptData */
 #include "Player.h"
 #include "RBAC.h"
 #include "SmartEnum.h"
+#include "Timer.h"
 #include "Transport.h"
-#include "World.h"
 #include "WorldSession.h"
+#include "World.h"
 
-using namespace Trinity::ChatCommands;
+using namespace Warhead::ChatCommands;
 
 using CreatureSpawnId = Variant<Hyperlink<creature>, ObjectGuid::LowType>;
 using CreatureEntry = Variant<Hyperlink<creature_entry>, uint32>;
@@ -266,7 +269,7 @@ public:
     //change level of creature or pet
     static bool HandleNpcSetLevelCommand(ChatHandler* handler, uint8 lvl)
     {
-        if (lvl < 1 || lvl > sWorld->getIntConfig(CONFIG_MAX_PLAYER_LEVEL) + 3)
+        if (lvl < 1 || lvl > CONF_GET_INT("MaxPlayerLevel") + 3)
         {
             handler->SendSysMessage(LANG_BAD_VALUE);
             handler->SetSentErrorMessage(true);
@@ -483,8 +486,9 @@ public:
 
         if (curRespawnDelay < 0)
             curRespawnDelay = 0;
-        std::string curRespawnDelayStr = secsToTimeString(uint64(curRespawnDelay), TimeFormat::ShortText);
-        std::string defRespawnDelayStr = secsToTimeString(target->GetRespawnDelay(), TimeFormat::ShortText);
+
+        std::string curRespawnDelayStr = Warhead::Time::ToTimeString<Seconds>(uint64(curRespawnDelay));
+        std::string defRespawnDelayStr = Warhead::Time::ToTimeString<Seconds>(target->GetRespawnDelay());
 
         handler->PSendSysMessage(LANG_NPCINFO_CHAR, target->GetName().c_str(), target->GetSpawnId(), target->GetGUID().GetCounter(), entry, faction, npcflags, displayid, nativeid);
         if (target->GetCreatureData() && target->GetCreatureData()->spawnGroupData->groupId)
@@ -657,7 +661,7 @@ public:
 
         if (!sCreatureDisplayInfoStore.LookupEntry(displayId))
         {
-            handler->PSendSysMessage(LANG_COMMAND_INVALID_PARAM, Trinity::ToString(displayId).c_str());
+            handler->PSendSysMessage(LANG_COMMAND_INVALID_PARAM, Warhead::ToString(displayId).c_str());
             handler->SetSentErrorMessage(true);
             return false;
         }
@@ -1107,16 +1111,10 @@ public:
     static void _ShowLootEntry(ChatHandler* handler, uint32 itemId, uint8 itemCount, bool alternateString = false)
     {
         ItemTemplate const* itemTemplate = sObjectMgr->GetItemTemplate(itemId);
-        ItemLocale const* itemLocale = sObjectMgr->GetItemLocale(itemId);
-        char const* name = nullptr;
-        if (itemLocale)
-            name = itemLocale->Name[handler->GetSessionDbcLocale()].c_str();
-        if ((!name || !*name) && itemTemplate)
-            name = itemTemplate->Name1.c_str();
-        if (!name)
-            name = "Unknown item";
+        std::string const& itemNameLocale = sGameLocale->GetItemNameLocale(itemId, handler->GetSessionDbLocaleIndex());
+
         handler->PSendSysMessage(alternateString ? LANG_COMMAND_NPC_SHOWLOOT_ENTRY_2 : LANG_COMMAND_NPC_SHOWLOOT_ENTRY,
-            itemCount, ItemQualityColors[itemTemplate ? itemTemplate->Quality : uint32(ITEM_QUALITY_POOR)], itemId, name, itemId);
+            itemCount, ItemQualityColors[itemTemplate ? itemTemplate->Quality : uint32(ITEM_QUALITY_POOR)], itemId, itemNameLocale.c_str(), itemId);
     }
     static void _IterateNotNormalLootMap(ChatHandler* handler, NotNormalLootItemMap const& map, std::vector<LootItem> const& items)
     {
@@ -1126,7 +1124,7 @@ public:
                 continue;
             ObjectGuid guid = ObjectGuid::Create<HighGuid::Player>(pair.first);
             Player const* player = ObjectAccessor::FindConnectedPlayer(guid);
-            handler->PSendSysMessage(LANG_COMMAND_NPC_SHOWLOOT_SUBLABEL, player ? player->GetName() : Trinity::StringFormat("Offline player (GuidLow 0x%08x)", pair.first).c_str(), pair.second->size());
+            handler->PSendSysMessage(LANG_COMMAND_NPC_SHOWLOOT_SUBLABEL, player ? player->GetName() : Warhead::StringFormat("Offline player (GuidLow 0x%08x)", pair.first).c_str(), pair.second->size());
 
             for (auto it = pair.second->cbegin(); it != pair.second->cend(); ++it)
             {

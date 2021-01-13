@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -15,22 +15,24 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TRINITY_MAIL_H
-#define TRINITY_MAIL_H
+#ifndef _MAIL_H_
+#define _MAIL_H_
 
 #include "Common.h"
-#include "DatabaseEnvFwd.h"
+#include "Mail.h"
+#include "Item.h"
 #include "ObjectGuid.h"
-#include <map>
+#include "Timer.h"
+
+constexpr uint32 MAIL_BODY_ITEM_TEMPLATE = 8383; // - plain letter, A Dusty Unsent Letter: 889
+constexpr uint32 MAX_MAIL_ITEMS = 12;
 
 struct AuctionEntry;
 struct CalendarEvent;
+
 class Item;
 class Object;
 class Player;
-
-#define MAIL_BODY_ITEM_TEMPLATE 8383                        // - plain letter, A Dusty Unsent Letter: 889
-#define MAX_MAIL_ITEMS 12
 
 enum MailMessageType
 {
@@ -63,13 +65,6 @@ enum MailStationery
     MAIL_STATIONERY_ORP     = 67                            // Orphan
 };
 
-enum MailState
-{
-    MAIL_STATE_UNCHANGED = 1,
-    MAIL_STATE_CHANGED   = 2,
-    MAIL_STATE_DELETED   = 3
-};
-
 enum MailShowFlags
 {
     MAIL_SHOW_UNK0    = 0x0001,
@@ -79,93 +74,15 @@ enum MailShowFlags
     MAIL_SHOW_RETURN  = 0x0010
 };
 
-class TC_GAME_API MailSender
+enum MailState : uint8
 {
-    public:                                                 // Constructors
-        MailSender(MailMessageType messageType, ObjectGuid::LowType sender_guidlow_or_entry, MailStationery stationery = MAIL_STATIONERY_DEFAULT)
-            : m_messageType(messageType), m_senderId(sender_guidlow_or_entry), m_stationery(stationery)
-        {
-        }
-        MailSender(Object* sender, MailStationery stationery = MAIL_STATIONERY_DEFAULT);
-        MailSender(CalendarEvent* sender);
-        MailSender(AuctionEntry* sender);
-        MailSender(Player* sender);
-        MailSender(uint32 senderEntry);
-    public:                                                 // Accessors
-        MailMessageType GetMailMessageType() const { return m_messageType; }
-        ObjectGuid::LowType GetSenderId() const { return m_senderId; }
-        MailStationery GetStationery() const { return m_stationery; }
-    private:
-        MailMessageType m_messageType;
-        ObjectGuid::LowType m_senderId;                                  // player low guid or other object entry
-        MailStationery m_stationery;
+    MAIL_STATE_UNCHANGED = 1,
+    MAIL_STATE_CHANGED   = 2,
+    //MAIL_STATE_DELETED   = 3  // not nessesary more
 };
 
-class TC_GAME_API MailReceiver
+struct WH_GAME_API Mail
 {
-    public:                                                 // Constructors
-        explicit MailReceiver(ObjectGuid::LowType receiver_lowguid) : m_receiver(nullptr), m_receiver_lowguid(receiver_lowguid) { }
-        MailReceiver(Player* receiver);
-        MailReceiver(Player* receiver, ObjectGuid::LowType receiver_lowguid);
-    public:                                                 // Accessors
-        Player* GetPlayer() const { return m_receiver; }
-        ObjectGuid::LowType GetPlayerGUIDLow() const { return m_receiver_lowguid; }
-    private:
-        Player* m_receiver;
-        ObjectGuid::LowType m_receiver_lowguid;
-};
-
-class TC_GAME_API MailDraft
-{
-    typedef std::map<ObjectGuid::LowType, Item*> MailItemMap;
-
-    public:                                                 // Constructors
-        explicit MailDraft(uint16 mailTemplateId, bool need_items = true)
-            : m_mailTemplateId(mailTemplateId), m_mailTemplateItemsNeed(need_items), m_money(0), m_COD(0)
-        { }
-        MailDraft(std::string const& subject, std::string const& body)
-            : m_mailTemplateId(0), m_mailTemplateItemsNeed(false), m_subject(subject), m_body(body), m_money(0), m_COD(0) { }
-    public:                                                 // Accessors
-        uint16 GetMailTemplateId() const { return m_mailTemplateId; }
-        std::string const& GetSubject() const { return m_subject; }
-        uint32 GetMoney() const { return m_money; }
-        uint32 GetCOD() const { return m_COD; }
-        std::string const& GetBody() const { return m_body; }
-
-    public:                                                 // modifiers
-        MailDraft& AddItem(Item* item);
-        MailDraft& AddMoney(uint32 money) { m_money = money; return *this; }
-        MailDraft& AddCOD(uint32 COD) { m_COD = COD; return *this; }
-
-    public:                                                 // finishers
-        void SendReturnToSender(uint32 sender_acc, ObjectGuid::LowType sender_guid, ObjectGuid::LowType receiver_guid, CharacterDatabaseTransaction trans);
-        void SendMailTo(CharacterDatabaseTransaction trans, MailReceiver const& receiver, MailSender const& sender, MailCheckMask checked = MAIL_CHECK_MASK_NONE, uint32 deliver_delay = 0);
-
-    private:
-        void deleteIncludedItems(CharacterDatabaseTransaction trans, bool inDB = false);
-        void prepareItems(Player* receiver, CharacterDatabaseTransaction trans);                // called from SendMailTo for generate mailTemplateBase items
-
-        uint16      m_mailTemplateId;
-        bool        m_mailTemplateItemsNeed;
-        std::string m_subject;
-        std::string m_body;
-
-        MailItemMap m_items;                                // Keep the items in a map to avoid duplicate guids (which can happen), store only low part of guid
-
-        uint32 m_money;
-        uint32 m_COD;
-};
-
-struct MailItemInfo
-{
-    ObjectGuid::LowType item_guid;
-    uint32 item_template;
-};
-typedef std::vector<MailItemInfo> MailItemInfoVec;
-
-struct TC_GAME_API Mail
-{
-    uint32 messageID;
     uint8 messageType;
     uint8 stationery;
     uint16 mailTemplateId;
@@ -173,37 +90,135 @@ struct TC_GAME_API Mail
     ObjectGuid::LowType receiver;
     std::string subject;
     std::string body;
-    std::vector<MailItemInfo> items;
-    std::vector<ObjectGuid::LowType> removedItems;
-    time_t expire_time;
-    time_t deliver_time;
+    bool items_exist;
+    time_t expireTime;
+    time_t deliverTime;
     uint32 money;
     uint32 COD;
-    uint32 checked;
-    MailState state;
-
-    void AddItem(ObjectGuid::LowType itemGuidLow, uint32 item_template)
-    {
-        MailItemInfo mii;
-        mii.item_guid = itemGuidLow;
-        mii.item_template = item_template;
-        items.push_back(mii);
-    }
-
-    bool RemoveItem(ObjectGuid::LowType item_guid)
-    {
-        for (MailItemInfoVec::iterator itr = items.begin(); itr != items.end(); ++itr)
-        {
-            if (itr->item_guid == item_guid)
-            {
-                items.erase(itr);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    bool HasItems() const { return !items.empty(); }
+    uint8 checked;
+    uint8 state;
 };
 
-#endif
+struct WH_GAME_API MailItem
+{
+    uint32 messageID;
+    ObjectGuid::LowType item_guid;
+    ObjectGuid::LowType receiver_guid;
+};
+
+class WH_GAME_API MailMgr
+{
+    private:
+        MailMgr();
+        ~MailMgr();
+
+    public:
+        static MailMgr* instance();
+
+        void Initialize();
+
+        void Update(uint32 diff);
+
+        void SendMailBy(Object* sender, ObjectGuid::LowType receiver, std::string const& subject, std::string const& body, uint32 money, MailCheckMask checkMask = MAIL_CHECK_MASK_NONE,
+                        uint32 deliver_delay = 0, uint32 COD = 0);
+        void SendMailByGUID(ObjectGuid::LowType sender, ObjectGuid::LowType receiver, uint8 messageType, std::string const& subject, std::string const& body, uint32 money,
+                            MailCheckMask checkMask = MAIL_CHECK_MASK_NONE, uint32 deliver_delay = 0, uint32 COD = 0);
+
+        void SendMailWithItemsBy(Object* sender, ObjectGuid::LowType receiver, std::string const& subject, std::string const& body, uint32 money, std::list<Item*> const& itemlist,
+                                 MailCheckMask checkMask = MAIL_CHECK_MASK_NONE, uint32 deliver_delay = 0, uint32 COD = 0);
+        void SendMailWithItemsByGUID(ObjectGuid::LowType sender, ObjectGuid::LowType receiver, uint8 messageType, std::string const& subject, std::string const& body, uint32 money,
+                                     std::list<Item*> const& itemlist, MailCheckMask checkMask = MAIL_CHECK_MASK_NONE, uint32 deliver_delay = 0, uint32 COD = 0);
+
+        void SendMailByAuctionHouse(AuctionEntry* sender, ObjectGuid::LowType receiver, std::string const& subject, std::string const& body, uint32 money, MailCheckMask checkMask = MAIL_CHECK_MASK_NONE,
+                                    uint32 deliver_delay = 0, uint32 COD = 0);
+        void SendMailByAuctionHouseWithItems(AuctionEntry* sender, ObjectGuid::LowType receiver, std::string const& subject, std::string const& body, uint32 money, std::list<Item*> const& itemlist,
+                                             MailCheckMask checkMask = MAIL_CHECK_MASK_NONE, uint32 deliver_delay = 0, uint32 COD = 0);
+
+        void SendMailByCalendarEvent(CalendarEvent* sender, ObjectGuid::LowType receiver, std::string const& subject, std::string const& body, uint32 money, MailCheckMask checkMask = MAIL_CHECK_MASK_NONE,
+                                     uint32 deliver_delay = 0, uint32 COD = 0);
+        void SendMailByCalendarEventWithItems(CalendarEvent* sender, ObjectGuid::LowType receiver, std::string const& subject, std::string const& body, uint32 money, std::list<Item*> const& itemlist,
+                                              MailCheckMask checkMask = MAIL_CHECK_MASK_NONE, uint32 deliver_delay = 0, uint32 COD = 0);
+
+        void SendMailWithTemplateBy(Object* sender, ObjectGuid::LowType receiver, uint16 mailTemplateId, MailCheckMask checkMask = MAIL_CHECK_MASK_HAS_BODY, uint32 deliver_delay = 0);
+        void SendMailWithTemplateByGUID(ObjectGuid::LowType sender, ObjectGuid::LowType receiver, uint8 messageType, uint16 mailTemplateId, MailCheckMask checkMask = MAIL_CHECK_MASK_HAS_BODY,
+                                        uint32 deliver_delay = 0);
+
+        void RemoveAllMailsFor(ObjectGuid::LowType playerId);
+
+        uint32 GetUnreadMessagesAndNextDelivertime(ObjectGuid::LowType playerId, time_t& delivertime);
+        uint32 GetMailBoxSize(ObjectGuid::LowType playerId);
+
+        bool HandleMailMarkAsRead(uint32 mailID);
+        bool HandleMailDelete(uint32 mailID);
+        uint8 HandleMailReturnToSender(uint32 mailID);
+        uint8 HandleMailTakeItem(Player* player, uint32 mailID, ObjectGuid::LowType item_guid, uint32& count, uint8& msg_result);
+        void HandleMailTakeMoney(Player* player, uint32 mailID);
+        void HandleGetMailList(Player* player, WorldPacket& data);
+        void HandleMailCreateTextItem(Player* player, uint32 mailID);
+        bool HandleQueryNextMailTime(Player* player, WorldPacket& data);
+
+        time_t GetMailMgrExpiryTimer() { return _ExpTimer.GetExpiry().count(); }
+
+    private:
+        // Mail section
+        uint32 AddNewMail(
+            uint8 messageType, uint8 stationery, uint16 mailTemplateId, ObjectGuid::LowType sender, ObjectGuid::LowType receiver,
+            std::string const& subject, std::string const& body, bool items, uint32 money, time_t expireTime, time_t deliverTime,
+            uint32 COD, uint8 checked = MAIL_CHECK_MASK_NONE, uint8 state = MAIL_STATE_UNCHANGED
+        );
+
+        // Mail Item section
+        void AddNewMailItem(uint32 mailID, Item* itemPointer, ObjectGuid::LowType itemGuidLow, ObjectGuid::LowType receiver, CharacterDatabaseTransaction& trans);
+
+        Item* GetMItem(uint32 id);
+        void AddMItem(Item* it);
+        bool RemoveMItem(uint32 id);
+
+        void RemoveMail(uint32 mailID, CharacterDatabaseTransaction& trans);
+        void RemoveMailItem(ObjectGuid::LowType itemGuidLow, CharacterDatabaseTransaction& trans);
+        void RemoveMailItemsByMailId(uint32 mailID, CharacterDatabaseTransaction& trans);
+
+        // helper
+        bool PrepareMessageAttributeBy(Object* sender, ObjectGuid::LowType receiver, uint8& messageType, uint8& stationery, ObjectGuid::LowType& m_senderId, uint32 deliver_delay, uint32 COD,
+                                       time_t& expireTime, time_t& deliverTime);
+        bool PrepareMessageAttributeByGUID(ObjectGuid::LowType sender, uint8 messageType, uint8& stationery, uint32 deliver_delay, uint32 COD, time_t& expireTime, time_t& deliverTime);
+        bool PrepareMessageAttributeForAuctionAndCalendar(uint32 deliver_delay, uint32 COD, time_t& expireTime, time_t& deliverTime);
+
+        void PrepareItems(uint32 mailId, uint16 mailTemplateId, Player* receiver);
+        uint32 SendReturnMailByGUID(uint32 old_mailID, ObjectGuid::LowType sender, ObjectGuid::LowType receiver, std::string const& subject, std::string const& body, uint32 money, bool itemexist,
+                                    uint32 deliver_delay = 0);
+
+        void CearDependInstanceItem(ObjectGuid::LowType playerId, uint32 mailID, CharacterDatabaseTransaction& trans);
+        void ClearDependInstanceItemsBeforeDeletePlayer(ObjectGuid::LowType playerId);
+
+        void _LoadMails();
+        void _LoadMailItems();
+        void _LoadMailedItemPointers();
+
+        void _UpdateExpiryTime();
+        time_t GetNextExpireMailUpd();
+        void _DeleteExpiryMails(bool startServer = false);
+
+        void _RemoveMoneyFromMail(uint32 mailId, CharacterDatabaseTransaction& trans) const;
+
+        void SendMail(uint8 messageType, uint8 stationery, ObjectGuid::LowType sender, ObjectGuid::LowType receiver,
+                      std::string const& subject, std::string const& body, uint32 money, time_t expireTime, time_t deliverTime, uint32 COD, uint8 checkMask = MAIL_CHECK_MASK_NONE);
+
+        void SendMailItems(uint8 messageType, uint8 stationery, ObjectGuid::LowType sender, ObjectGuid::LowType receiver,
+                           std::string const& subject, std::string const& body, uint32 money, std::list<Item*> const& itemlist, time_t expireTime, time_t deliverTime, uint32 COD, uint8 checkMask = MAIL_CHECK_MASK_NONE);
+
+        void SendMailTemplate(uint8 messageType, uint8 stationery, uint16 mailTemplateId, ObjectGuid::LowType senderID,
+                              ObjectGuid::LowType receiver, uint32 money, time_t expireTime, time_t deliverTime, MailCheckMask checkMask);
+
+        std::unordered_map<uint32 /*mailId*/, Mail> _mails;
+        std::unordered_map<uint32 /*mailItemId*/, MailItem> _mailItems;
+        std::unordered_map<uint32, Item*> _MItems; // template defined in objectmgr.cpp
+
+        // update interval
+        uint32 m_updateTimer;
+        TimeTracker _ExpTimer;
+};
+
+#define sMailMgr MailMgr::instance()
+
+#endif // _MAIL_H_

@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -35,23 +35,26 @@ IpLocationStore::~IpLocationStore()
 void IpLocationStore::Load()
 {
     _ipLocationStore.clear();
-    TC_LOG_INFO("server.loading", "Loading IP Location Database...");
+    LOG_INFO("server.loading", "Loading IP Location Database...");
 
     std::string databaseFilePath = sConfigMgr->GetStringDefault("IPLocationFile", "");
     if (databaseFilePath.empty())
+    {
+        LOG_INFO("server.loading", "");
         return;
+    }
 
     // Check if file exists
     std::ifstream databaseFile(databaseFilePath);
     if (!databaseFile)
     {
-        TC_LOG_ERROR("server.loading", "IPLocation: No ip database file exists (%s).", databaseFilePath.c_str());
+        LOG_ERROR("server.loading", "IPLocation: No ip database file exists (%s).", databaseFilePath.c_str());
         return;
     }
 
     if (!databaseFile.is_open())
     {
-        TC_LOG_ERROR("server.loading", "IPLocation: Ip database file (%s) can not be opened.", databaseFilePath.c_str());
+        LOG_ERROR("server.loading", "IPLocation: Ip database file (%s) can not be opened.", databaseFilePath.c_str());
         return;
     }
 
@@ -94,12 +97,13 @@ void IpLocationStore::Load()
 
     databaseFile.close();
 
-    TC_LOG_INFO("server.loading", ">> Loaded " SZFMTD " ip location entries.", _ipLocationStore.size());
+    LOG_INFO("server.loading", ">> Loaded " SZFMTD " ip location entries.", _ipLocationStore.size());
+    LOG_INFO("server.loading", "");
 }
 
 IpLocationRecord const* IpLocationStore::GetLocationRecord(std::string const& ipAddress) const
 {
-    uint32 ip = Trinity::Net::address_to_uint(Trinity::Net::make_address_v4(ipAddress));
+    uint32 ip = Warhead::Net::address_to_uint(Warhead::Net::make_address_v4(ipAddress));
     auto itr = std::upper_bound(_ipLocationStore.begin(), _ipLocationStore.end(), ip, [](uint32 ip, IpLocationRecord const& loc) { return ip < loc.IpTo; });
     if (itr == _ipLocationStore.end())
         return nullptr;

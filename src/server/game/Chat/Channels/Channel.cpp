@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -21,17 +21,17 @@
 #include "Chat.h"
 #include "DatabaseEnv.h"
 #include "DBCStores.h"
+#include "GameConfig.h"
+#include "GameLocale.h"
 #include "GameTime.h"
 #include "GridNotifiers.h"
 #include "GridNotifiersImpl.h"
 #include "Language.h"
 #include "Log.h"
 #include "ObjectAccessor.h"
-#include "ObjectMgr.h"
 #include "Player.h"
 #include "SocialMgr.h"
 #include "StringConvert.h"
-#include "World.h"
 
 Channel::Channel(uint32 channelId, uint32 team /*= 0*/, AreaTableEntry const* zoneEntry /*= nullptr*/) :
     _isDirty(false),
@@ -74,13 +74,13 @@ Channel::Channel(std::string const& name, uint32 team /*= 0*/, std::string const
     _channelPassword(),
     _zoneEntry(nullptr)
 {
-    for (std::string_view guid : Trinity::Tokenize(banList, ' ', false))
+    for (std::string_view guid : Warhead::Tokenize(banList, ' ', false))
     {
-        ObjectGuid banned(Trinity::StringTo<uint64>(guid).value_or(0));
+        ObjectGuid banned(Warhead::StringTo<uint64>(guid).value_or(0));
         if (!banned)
             continue;
 
-        TC_LOG_DEBUG("chat.system", "Channel(%s) loaded player %s into bannedStore", name.c_str(), banned.ToString().c_str());
+        LOG_DEBUG("chat.system", "Channel(%s) loaded player %s into bannedStore", name.c_str(), banned.ToString().c_str());
         _bannedStore.insert(banned);
     }
 }
@@ -93,9 +93,9 @@ void Channel::GetChannelName(std::string& channelName, uint32 channelId, LocaleC
         if (!(channelEntry->Flags & CHANNEL_DBC_FLAG_GLOBAL))
         {
             if (channelEntry->Flags & CHANNEL_DBC_FLAG_CITY_ONLY)
-                channelName = Trinity::StringFormat(channelEntry->Name[locale], sObjectMgr->GetTrinityString(LANG_CHANNEL_CITY, locale));
+                channelName = Warhead::StringFormat(channelEntry->Name[locale], sGameLocale->GetWarheadString(LANG_CHANNEL_CITY, locale));
             else
-                channelName = Trinity::StringFormat(channelEntry->Name[locale], ASSERT_NOTNULL(zoneEntry)->AreaName[locale]);
+                channelName = Warhead::StringFormat(channelEntry->Name[locale], ASSERT_NOTNULL(zoneEntry)->AreaName[locale]);
         }
         else
             channelName = channelEntry->Name[locale];
@@ -144,7 +144,7 @@ void Channel::UpdateChannelInDB()
         return;
 
     _isDirty = false;
-    _nextActivityUpdateTime = now + urand(1 * MINUTE, 6 * MINUTE) * std::max(1u, sWorld->getIntConfig(CONFIG_PRESERVE_CUSTOM_CHANNEL_INTERVAL));
+    _nextActivityUpdateTime = now + urand(1 * MINUTE, 6 * MINUTE) * std::max(1, CONF_GET_INT("PreserveCustomChannelInterval"));
 }
 
 void Channel::JoinChannel(Player* player, std::string const& pass)
@@ -179,7 +179,7 @@ void Channel::JoinChannel(Player* player, std::string const& pass)
     }
 
     if (HasFlag(CHANNEL_FLAG_LFG) &&
-        sWorld->getBoolConfig(CONFIG_RESTRICTED_LFG_CHANNEL) &&
+        CONF_GET_BOOL("Channel.RestrictedLfg") &&
         AccountMgr::IsPlayerAccount(player->GetSession()->GetSecurity()) && //FIXME: Move to RBAC
         player->GetGroup())
     {
@@ -602,7 +602,7 @@ void Channel::List(Player const* player) const
     }
 
     std::string channelName = GetName(player->GetSession()->GetSessionDbcLocale());
-    TC_LOG_DEBUG("chat.system", "SMSG_CHANNEL_LIST %s Channel: %s",
+    LOG_DEBUG("chat.system", "SMSG_CHANNEL_LIST %s Channel: %s",
         player->GetSession()->GetPlayerInfo().c_str(), channelName.c_str());
 
     WorldPacket data(SMSG_CHANNEL_LIST, 1 + (channelName.size() + 1) + 1 + 4 + _playersStore.size() * (8 + 1));
@@ -613,7 +613,7 @@ void Channel::List(Player const* player) const
     size_t pos = data.wpos();
     data << uint32(0);                                  // size of list, placeholder
 
-    uint32 gmLevelInWhoList = sWorld->getIntConfig(CONFIG_GM_LEVEL_IN_WHO_LIST);
+    uint32 gmLevelInWhoList = CONF_GET_INT("GM.InWhoList.Level");
 
     uint32 count  = 0;
     for (PlayerContainer::const_iterator i = _playersStore.begin(); i != _playersStore.end(); ++i)
@@ -682,7 +682,7 @@ void Channel::Say(ObjectGuid guid, std::string const& what, uint32 lang) const
         return;
 
     // TODO: Add proper RBAC check
-    if (sWorld->getBoolConfig(CONFIG_ALLOW_TWO_SIDE_INTERACTION_CHANNEL))
+    if (CONF_GET_BOOL("AllowTwoSide.Interaction.Channel"))
         lang = LANG_UNIVERSAL;
 
     if (!IsOn(guid))
@@ -861,7 +861,7 @@ void Channel::LeaveNotify(ObjectGuid guid) const
 template<class Builder>
 void Channel::SendToAll(Builder& builder, ObjectGuid guid /*= ObjectGuid::Empty*/) const
 {
-    Trinity::LocalizedPacketDo<Builder> localizer(builder);
+    Warhead::LocalizedPacketDo<Builder> localizer(builder);
 
     for (PlayerContainer::const_iterator i = _playersStore.begin(); i != _playersStore.end(); ++i)
         if (Player* player = ObjectAccessor::FindConnectedPlayer(i->first))
@@ -872,7 +872,7 @@ void Channel::SendToAll(Builder& builder, ObjectGuid guid /*= ObjectGuid::Empty*
 template<class Builder>
 void Channel::SendToAllButOne(Builder& builder, ObjectGuid who) const
 {
-    Trinity::LocalizedPacketDo<Builder> localizer(builder);
+    Warhead::LocalizedPacketDo<Builder> localizer(builder);
 
     for (PlayerContainer::const_iterator i = _playersStore.begin(); i != _playersStore.end(); ++i)
         if (i->first != who)
@@ -883,7 +883,7 @@ void Channel::SendToAllButOne(Builder& builder, ObjectGuid who) const
 template<class Builder>
 void Channel::SendToOne(Builder& builder, ObjectGuid who) const
 {
-    Trinity::LocalizedPacketDo<Builder> localizer(builder);
+    Warhead::LocalizedPacketDo<Builder> localizer(builder);
 
     if (Player* player = ObjectAccessor::FindConnectedPlayer(who))
         localizer(player);

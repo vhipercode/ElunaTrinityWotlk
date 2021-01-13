@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -32,10 +32,12 @@ enum LoginDatabaseStatements : uint32
     LOGIN_DEL_EXPIRED_IP_BANS,
     LOGIN_UPD_EXPIRED_ACCOUNT_BANS,
     LOGIN_SEL_IP_INFO,
+    LOGIN_SEL_IP_INFO_BY_ACC_ID,
     LOGIN_INS_IP_AUTO_BANNED,
     LOGIN_SEL_ACCOUNT_BANNED_ALL,
     LOGIN_SEL_ACCOUNT_BANNED_BY_FILTER,
     LOGIN_SEL_ACCOUNT_BANNED_BY_USERNAME,
+    LOGIN_SEL_ACCOUNT_BANNED_INFO,
     LOGIN_INS_ACCOUNT_AUTO_BANNED,
     LOGIN_DEL_ACCOUNT_BANNED,
     LOGIN_UPD_LOGON,
@@ -68,8 +70,6 @@ enum LoginDatabaseStatements : uint32
     LOGIN_UPD_USERNAME,
     LOGIN_UPD_EMAIL,
     LOGIN_UPD_REG_EMAIL,
-    LOGIN_UPD_MUTE_TIME,
-    LOGIN_UPD_MUTE_TIME_LOGIN,
     LOGIN_UPD_LAST_IP,
     LOGIN_UPD_LAST_ATTEMPT_IP,
     LOGIN_UPD_ACCOUNT_ONLINE,
@@ -107,8 +107,11 @@ enum LoginDatabaseStatements : uint32
     LOGIN_DEL_RBAC_ACCOUNT_PERMISSION,
 
     LOGIN_INS_ACCOUNT_MUTE,
+    LOGIN_UPD_ACCOUNT_MUTE,
     LOGIN_SEL_ACCOUNT_MUTE_INFO,
-    LOGIN_DEL_ACCOUNT_MUTED,
+    LOGIN_SEL_ACCOUNT_MUTE,
+    LOGIN_UPD_ACCOUNT_MUTE_EXPIRED,
+    LOGIN_DEL_ACCOUNT_MUTE,
 
     LOGIN_SEL_SECRET_DIGEST,
     LOGIN_INS_SECRET_DIGEST,
@@ -120,7 +123,7 @@ enum LoginDatabaseStatements : uint32
     MAX_LOGINDATABASE_STATEMENTS
 };
 
-class TC_DATABASE_API LoginDatabaseConnection : public MySQLConnection
+class WH_DATABASE_API LoginDatabaseConnection : public MySQLConnection
 {
 public:
     typedef LoginDatabaseStatements Statements;

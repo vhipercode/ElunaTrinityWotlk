@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -74,17 +74,6 @@ constexpr WardenCheckCategory GetWardenCheckCategory(WardenCheckType type)
     }
 }
 
-constexpr WorldIntConfigs GetWardenCategoryCountConfig(WardenCheckCategory category)
-{
-    switch (category)
-    {
-        case INJECT_CHECK_CATEGORY: return CONFIG_WARDEN_NUM_INJECT_CHECKS;
-        case LUA_CHECK_CATEGORY:    return CONFIG_WARDEN_NUM_LUA_CHECKS;
-        case MODDED_CHECK_CATEGORY: return CONFIG_WARDEN_NUM_CLIENT_MOD_CHECKS;
-        default:                    return INT_CONFIG_VALUE_COUNT;
-    }
-}
-
 struct WardenCheck
 {
     uint16 CheckId;
@@ -102,7 +91,7 @@ constexpr uint8 WARDEN_MAX_LUA_CHECK_LENGTH = 170;
 
 using WardenCheckResult = std::vector<uint8>;
 
-class TC_GAME_API WardenCheckMgr
+class WH_GAME_API WardenCheckMgr
 {
     private:
         WardenCheckMgr();

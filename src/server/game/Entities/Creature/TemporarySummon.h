@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -15,8 +15,8 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TRINITYCORE_TEMPSUMMON_H
-#define TRINITYCORE_TEMPSUMMON_H
+#ifndef WARHEADCORE_TEMPSUMMON_H
+#define WARHEADCORE_TEMPSUMMON_H
 
 #include "Creature.h"
 
@@ -32,7 +32,7 @@ enum PetEntry : uint32
 
 struct SummonPropertiesEntry;
 
-class TC_GAME_API TempSummon : public Creature
+class WH_GAME_API TempSummon : public Creature
 {
     public:
         explicit TempSummon(SummonPropertiesEntry const* properties, WorldObject* owner, bool isWorldObject);
@@ -54,6 +54,8 @@ class TC_GAME_API TempSummon : public Creature
         uint32 GetTimer() const { return m_timer; }
         bool CanFollowOwner() const { return m_canFollowOwner; }
         void SetCanFollowOwner(bool can) { m_canFollowOwner = can; }
+        void SetVisibleBySummonerOnly(bool visibleBySummonerOnly) { m_visibleBySummonerOnly = visibleBySummonerOnly; }
+        bool IsVisibleBySummonerOnly() const { return m_visibleBySummonerOnly; }
 
         SummonPropertiesEntry const* const m_Properties;
 
@@ -64,9 +66,10 @@ class TC_GAME_API TempSummon : public Creature
         uint32 m_lifetime;
         ObjectGuid m_summonerGUID;
         bool m_canFollowOwner;
+        bool m_visibleBySummonerOnly;
 };
 
-class TC_GAME_API Minion : public TempSummon
+class WH_GAME_API Minion : public TempSummon
 {
     public:
         Minion(SummonPropertiesEntry const* properties, Unit* owner, bool isWorldObject);
@@ -92,7 +95,7 @@ class TC_GAME_API Minion : public TempSummon
         float m_followAngle;
 };
 
-class TC_GAME_API Guardian : public Minion
+class WH_GAME_API Guardian : public Minion
 {
     public:
         Guardian(SummonPropertiesEntry const* properties, Unit* owner, bool isWorldObject);
@@ -118,7 +121,7 @@ class TC_GAME_API Guardian : public Minion
         float   m_statFromOwner[MAX_STATS];
 };
 
-class TC_GAME_API Puppet : public Minion
+class WH_GAME_API Puppet : public Minion
 {
     public:
         Puppet(SummonPropertiesEntry const* properties, Unit* owner);
@@ -127,7 +130,7 @@ class TC_GAME_API Puppet : public Minion
         void Update(uint32 time) override;
 };
 
-class TC_GAME_API ForcedUnsummonDelayEvent : public BasicEvent
+class WH_GAME_API ForcedUnsummonDelayEvent : public BasicEvent
 {
 public:
     ForcedUnsummonDelayEvent(TempSummon& owner) : BasicEvent(), m_owner(owner) { }

@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -15,8 +15,8 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TRINITY_COMBATMANAGER_H
-#define TRINITY_COMBATMANAGER_H
+#ifndef WARHEAD_COMBATMANAGER_H
+#define WARHEAD_COMBATMANAGER_H
 
 #include "Common.h"
 #include "ObjectGuid.h"
@@ -51,7 +51,7 @@ class Unit;
 \********************************************************************************************************************************************************/
 
 // Please check Game/Combat/CombatManager.h for documentation on how this class works!
-struct TC_GAME_API CombatReference
+struct WH_GAME_API CombatReference
 {
     Unit* const first;
     Unit* const second;
@@ -70,7 +70,7 @@ protected:
 };
 
 // Please check Game/Combat/CombatManager.h for documentation on how this class works!
-struct TC_GAME_API PvPCombatReference : public CombatReference
+struct WH_GAME_API PvPCombatReference : public CombatReference
 {
     static const uint32 PVP_COMBAT_TIMEOUT = 5 * IN_MILLISECONDS;
 
@@ -94,7 +94,7 @@ private:
 };
 
 // please check Game/Combat/CombatManager.h for documentation on how this class works!
-class TC_GAME_API CombatManager
+class WH_GAME_API CombatManager
 {
     public:
         static bool CanBeginCombat(Unit const* a, Unit const* b);
@@ -136,7 +136,6 @@ class TC_GAME_API CombatManager
         Unit* const _owner;
         std::unordered_map<ObjectGuid, CombatReference*> _pveRefs;
         std::unordered_map<ObjectGuid, PvPCombatReference*> _pvpRefs;
-
 
     friend struct CombatReference;
     friend struct PvPCombatReference;

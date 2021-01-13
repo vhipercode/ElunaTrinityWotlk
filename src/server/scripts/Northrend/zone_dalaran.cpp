@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -25,6 +25,7 @@ Script Data End */
 
 #include "ScriptMgr.h"
 #include "DatabaseEnv.h"
+#include "Mail.h"
 #include "Mail.h"
 #include "Map.h"
 #include "MotionMaster.h"
@@ -188,15 +189,13 @@ class npc_minigob_manabonk : public CreatureScript
                 if (PlayerInDalaranList.empty())
                     return nullptr;
 
-                return Trinity::Containers::SelectRandomContainerElement(PlayerInDalaranList);
+                return Warhead::Containers::SelectRandomContainerElement(PlayerInDalaranList);
             }
 
             void SendMailToPlayer(Player* player) const
             {
-                CharacterDatabaseTransaction trans = CharacterDatabase.BeginTransaction();
                 int16 deliverDelay = irand(MAIL_DELIVER_DELAY_MIN, MAIL_DELIVER_DELAY_MAX);
-                MailDraft(MAIL_MINIGOB_ENTRY, true).SendMailTo(trans, MailReceiver(player), MailSender(MAIL_CREATURE, me->GetEntry()), MAIL_CHECK_MASK_NONE, deliverDelay);
-                CharacterDatabase.CommitTransaction(trans);
+                sMailMgr->SendMailWithTemplateByGUID(me->GetEntry(), player->GetGUID().GetCounter(), MAIL_CREATURE, MAIL_MINIGOB_ENTRY, MAIL_CHECK_MASK_NONE, deliverDelay);
             }
 
             void UpdateAI(uint32 diff) override

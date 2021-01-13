@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -15,8 +15,8 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __TRINITY_VEHICLE_H
-#define __TRINITY_VEHICLE_H
+#ifndef __WARHEAD_VEHICLE_H
+#define __WARHEAD_VEHICLE_H
 
 #include "ObjectDefines.h"
 #include "Object.h"
@@ -28,7 +28,7 @@ struct VehicleEntry;
 class Unit;
 class VehicleJoinEvent;
 
-class TC_GAME_API Vehicle : public TransportBase
+class WH_GAME_API Vehicle : public TransportBase
 {
     protected:
         friend bool Unit::CreateVehicleKit(uint32 id, uint32 creatureEntry);
@@ -71,6 +71,8 @@ class TC_GAME_API Vehicle : public TransportBase
         VehicleSeatEntry const* GetSeatForPassenger(Unit const* passenger) const;
 
         void RemovePendingEventsForPassenger(Unit* passenger);
+
+        Milliseconds GetDespawnDelay();
 
     protected:
         friend class VehicleJoinEvent;
@@ -121,7 +123,7 @@ class TC_GAME_API Vehicle : public TransportBase
         PendingJoinEventContainer _pendingJoinEvents;       ///< Collection of delayed join events for prospective passengers
 };
 
-class TC_GAME_API VehicleJoinEvent : public BasicEvent
+class WH_GAME_API VehicleJoinEvent : public BasicEvent
 {
     friend class Vehicle;
     protected:

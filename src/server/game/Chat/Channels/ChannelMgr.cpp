@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -21,7 +21,7 @@
 #include "DBCStores.h"
 #include "Log.h"
 #include "Player.h"
-#include "World.h"
+#include "GameConfig.h"
 #include "WorldSession.h"
 
 ChannelMgr::~ChannelMgr()
@@ -35,14 +35,15 @@ ChannelMgr::~ChannelMgr()
 
 /*static*/ void ChannelMgr::LoadFromDB()
 {
-    if (!sWorld->getBoolConfig(CONFIG_PRESERVE_CUSTOM_CHANNELS))
+    if (!CONF_GET_BOOL("PreserveCustomChannels"))
     {
-        TC_LOG_INFO("server.loading", ">> Loaded 0 custom chat channels. Custom channel saving is disabled.");
+        LOG_INFO("server.loading", ">> Loaded 0 custom chat channels. Custom channel saving is disabled.");
+        LOG_INFO("server.loading", "");
         return;
     }
 
     uint32 oldMSTime = getMSTime();
-    if (uint32 days = sWorld->getIntConfig(CONFIG_PRESERVE_CUSTOM_CHANNEL_DURATION))
+    if (uint32 days = CONF_GET_INT("PreserveCustomChannelDuration"))
     {
         CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_OLD_CHANNELS);
         stmt->setUInt32(0, days * DAY);
@@ -52,7 +53,8 @@ ChannelMgr::~ChannelMgr()
     QueryResult result = CharacterDatabase.Query("SELECT name, team, announce, ownership, password, bannedList FROM channels");
     if (!result)
     {
-        TC_LOG_INFO("server.loading", ">> Loaded 0 custom chat channels. DB table `channels` is empty.");
+        LOG_INFO("server.loading", ">> Loaded 0 custom chat channels. DB table `channels` is empty.");
+        LOG_INFO("server.loading", "");
         return;
     }
 
@@ -71,7 +73,7 @@ ChannelMgr::~ChannelMgr()
         std::wstring channelName;
         if (!Utf8toWStr(dbName, channelName))
         {
-            TC_LOG_ERROR("server.loading", "Failed to load custom chat channel '%s' from database - invalid utf8 sequence? Deleted.", dbName.c_str());
+            LOG_ERROR("server.loading", "Failed to load custom chat channel '%s' from database - invalid utf8 sequence? Deleted.", dbName.c_str());
             toDelete.push_back({ dbName, team });
             continue;
         }
@@ -79,7 +81,7 @@ ChannelMgr::~ChannelMgr()
         ChannelMgr* mgr = forTeam(team);
         if (!mgr)
         {
-            TC_LOG_ERROR("server.loading", "Failed to load custom chat channel '%s' from database - invalid team %u. Deleted.", dbName.c_str(), team);
+            LOG_ERROR("server.loading", "Failed to load custom chat channel '%s' from database - invalid team %u. Deleted.", dbName.c_str(), team);
             toDelete.push_back({ dbName, team });
             continue;
         }
@@ -101,7 +103,8 @@ ChannelMgr::~ChannelMgr()
         CharacterDatabase.Execute(stmt);
     }
 
-    TC_LOG_INFO("server.loading", ">> Loaded %u custom chat channels in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+    LOG_INFO("server.loading", ">> Loaded %u custom chat channels in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+    LOG_INFO("server.loading", "");
 }
 
 /*static*/ ChannelMgr* ChannelMgr::forTeam(uint32 team)
@@ -109,7 +112,7 @@ ChannelMgr::~ChannelMgr()
     static ChannelMgr allianceChannelMgr(ALLIANCE);
     static ChannelMgr hordeChannelMgr(HORDE);
 
-    if (sWorld->getBoolConfig(CONFIG_ALLOW_TWO_SIDE_INTERACTION_CHANNEL))
+    if (CONF_GET_BOOL("AllowTwoSide.Interaction.Channel"))
         return &allianceChannelMgr;        // cross-faction
 
     if (team == ALLIANCE)

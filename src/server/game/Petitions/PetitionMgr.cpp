@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -44,7 +44,8 @@ void PetitionMgr::LoadPetitions()
     QueryResult result = CharacterDatabase.Query("SELECT petitionguid, ownerguid, name, type FROM petition");
     if (!result)
     {
-        TC_LOG_INFO("server.loading", ">> Loaded 0 petitions.");
+        LOG_INFO("server.loading", ">> Loaded 0 petitions.");
+        LOG_INFO("server.loading", "");
         return;
     }
 
@@ -56,7 +57,8 @@ void PetitionMgr::LoadPetitions()
         ++count;
     } while (result->NextRow());
 
-    TC_LOG_INFO("server.loading", ">> Loaded %u petitions in: %u ms.", count, GetMSTimeDiffToNow(oldMSTime));
+    LOG_INFO("server.loading", ">> Loaded %u petitions in: %u ms.", count, GetMSTimeDiffToNow(oldMSTime));
+    LOG_INFO("server.loading", "");
 }
 
 void PetitionMgr::LoadSignatures()
@@ -66,7 +68,8 @@ void PetitionMgr::LoadSignatures()
     QueryResult result = CharacterDatabase.Query("SELECT petitionguid, player_account, playerguid FROM petition_sign");
     if (!result)
     {
-        TC_LOG_INFO("server.loading", ">> Loaded 0 Petition signs!");
+        LOG_INFO("server.loading", ">> Loaded 0 Petition signs!");
+        LOG_INFO("server.loading", "");
         return;
     }
 
@@ -83,7 +86,8 @@ void PetitionMgr::LoadSignatures()
         ++count;
     } while (result->NextRow());
 
-    TC_LOG_INFO("server.loading", ">> Loaded %u Petition signs in %u ms.", count, GetMSTimeDiffToNow(oldMSTime));
+    LOG_INFO("server.loading", ">> Loaded %u Petition signs in %u ms.", count, GetMSTimeDiffToNow(oldMSTime));
+    LOG_INFO("server.loading", "");
 }
 
 void PetitionMgr::AddPetition(ObjectGuid petitionGuid, ObjectGuid ownerGuid, std::string const& name, CharterTypes type, bool isLoading)

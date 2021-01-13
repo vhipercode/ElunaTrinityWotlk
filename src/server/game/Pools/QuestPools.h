@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -15,8 +15,8 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TRINITY_QUESTPOOLS_H
-#define TRINITY_QUESTPOOLS_H
+#ifndef WARHEAD_QUESTPOOLS_H
+#define WARHEAD_QUESTPOOLS_H
 
 #include "Define.h"
 #include <unordered_map>
@@ -34,7 +34,7 @@ struct QuestPool
     std::unordered_set<uint32> activeQuests;
 };
 
-class TC_GAME_API QuestPoolMgr
+class WH_GAME_API QuestPoolMgr
 {
     private:
         QuestPoolMgr() {}

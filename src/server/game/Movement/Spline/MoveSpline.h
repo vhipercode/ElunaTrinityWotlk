@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -15,8 +15,8 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TRINITYSERVER_MOVEPLINE_H
-#define TRINITYSERVER_MOVEPLINE_H
+#ifndef WARHEADSERVER_MOVEPLINE_H
+#define WARHEADSERVER_MOVEPLINE_H
 
 #include "Spline.h"
 #include "MoveSplineInitArgs.h"
@@ -39,7 +39,7 @@ namespace Movement
     // MoveSpline represents smooth catmullrom or linear curve and point that moves belong it
     // curve can be cyclic - in this case movement will be cyclic
     // point can have vertical acceleration motion componemt(used in fall, parabolic movement)
-    class TC_GAME_API MoveSpline
+    class WH_GAME_API MoveSpline
     {
     public:
         typedef Spline<int32> MySpline;
@@ -136,4 +136,4 @@ namespace Movement
         }
     };
 }
-#endif // TRINITYSERVER_MOVEPLINE_H
+#endif // WARHEADSERVER_MOVEPLINE_H

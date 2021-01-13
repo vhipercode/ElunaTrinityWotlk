@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -597,7 +597,7 @@ struct _Socket
 #define MAX_ITEM_PROTO_SPELLS  5
 #define MAX_ITEM_PROTO_STATS  10
 
-struct TC_GAME_API ItemTemplate
+struct WH_GAME_API ItemTemplate
 {
     friend class ObjectMgr;
 
@@ -718,21 +718,10 @@ private:
     void _LoadTotalAP();
 };
 
-struct ItemLocale
-{
-    std::vector<std::string> Name;
-    std::vector<std::string> Description;
-};
-
 struct ItemSetNameEntry
 {
     std::string name;
     uint32 InventoryType;
-};
-
-struct ItemSetNameLocale
-{
-    std::vector<std::string> Name;
 };
 
 #endif

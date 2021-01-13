@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -46,7 +46,7 @@ struct FormationInfo
     uint32 LeaderWaypointIDs[2];
 };
 
-class TC_GAME_API FormationMgr
+class WH_GAME_API FormationMgr
 {
     private:
         FormationMgr();
@@ -66,7 +66,7 @@ class TC_GAME_API FormationMgr
         void AddFormationMember(ObjectGuid::LowType spawnId, float followAng, float followDist, ObjectGuid::LowType leaderSpawnId, uint32 groupAI);
 };
 
-class TC_GAME_API CreatureGroup
+class WH_GAME_API CreatureGroup
 {
     private:
         Creature* _leader; //Important do not forget sometimes to work with pointers instead synonims :D:D

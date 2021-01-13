@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -20,14 +20,14 @@
 #include "SmartEnum.h"
 #include <stdexcept>
 
-namespace Trinity::Impl::EnumUtilsImpl
+namespace Warhead::Impl::EnumUtilsImpl
 {
 
 /***********************************************************************\
 |* data for enum 'EncounterState' in 'InstanceScript.h' auto-generated *|
 \***********************************************************************/
 template <>
-TC_API_EXPORT EnumText EnumUtils<EncounterState>::ToString(EncounterState value)
+WH_API_EXPORT EnumText EnumUtils<EncounterState>::ToString(EncounterState value)
 {
     switch (value)
     {
@@ -42,10 +42,10 @@ TC_API_EXPORT EnumText EnumUtils<EncounterState>::ToString(EncounterState value)
 }
 
 template <>
-TC_API_EXPORT size_t EnumUtils<EncounterState>::Count() { return 6; }
+WH_API_EXPORT size_t EnumUtils<EncounterState>::Count() { return 6; }
 
 template <>
-TC_API_EXPORT EncounterState EnumUtils<EncounterState>::FromIndex(size_t index)
+WH_API_EXPORT EncounterState EnumUtils<EncounterState>::FromIndex(size_t index)
 {
     switch (index)
     {
@@ -60,7 +60,7 @@ TC_API_EXPORT EncounterState EnumUtils<EncounterState>::FromIndex(size_t index)
 }
 
 template <>
-TC_API_EXPORT size_t EnumUtils<EncounterState>::ToIndex(EncounterState value)
+WH_API_EXPORT size_t EnumUtils<EncounterState>::ToIndex(EncounterState value)
 {
     switch (value)
     {

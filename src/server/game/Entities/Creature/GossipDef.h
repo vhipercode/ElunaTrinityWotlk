@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -15,8 +15,8 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TRINITYCORE_GOSSIP_H
-#define TRINITYCORE_GOSSIP_H
+#ifndef WARHEADCORE_GOSSIP_H
+#define WARHEADCORE_GOSSIP_H
 
 #include "Common.h"
 #include "ObjectGuid.h"
@@ -158,7 +158,7 @@ struct QuestMenuItem
 
 typedef std::vector<QuestMenuItem> QuestMenuItemList;
 
-class TC_GAME_API GossipMenu
+class WH_GAME_API GossipMenu
 {
     public:
         GossipMenu();
@@ -223,7 +223,7 @@ class TC_GAME_API GossipMenu
         LocaleConstant _locale;
 };
 
-class TC_GAME_API QuestMenu
+class WH_GAME_API QuestMenu
 {
     public:
         QuestMenu();
@@ -253,7 +253,7 @@ class TC_GAME_API QuestMenu
         QuestMenuItemList _questMenuItems;
 };
 
-class TC_GAME_API PlayerMenu
+class WH_GAME_API PlayerMenu
 {
     public:
         explicit PlayerMenu(WorldSession* session);

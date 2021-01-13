@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -16,11 +16,10 @@
  */
 
 #include "ItemTemplate.h"
-#include "ObjectMgr.h"
+#include "GameLocale.h"
 #include "Opcodes.h"
 #include "SpellInfo.h"
 #include "SpellMgr.h"
-
 #include "Packets/QueryPackets.h"
 
 bool ItemTemplate::HasSignature() const
@@ -51,7 +50,6 @@ bool ItemTemplate::CanChangeEquipStateInCombat() const
 
     return false;
 }
-
 
 float ItemTemplate::getDPS() const
 {
@@ -169,10 +167,10 @@ WorldPacket ItemTemplate::BuildQueryData(LocaleConstant loc) const
     std::string locName = Name1;
     std::string locDescription = Description;
 
-    if (ItemLocale const* il = sObjectMgr->GetItemLocale(ItemId))
+    if (ItemLocale const* il = sGameLocale->GetItemLocale(ItemId))
     {
-        ObjectMgr::GetLocaleString(il->Name, loc, locName);
-        ObjectMgr::GetLocaleString(il->Description, loc, locDescription);
+        sGameLocale->GetLocaleString(il->Name, loc, locName);
+        sGameLocale->GetLocaleString(il->Description, loc, locDescription);
     }
 
     response.ItemID = ItemId;

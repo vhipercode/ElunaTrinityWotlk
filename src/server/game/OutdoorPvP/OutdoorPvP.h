@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -83,7 +83,7 @@ class Unit;
 class WorldPacket;
 struct GossipMenuItems;
 
-class TC_GAME_API OPvPCapturePoint
+class WH_GAME_API OPvPCapturePoint
 {
     public:
 
@@ -182,7 +182,7 @@ class TC_GAME_API OPvPCapturePoint
 };
 
 // base class for specific outdoor pvp handlers
-class TC_GAME_API OutdoorPvP : public ZoneScript
+class WH_GAME_API OutdoorPvP : public ZoneScript
 {
     friend class OutdoorPvPMgr;
 

@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -15,8 +15,8 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TRINITY_MOVEMENTDEFINES_H
-#define TRINITY_MOVEMENTDEFINES_H
+#ifndef WARHEAD_MOVEMENTDEFINES_H
+#define WARHEAD_MOVEMENTDEFINES_H
 
 #include "Common.h"
 
@@ -73,7 +73,7 @@ enum RotateDirection : uint8
     ROTATE_DIRECTION_RIGHT
 };
 
-struct TC_GAME_API ChaseRange
+struct WH_GAME_API ChaseRange
 {
     ChaseRange(float range);
     ChaseRange(float _minRange, float _maxRange);
@@ -86,7 +86,7 @@ struct TC_GAME_API ChaseRange
     float MaxTolerance; // ...and if we are, we will move into this range
 };
 
-struct TC_GAME_API ChaseAngle
+struct WH_GAME_API ChaseAngle
 {
     ChaseAngle(float angle, float _tolerance = M_PI_4);
 

@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -23,7 +23,7 @@
 #include "SQLOperation.h"
 
 /*! Raw, ad-hoc query. */
-class TC_DATABASE_API BasicStatementTask : public SQLOperation
+class WH_DATABASE_API BasicStatementTask : public SQLOperation
 {
     public:
         BasicStatementTask(char const* sql, bool async = false);

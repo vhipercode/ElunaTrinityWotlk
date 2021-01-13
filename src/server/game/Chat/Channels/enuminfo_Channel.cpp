@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -20,14 +20,14 @@
 #include "SmartEnum.h"
 #include <stdexcept>
 
-namespace Trinity::Impl::EnumUtilsImpl
+namespace Warhead::Impl::EnumUtilsImpl
 {
 
 /************************************************************\
 |* data for enum 'ChatNotify' in 'Channel.h' auto-generated *|
 \************************************************************/
 template <>
-TC_API_EXPORT EnumText EnumUtils<ChatNotify>::ToString(ChatNotify value)
+WH_API_EXPORT EnumText EnumUtils<ChatNotify>::ToString(ChatNotify value)
 {
     switch (value)
     {
@@ -72,10 +72,10 @@ TC_API_EXPORT EnumText EnumUtils<ChatNotify>::ToString(ChatNotify value)
 }
 
 template <>
-TC_API_EXPORT size_t EnumUtils<ChatNotify>::Count() { return 36; }
+WH_API_EXPORT size_t EnumUtils<ChatNotify>::Count() { return 36; }
 
 template <>
-TC_API_EXPORT ChatNotify EnumUtils<ChatNotify>::FromIndex(size_t index)
+WH_API_EXPORT ChatNotify EnumUtils<ChatNotify>::FromIndex(size_t index)
 {
     switch (index)
     {
@@ -120,7 +120,7 @@ TC_API_EXPORT ChatNotify EnumUtils<ChatNotify>::FromIndex(size_t index)
 }
 
 template <>
-TC_API_EXPORT size_t EnumUtils<ChatNotify>::ToIndex(ChatNotify value)
+WH_API_EXPORT size_t EnumUtils<ChatNotify>::ToIndex(ChatNotify value)
 {
     switch (value)
     {

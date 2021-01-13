@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -105,9 +105,9 @@ typedef std::map<ObjectGuid, LfgLockMap> LfgLockPartyMap;
 typedef std::map<ObjectGuid, uint8> LfgRolesMap;
 typedef std::map<ObjectGuid, ObjectGuid> LfgGroupsMap;
 
-TC_GAME_API std::string ConcatenateDungeons(LfgDungeonSet const& dungeons);
-TC_GAME_API std::string GetRolesString(uint8 roles);
-TC_GAME_API std::string GetStateString(LfgState state);
+WH_GAME_API std::string ConcatenateDungeons(LfgDungeonSet const& dungeons);
+WH_GAME_API std::string GetRolesString(uint8 roles);
+WH_GAME_API std::string GetStateString(LfgState state);
 
 } // namespace lfg
 

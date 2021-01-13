@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -15,8 +15,8 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TRINITY_CHATCOMMAND_H
-#define TRINITY_CHATCOMMAND_H
+#ifndef WARHEAD_CHATCOMMAND_H
+#define WARHEAD_CHATCOMMAND_H
 
 #include "advstd.h"
 #include "ChatCommandArgs.h"
@@ -39,7 +39,7 @@
 
 class ChatHandler;
 
-namespace Trinity::ChatCommands
+namespace Warhead::ChatCommands
 {
     enum class Console : bool
     {
@@ -51,7 +51,7 @@ namespace Trinity::ChatCommands
     using ChatCommandTable = std::vector<ChatCommandBuilder>;
 }
 
-namespace Trinity::Impl::ChatCommands
+namespace Warhead::Impl::ChatCommands
 {
     // forward declaration
     // ConsumeFromOffset contains the bounds check for offset, then hands off to MultiConsumer
@@ -93,9 +93,9 @@ namespace Trinity::Impl::ChatCommands
                 return result2;
             if (result1.HasErrorMessage() && result2.HasErrorMessage())
             {
-                return Trinity::StringFormat("%s \"%s\"\n%s \"%s\"",
-                    GetTrinityString(handler, LANG_CMDPARSER_EITHER), result2.GetErrorMessage().c_str(),
-                    GetTrinityString(handler, LANG_CMDPARSER_OR), result1.GetErrorMessage().c_str());
+                return Warhead::StringFormat("%s \"%s\"\n%s \"%s\"",
+                    GetWarheadString(handler, LANG_CMDPARSER_EITHER), result2.GetErrorMessage().c_str(),
+                    GetWarheadString(handler, LANG_CMDPARSER_OR), result1.GetErrorMessage().c_str());
             }
             else if (result1.HasErrorMessage())
                 return result1;
@@ -115,7 +115,7 @@ namespace Trinity::Impl::ChatCommands
             return args;
     }
 
-    template <typename T> struct HandlerToTuple { static_assert(Trinity::dependant_false_v<T>, "Invalid command handler signature"); };
+    template <typename T> struct HandlerToTuple { static_assert(Warhead::dependant_false_v<T>, "Invalid command handler signature"); };
     template <typename... Ts> struct HandlerToTuple<bool(ChatHandler*, Ts...)> { using type = std::tuple<ChatHandler*, advstd::remove_cvref_t<Ts>...>; };
     template <typename T> using TupleType = typename HandlerToTuple<T>::type;
 
@@ -168,15 +168,15 @@ namespace Trinity::Impl::ChatCommands
     struct CommandPermissions
     {
         CommandPermissions() : RequiredPermission{}, AllowConsole{} {}
-        CommandPermissions(rbac::RBACPermissions perm, Trinity::ChatCommands::Console console) : RequiredPermission{ perm }, AllowConsole{ console } {}
+        CommandPermissions(rbac::RBACPermissions perm, Warhead::ChatCommands::Console console) : RequiredPermission{ perm }, AllowConsole{ console } {}
         rbac::RBACPermissions RequiredPermission;
-        Trinity::ChatCommands::Console AllowConsole;
+        Warhead::ChatCommands::Console AllowConsole;
     };
 
     class ChatCommandNode
     {
         friend struct FilteredCommandListIterator;
-        using ChatCommandBuilder = Trinity::ChatCommands::ChatCommandBuilder;
+        using ChatCommandBuilder = Warhead::ChatCommands::ChatCommandBuilder;
 
         public:
             static void LoadCommandMap();
@@ -189,7 +189,7 @@ namespace Trinity::Impl::ChatCommands
 
         private:
             static std::map<std::string_view, ChatCommandNode, StringCompareLessI_T> const& GetTopLevelMap();
-            static void LoadCommandsIntoMap(ChatCommandNode* blank, std::map<std::string_view, ChatCommandNode, StringCompareLessI_T>& map, Trinity::ChatCommands::ChatCommandTable const& commands);
+            static void LoadCommandsIntoMap(ChatCommandNode* blank, std::map<std::string_view, ChatCommandNode, StringCompareLessI_T>& map, Warhead::ChatCommands::ChatCommandTable const& commands);
 
             void LoadFromBuilder(ChatCommandBuilder const& builder);
             ChatCommandNode(ChatCommandNode&& other) = default;
@@ -204,28 +204,28 @@ namespace Trinity::Impl::ChatCommands
             std::string _name;
             CommandInvoker _invoker;
             CommandPermissions _permission;
-            std::variant<std::monostate, TrinityStrings, std::string> _help;
+            std::variant<std::monostate, WarheadStrings, std::string> _help;
             std::map<std::string_view, ChatCommandNode, StringCompareLessI_T> _subCommands;
     };
 }
 
-namespace Trinity::ChatCommands
+namespace Warhead::ChatCommands
 {
     struct ChatCommandBuilder
     {
-        friend class Trinity::Impl::ChatCommands::ChatCommandNode;
+        friend class Warhead::Impl::ChatCommands::ChatCommandNode;
         struct InvokerEntry
         {
             template <typename T>
-            InvokerEntry(T& handler, TrinityStrings help, rbac::RBACPermissions permission, Trinity::ChatCommands::Console allowConsole)
+            InvokerEntry(T& handler, WarheadStrings help, rbac::RBACPermissions permission, Warhead::ChatCommands::Console allowConsole)
                 : _invoker{ handler }, _help{ help }, _permissions{ permission, allowConsole }
             {}
             InvokerEntry(InvokerEntry const&) = default;
             InvokerEntry(InvokerEntry&&) = default;
 
-            Trinity::Impl::ChatCommands::CommandInvoker _invoker;
-            TrinityStrings _help;
-            Trinity::Impl::ChatCommands::CommandPermissions _permissions;
+            Warhead::Impl::ChatCommands::CommandInvoker _invoker;
+            WarheadStrings _help;
+            Warhead::Impl::ChatCommands::CommandPermissions _permissions;
 
             auto operator*() const { return std::tie(_invoker, _help, _permissions); }
         };
@@ -235,27 +235,27 @@ namespace Trinity::ChatCommands
         ChatCommandBuilder(ChatCommandBuilder const&) = default;
 
         template <typename TypedHandler>
-        ChatCommandBuilder(char const* name, TypedHandler& handler, TrinityStrings help, rbac::RBACPermissions permission, Trinity::ChatCommands::Console allowConsole)
+        ChatCommandBuilder(char const* name, TypedHandler& handler, WarheadStrings help, rbac::RBACPermissions permission, Warhead::ChatCommands::Console allowConsole)
             : _name{ ASSERT_NOTNULL(name) }, _data{ std::in_place_type<InvokerEntry>, handler, help, permission, allowConsole }
         {}
 
         template <typename TypedHandler>
-        ChatCommandBuilder(char const* name, TypedHandler& handler, rbac::RBACPermissions permission, Trinity::ChatCommands::Console allowConsole)
-            : ChatCommandBuilder(name, handler, TrinityStrings(), permission, allowConsole)
+        ChatCommandBuilder(char const* name, TypedHandler& handler, rbac::RBACPermissions permission, Warhead::ChatCommands::Console allowConsole)
+            : ChatCommandBuilder(name, handler, WarheadStrings(), permission, allowConsole)
         {}
         ChatCommandBuilder(char const* name, std::vector<ChatCommandBuilder> const& subCommands)
             : _name{ ASSERT_NOTNULL(name) }, _data{ std::in_place_type<SubCommandEntry>, subCommands }
         {}
 
         [[deprecated("char const* parameters to command handlers are deprecated; convert this to a typed argument handler instead")]]
-        ChatCommandBuilder(char const* name, bool(&handler)(ChatHandler*, char const*), rbac::RBACPermissions permission, Trinity::ChatCommands::Console allowConsole)
-            : ChatCommandBuilder(name, handler, TrinityStrings(), permission, allowConsole)
+        ChatCommandBuilder(char const* name, bool(&handler)(ChatHandler*, char const*), rbac::RBACPermissions permission, Warhead::ChatCommands::Console allowConsole)
+            : ChatCommandBuilder(name, handler, WarheadStrings(), permission, allowConsole)
         {}
 
         template <typename TypedHandler>
         [[deprecated("you are using the old-style command format; convert this to the new format ({ name, handler (not a pointer!), permission, Console::(Yes/No) })")]]
         ChatCommandBuilder(char const* name, rbac::RBACPermissions permission, bool console, TypedHandler* handler, char const*)
-            : ChatCommandBuilder(name, *handler, TrinityStrings(), permission, static_cast<Trinity::ChatCommands::Console>(console))
+            : ChatCommandBuilder(name, *handler, WarheadStrings(), permission, static_cast<Warhead::ChatCommands::Console>(console))
         {}
 
         [[deprecated("you are using the old-style command format; convert this to the new format ({ name, subCommands })")]]
@@ -268,14 +268,14 @@ namespace Trinity::ChatCommands
         std::variant<InvokerEntry, SubCommandEntry> _data;
     };
 
-    TC_GAME_API void LoadCommandMap();
-    TC_GAME_API void InvalidateCommandMap();
-    TC_GAME_API bool TryExecuteCommand(ChatHandler& handler, std::string_view cmd);
-    TC_GAME_API void SendCommandHelpFor(ChatHandler& handler, std::string_view cmd);
-    TC_GAME_API std::vector<std::string> GetAutoCompletionsFor(ChatHandler const& handler, std::string_view cmd);
+    WH_GAME_API void LoadCommandMap();
+    WH_GAME_API void InvalidateCommandMap();
+    WH_GAME_API bool TryExecuteCommand(ChatHandler& handler, std::string_view cmd);
+    WH_GAME_API void SendCommandHelpFor(ChatHandler& handler, std::string_view cmd);
+    WH_GAME_API std::vector<std::string> GetAutoCompletionsFor(ChatHandler const& handler, std::string_view cmd);
 }
 
 // backwards compatibility with old patches
-using ChatCommand [[deprecated("std::vector<ChatCommand> should be ChatCommandTable! (using namespace Trinity::ChatCommands)")]] = Trinity::ChatCommands::ChatCommandBuilder;
+using ChatCommand [[deprecated("std::vector<ChatCommand> should be ChatCommandTable! (using namespace Warhead::ChatCommands)")]] = Warhead::ChatCommands::ChatCommandBuilder;
 
 #endif

@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -15,8 +15,8 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TRINITY_POOLHANDLER_H
-#define TRINITY_POOLHANDLER_H
+#ifndef WARHEAD_POOLHANDLER_H
+#define WARHEAD_POOLHANDLER_H
 
 #include "Define.h"
 #include "Creature.h"
@@ -42,7 +42,7 @@ class Pool                                                  // for Pool of Pool 
 typedef std::set<ObjectGuid::LowType> ActivePoolObjects;
 typedef std::map<uint32, uint32> ActivePoolPools;
 
-class TC_GAME_API ActivePoolData
+class WH_GAME_API ActivePoolData
 {
     public:
         template<typename T>
@@ -62,7 +62,7 @@ class TC_GAME_API ActivePoolData
 };
 
 template <class T>
-class TC_GAME_API PoolGroup
+class WH_GAME_API PoolGroup
 {
     typedef std::vector<PoolObject> PoolObjectList;
     public:
@@ -93,7 +93,7 @@ class TC_GAME_API PoolGroup
         PoolObjectList EqualChanced;
 };
 
-class TC_GAME_API PoolMgr
+class WH_GAME_API PoolMgr
 {
     private:
         PoolMgr();
@@ -120,6 +120,7 @@ class TC_GAME_API PoolMgr
 
         template<typename T>
         void UpdatePool(uint32 pool_id, uint32 db_guid_or_pool_id);
+        void UpdatePool(uint32 pool_id, SpawnObjectType type, ObjectGuid::LowType spawnId);
 
     private:
         template<typename T>

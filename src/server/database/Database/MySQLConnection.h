@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -40,7 +40,7 @@ enum ConnectionFlags
     CONNECTION_BOTH = CONNECTION_ASYNC | CONNECTION_SYNCH
 };
 
-struct TC_DATABASE_API MySQLConnectionInfo
+struct WH_DATABASE_API MySQLConnectionInfo
 {
     explicit MySQLConnectionInfo(std::string const& infoString);
 
@@ -52,7 +52,7 @@ struct TC_DATABASE_API MySQLConnectionInfo
     std::string ssl;
 };
 
-class TC_DATABASE_API MySQLConnection
+class WH_DATABASE_API MySQLConnection
 {
     template <class T> friend class DatabaseWorkerPool;
     friend class PingOperation;

@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -22,7 +22,7 @@
 #include <string>
 #include <vector>
 
-class TC_COMMON_API ConfigMgr
+class WH_COMMON_API ConfigMgr
 {
     ConfigMgr() = default;
     ConfigMgr(ConfigMgr const&) = delete;
@@ -30,13 +30,13 @@ class TC_COMMON_API ConfigMgr
     ~ConfigMgr() = default;
 
 public:
-    /// Method used only for loading main configuration files (authserver.conf and worldserver.conf)
-    bool LoadInitial(std::string file, std::vector<std::string> args, std::string& error);
-    bool LoadAdditionalFile(std::string file, bool keepOnReload, std::string& error);
+    bool LoadAppConfigs();
+    bool LoadModulesConfigs();
+    void Configure(std::string const& initFileName, std::vector<std::string> args, std::string const& modulesConfigList = "");
 
     static ConfigMgr* instance();
 
-    bool Reload(std::vector<std::string>& errors);
+    bool Reload();
 
     std::string GetStringDefault(std::string const& name, const std::string& def, bool quiet = false) const;
     bool GetBoolDefault(std::string const& name, bool def, bool quiet = false) const;
@@ -44,10 +44,15 @@ public:
     float GetFloatDefault(std::string const& name, float def, bool quiet = false) const;
 
     std::string const& GetFilename();
+    std::string const GetConfigPath();
     std::vector<std::string> const& GetArguments() const;
     std::vector<std::string> GetKeysByString(std::string const& name);
 
 private:
+    /// Method used only for loading main configuration files (authserver.conf and worldserver.conf)
+    bool LoadInitial(std::string const& file, std::string& error);
+    bool LoadAdditionalFile(std::string file, std::string& error);
+
     template<class T>
     T GetValueDefault(std::string const& name, T def, bool quiet) const;
 };

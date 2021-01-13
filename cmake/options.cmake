@@ -1,4 +1,4 @@
-# This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+# This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
 #
 # This file is free software; as a special exception the author gives
 # unlimited permission to copy and/or distribute it, with or without
@@ -22,7 +22,7 @@ if(SCRIPTS)
   endif()
 endif()
 
-set(SCRIPTS "static" CACHE STRING "Build core with scripts")
+set(SCRIPTS "dynamic" CACHE STRING "Build core with scripts")
 set_property(CACHE SCRIPTS PROPERTY STRINGS ${SCRIPTS_AVAILABLE_OPTIONS})
 
 # Build a list of all script modules when -DSCRIPT="custom" is selected
@@ -37,7 +37,7 @@ option(TOOLS            "Build map/vmap/mmap extraction/assembler tools"        
 option(ELUNA            "Build Eluna Lua Engine"                                      1)
 option(USE_SCRIPTPCH    "Use precompiled headers when compiling scripts"              1)
 option(USE_COREPCH      "Use precompiled headers when compiling servers"              1)
-option(WITH_DYNAMIC_LINKING "Enable dynamic library linking."                         0)
+option(WITH_DYNAMIC_LINKING "Enable dynamic library linking."                         1)
 IsDynamicLinkingRequired(WITH_DYNAMIC_LINKING_FORCED)
 if(WITH_DYNAMIC_LINKING AND WITH_DYNAMIC_LINKING_FORCED)
   set(WITH_DYNAMIC_LINKING_FORCED OFF)

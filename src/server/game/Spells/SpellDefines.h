@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -15,8 +15,8 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TRINITY_SPELLDEFINES_H
-#define TRINITY_SPELLDEFINES_H
+#ifndef WARHEAD_SPELLDEFINES_H
+#define WARHEAD_SPELLDEFINES_H
 
 #include "Define.h"
 #include "ObjectGuid.h"
@@ -157,7 +157,7 @@ enum TriggerCastFlags : uint32
     TRIGGERED_FULL_DEBUG_MASK                       = 0xFFFFFFFF
 };
 
-struct TC_GAME_API CastSpellExtraArgs
+struct WH_GAME_API CastSpellExtraArgs
 {
     CastSpellExtraArgs() {}
     CastSpellExtraArgs(bool triggered) : TriggerFlags(triggered ? TRIGGERED_FULL_MASK : TRIGGERED_NONE) {}

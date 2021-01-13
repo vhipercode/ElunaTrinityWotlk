@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -15,17 +15,17 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TRINITY_ARGON2_H
-#define TRINITY_ARGON2_H
+#ifndef WARHEAD_ARGON2_H
+#define WARHEAD_ARGON2_H
 
 #include "BigNumber.h"
 #include "Define.h"
 #include "Optional.h"
 #include <string>
 
-namespace Trinity::Crypto
+namespace Warhead::Crypto
 {
-    struct TC_COMMON_API Argon2
+    struct WH_COMMON_API Argon2
     {
         static constexpr uint32 HASH_LEN = 16;                    // 128 bits, in bytes
         static constexpr uint32 ENCODED_HASH_LEN = 100;           // in chars

@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -15,8 +15,8 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TRINITY_SCRIPTEDFOLLOWERAI_H
-#define TRINITY_SCRIPTEDFOLLOWERAI_H
+#ifndef WARHEAD_SCRIPTEDFOLLOWERAI_H
+#define WARHEAD_SCRIPTEDFOLLOWERAI_H
 
 #include "ScriptedCreature.h"
 
@@ -32,7 +32,7 @@ enum FollowerState : uint32
     STATE_FOLLOW_POSTEVENT  = 0x010  // can be set at complete and allow post event to run
 };
 
-class TC_GAME_API FollowerAI : public ScriptedAI
+class WH_GAME_API FollowerAI : public ScriptedAI
 {
     public:
         explicit FollowerAI(Creature* creature);

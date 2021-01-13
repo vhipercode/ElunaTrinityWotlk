@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -26,13 +26,13 @@ class WorldPacket;
 namespace Motd
 {
     /// Set a new Message of the Day
-    TC_GAME_API void SetMotd(std::string motd);
+    WH_GAME_API void SetMotd(std::string motd);
 
     /// Get the current Message of the Day
-    TC_GAME_API char const* GetMotd();
+    WH_GAME_API char const* GetMotd();
 
     /// Get the motd packet to send at login
-    TC_GAME_API WorldPacket const* GetMotdPacket();
+    WH_GAME_API WorldPacket const* GetMotdPacket();
 }
 
 #endif //ServerMotd_h__

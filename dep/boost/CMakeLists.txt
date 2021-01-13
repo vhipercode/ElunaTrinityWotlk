@@ -1,4 +1,4 @@
-# This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+# This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
 #
 # This file is free software; as a special exception the author gives
 # unlimited permission to copy and/or distribute it, with or without
@@ -82,4 +82,4 @@ endif()
 
 target_compile_definitions(boost
   INTERFACE
-    -DTC_HAS_BROKEN_WSTRING_REGEX)
+    -DWH_HAS_BROKEN_WSTRING_REGEX)

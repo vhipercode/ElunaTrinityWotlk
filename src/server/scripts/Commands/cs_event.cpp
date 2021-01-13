@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -29,8 +29,9 @@ EndScriptData */
 #include "Language.h"
 #include "Player.h"
 #include "RBAC.h"
+#include "Timer.h"
 
-using namespace Trinity::ChatCommands;
+using namespace Warhead::ChatCommands;
 
 class event_commandscript : public CommandScript
 {
@@ -60,7 +61,7 @@ public:
         GameEventMgr::GameEventDataMap const& events = sGameEventMgr->GetEventMap();
         GameEventMgr::ActiveEvents const& activeEvents = sGameEventMgr->GetActiveEventList();
 
-        char const* active = handler->GetTrinityString(LANG_ACTIVE);
+        char const* active = handler->GetWarheadString(LANG_ACTIVE);
 
         for (uint16 eventId : activeEvents)
         {
@@ -102,17 +103,17 @@ public:
 
         GameEventMgr::ActiveEvents const& activeEvents = sGameEventMgr->GetActiveEventList();
         bool active = activeEvents.find(eventId) != activeEvents.end();
-        char const* activeStr = active ? handler->GetTrinityString(LANG_ACTIVE) : "";
+        char const* activeStr = active ? handler->GetWarheadString(LANG_ACTIVE) : "";
 
-        std::string startTimeStr = TimeToTimestampStr(eventData.start);
-        std::string endTimeStr = TimeToTimestampStr(eventData.end);
+        std::string startTimeStr = Warhead::Time::TimeToTimestampStr(eventData.start);
+        std::string endTimeStr = Warhead::Time::TimeToTimestampStr(eventData.end);
 
         uint32 delay = sGameEventMgr->NextCheck(eventId);
         time_t nextTime = GameTime::GetGameTime() + delay;
-        std::string nextStr = nextTime >= eventData.start && nextTime < eventData.end ? TimeToTimestampStr(GameTime::GetGameTime() + delay) : "-";
+        std::string nextStr = nextTime >= eventData.start && nextTime < eventData.end ? Warhead::Time::TimeToTimestampStr(GameTime::GetGameTime() + delay) : "-";
 
-        std::string occurenceStr = secsToTimeString(eventData.occurence * MINUTE);
-        std::string lengthStr = secsToTimeString(eventData.length * MINUTE);
+        std::string occurenceStr = Warhead::Time::ToTimeString<Seconds>(eventData.occurence * MINUTE);
+        std::string lengthStr = Warhead::Time::ToTimeString<Seconds>(eventData.length * MINUTE);
 
         handler->PSendSysMessage(LANG_EVENT_INFO, eventId, eventData.description.c_str(), activeStr,
             startTimeStr.c_str(), endTimeStr.c_str(), occurenceStr.c_str(), lengthStr.c_str(),

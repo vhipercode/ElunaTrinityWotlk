@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -15,8 +15,8 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TRINITYSERVER_TYPEDEFS_H
-#define TRINITYSERVER_TYPEDEFS_H
+#ifndef WARHEADSERVER_TYPEDEFS_H
+#define WARHEADSERVER_TYPEDEFS_H
 
 #include "Common.h"
 
@@ -68,8 +68,8 @@ namespace Movement
 
     typedef counter<uint32, 0xFFFFFFFF> UInt32Counter;
 
-    TC_GAME_API extern float gravity;
-    TC_GAME_API extern UInt32Counter splineIdGen;
+    WH_GAME_API extern float gravity;
+    WH_GAME_API extern UInt32Counter splineIdGen;
 }
 
-#endif // TRINITYSERVER_TYPEDEFS_H
+#endif // WARHEADSERVER_TYPEDEFS_H

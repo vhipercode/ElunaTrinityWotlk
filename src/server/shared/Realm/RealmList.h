@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -45,7 +45,7 @@ namespace boost
 }
 
 /// Storage object for the list of realms on the server
-class TC_SHARED_API RealmList
+class WH_SHARED_API RealmList
 {
 public:
     typedef std::map<RealmHandle, Realm> RealmMap;
@@ -54,7 +54,7 @@ public:
 
     ~RealmList();
 
-    void Initialize(Trinity::Asio::IoContext& ioContext, uint32 updateInterval);
+    void Initialize(Warhead::Asio::IoContext& ioContext, uint32 updateInterval);
     void Close();
 
     RealmMap const& GetRealms() const { return _realms; }
@@ -74,8 +74,8 @@ private:
     std::vector<RealmBuildInfo> _builds;
     RealmMap _realms;
     uint32 _updateInterval;
-    std::unique_ptr<Trinity::Asio::DeadlineTimer> _updateTimer;
-    std::unique_ptr<Trinity::Asio::Resolver> _resolver;
+    std::unique_ptr<Warhead::Asio::DeadlineTimer> _updateTimer;
+    std::unique_ptr<Warhead::Asio::Resolver> _resolver;
 };
 
 #define sRealmList RealmList::Instance()

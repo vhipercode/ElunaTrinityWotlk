@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -185,7 +185,7 @@ void CasterAI::UpdateAI(uint32 diff)
 ArcherAI::ArcherAI(Creature* creature) : CreatureAI(creature)
 {
     if (!creature->m_spells[0])
-        TC_LOG_ERROR("scripts.ai", "ArcherAI set for creature with spell1 = 0. AI will do nothing (%s)", creature->GetGUID().ToString().c_str());
+        LOG_ERROR("scripts.ai", "ArcherAI set for creature with spell1 = 0. AI will do nothing (%s)", creature->GetGUID().ToString().c_str());
 
     SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(creature->m_spells[0]);
     _minimumRange = spellInfo ? spellInfo->GetMinRange(false) : 0;
@@ -234,7 +234,7 @@ void ArcherAI::UpdateAI(uint32 /*diff*/)
 TurretAI::TurretAI(Creature* creature) : CreatureAI(creature)
 {
     if (!creature->m_spells[0])
-        TC_LOG_ERROR("scripts.ai", "TurretAI set for creature with spell1 = 0. AI will do nothing (%s)", creature->GetGUID().ToString().c_str());
+        LOG_ERROR("scripts.ai", "TurretAI set for creature with spell1 = 0. AI will do nothing (%s)", creature->GetGUID().ToString().c_str());
 
     SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(creature->m_spells[0]);
     _minimumRange = spellInfo ? spellInfo->GetMinRange(false) : 0;

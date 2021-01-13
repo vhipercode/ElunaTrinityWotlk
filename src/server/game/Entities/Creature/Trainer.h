@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -50,7 +50,7 @@ namespace Trainer
         NotEnoughSkill = 2
     };
 
-    struct TC_GAME_API Spell
+    struct WH_GAME_API Spell
     {
         uint32 SpellId = 0;
         uint32 MoneyCost = 0;
@@ -62,7 +62,7 @@ namespace Trainer
         bool IsCastable() const;
     };
 
-    class TC_GAME_API Trainer
+    class WH_GAME_API Trainer
     {
     public:
         Trainer(uint32 trainerId, Type type, uint32 requirement, std::string greeting, std::vector<Spell> spells);

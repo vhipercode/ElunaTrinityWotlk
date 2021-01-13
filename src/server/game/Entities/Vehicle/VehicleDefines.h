@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -15,10 +15,11 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __TRINITY_VEHICLEDEFINES_H
-#define __TRINITY_VEHICLEDEFINES_H
+#ifndef __WARHEAD_VEHICLEDEFINES_H
+#define __WARHEAD_VEHICLEDEFINES_H
 
 #include "Define.h"
+#include "Duration.h"
 #include <vector>
 #include <map>
 
@@ -111,6 +112,11 @@ struct VehicleAccessory
     uint32 SummonTime;
     int8 SeatId;
     uint8 SummonedType;
+};
+
+struct VehicleTemplate
+{
+    Milliseconds DespawnDelay = Milliseconds::zero();
 };
 
 typedef std::vector<VehicleAccessory> VehicleAccessoryList;

@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -22,7 +22,7 @@
 
 namespace WorldPackets
 {
-    class TC_GAME_API Packet
+    class WH_GAME_API Packet
     {
     public:
         Packet(WorldPacket&& worldPacket);
@@ -42,7 +42,7 @@ namespace WorldPackets
         WorldPacket _worldPacket;
     };
 
-    class TC_GAME_API ServerPacket : public Packet
+    class WH_GAME_API ServerPacket : public Packet
     {
     public:
         ServerPacket(OpcodeServer opcode, size_t initialSize = 200);
@@ -56,7 +56,7 @@ namespace WorldPackets
         OpcodeServer GetOpcode() const { return OpcodeServer(_worldPacket.GetOpcode()); }
     };
 
-    class TC_GAME_API ClientPacket : public Packet
+    class WH_GAME_API ClientPacket : public Packet
     {
     public:
         ClientPacket(WorldPacket&& packet);

@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -20,14 +20,14 @@
 #include "SmartEnum.h"
 #include <stdexcept>
 
-namespace Trinity::Impl::EnumUtilsImpl
+namespace Warhead::Impl::EnumUtilsImpl
 {
 
 /************************************************************************\
 |* data for enum 'AuctionQuality' in 'AuctionHouseBot.h' auto-generated *|
 \************************************************************************/
 template <>
-TC_API_EXPORT EnumText EnumUtils<AuctionQuality>::ToString(AuctionQuality value)
+WH_API_EXPORT EnumText EnumUtils<AuctionQuality>::ToString(AuctionQuality value)
 {
     switch (value)
     {
@@ -43,10 +43,10 @@ TC_API_EXPORT EnumText EnumUtils<AuctionQuality>::ToString(AuctionQuality value)
 }
 
 template <>
-TC_API_EXPORT size_t EnumUtils<AuctionQuality>::Count() { return 7; }
+WH_API_EXPORT size_t EnumUtils<AuctionQuality>::Count() { return 7; }
 
 template <>
-TC_API_EXPORT AuctionQuality EnumUtils<AuctionQuality>::FromIndex(size_t index)
+WH_API_EXPORT AuctionQuality EnumUtils<AuctionQuality>::FromIndex(size_t index)
 {
     switch (index)
     {
@@ -62,7 +62,7 @@ TC_API_EXPORT AuctionQuality EnumUtils<AuctionQuality>::FromIndex(size_t index)
 }
 
 template <>
-TC_API_EXPORT size_t EnumUtils<AuctionQuality>::ToIndex(AuctionQuality value)
+WH_API_EXPORT size_t EnumUtils<AuctionQuality>::ToIndex(AuctionQuality value)
 {
     switch (value)
     {
@@ -81,7 +81,7 @@ TC_API_EXPORT size_t EnumUtils<AuctionQuality>::ToIndex(AuctionQuality value)
 |* data for enum 'AuctionHouseType' in 'AuctionHouseBot.h' auto-generated *|
 \**************************************************************************/
 template <>
-TC_API_EXPORT EnumText EnumUtils<AuctionHouseType>::ToString(AuctionHouseType value)
+WH_API_EXPORT EnumText EnumUtils<AuctionHouseType>::ToString(AuctionHouseType value)
 {
     switch (value)
     {
@@ -93,10 +93,10 @@ TC_API_EXPORT EnumText EnumUtils<AuctionHouseType>::ToString(AuctionHouseType va
 }
 
 template <>
-TC_API_EXPORT size_t EnumUtils<AuctionHouseType>::Count() { return 3; }
+WH_API_EXPORT size_t EnumUtils<AuctionHouseType>::Count() { return 3; }
 
 template <>
-TC_API_EXPORT AuctionHouseType EnumUtils<AuctionHouseType>::FromIndex(size_t index)
+WH_API_EXPORT AuctionHouseType EnumUtils<AuctionHouseType>::FromIndex(size_t index)
 {
     switch (index)
     {
@@ -108,7 +108,7 @@ TC_API_EXPORT AuctionHouseType EnumUtils<AuctionHouseType>::FromIndex(size_t ind
 }
 
 template <>
-TC_API_EXPORT size_t EnumUtils<AuctionHouseType>::ToIndex(AuctionHouseType value)
+WH_API_EXPORT size_t EnumUtils<AuctionHouseType>::ToIndex(AuctionHouseType value)
 {
     switch (value)
     {

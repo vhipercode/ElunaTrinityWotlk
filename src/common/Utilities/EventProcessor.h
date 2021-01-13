@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -29,7 +29,7 @@ class EventProcessor;
 
 // Note. All times are in milliseconds here.
 
-class TC_COMMON_API BasicEvent
+class WH_COMMON_API BasicEvent
 {
         friend class EventProcessor;
 
@@ -91,7 +91,7 @@ private:
 template<typename T>
 using is_lambda_event = std::enable_if_t<!std::is_base_of_v<BasicEvent, std::remove_pointer_t<advstd::remove_cvref_t<T>>>>;
 
-class TC_COMMON_API EventProcessor
+class WH_COMMON_API EventProcessor
 {
     public:
         EventProcessor() : m_time(0) { }

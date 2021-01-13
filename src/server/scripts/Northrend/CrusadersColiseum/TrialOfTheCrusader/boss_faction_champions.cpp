@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -2332,7 +2332,7 @@ class spell_toc_bloodlust : public SpellScriptLoader
 
             void RemoveInvalidTargets(std::list<WorldObject*>& targets)
             {
-                targets.remove_if(Trinity::UnitAuraCheck(true, AURA_SATED));
+                targets.remove_if(Warhead::UnitAuraCheck(true, AURA_SATED));
             }
 
             void ApplyDebuff()
@@ -2371,7 +2371,7 @@ class spell_toc_heroism : public SpellScriptLoader
 
             void RemoveInvalidTargets(std::list<WorldObject*>& targets)
             {
-                targets.remove_if(Trinity::UnitAuraCheck(true, AURA_EXHAUSTION));
+                targets.remove_if(Warhead::UnitAuraCheck(true, AURA_EXHAUSTION));
             }
 
             void ApplyDebuff()

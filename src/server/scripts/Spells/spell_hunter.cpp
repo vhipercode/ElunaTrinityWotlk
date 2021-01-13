@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -78,6 +78,11 @@ enum HunterSpells
     SPELL_HUNTER_WYVERN_STING_DOT_R4                = 27069,
     SPELL_HUNTER_WYVERN_STING_DOT_R5                = 49009,
     SPELL_HUNTER_WYVERN_STING_DOT_R6                = 49010
+};
+
+enum HunterSpellIcons
+{
+    SPELL_ICON_HUNTER_PET_IMPROVED_COWER            = 958
 };
 
 // 13161 - Aspect of the Beast
@@ -960,6 +965,23 @@ class spell_hun_misdirection_proc : public SpellScriptLoader
         }
 };
 
+// 1742 - Pet Cower
+class spell_hun_pet_cower : public AuraScript
+{
+    PrepareAuraScript(spell_hun_pet_cower);
+
+    void CalculateAmount(AuraEffect const* /*aurEff*/, int32& amount, bool& /*canBeRecalculated*/)
+    {
+        if (AuraEffect const* improvedCower = GetUnitOwner()->GetDummyAuraEffect(SPELLFAMILY_PET, SPELL_ICON_HUNTER_PET_IMPROVED_COWER, EFFECT_0))
+            AddPct(amount, improvedCower->GetAmount());
+    }
+
+    void Register() override
+    {
+        DoEffectCalcAmount += AuraEffectCalcAmountFn(spell_hun_pet_cower::CalculateAmount, EFFECT_1, SPELL_AURA_MOD_DECREASE_SPEED);
+    }
+};
+
 // 54044 - Pet Carrion Feeder
 class spell_hun_pet_carrion_feeder : public SpellScriptLoader
 {
@@ -988,8 +1010,8 @@ class spell_hun_pet_carrion_feeder : public SpellScriptLoader
                 float max_range = GetSpellInfo()->GetMaxRange(false);
                 WorldObject* result = nullptr;
                 // search for nearby enemy corpse in range
-                Trinity::AnyDeadUnitSpellTargetInRangeCheck check(caster, max_range, GetSpellInfo(), TARGET_CHECK_ENEMY);
-                Trinity::WorldObjectSearcher<Trinity::AnyDeadUnitSpellTargetInRangeCheck> searcher(caster, result, check);
+                Warhead::AnyDeadUnitSpellTargetInRangeCheck check(caster, max_range, GetSpellInfo(), TARGET_CHECK_ENEMY);
+                Warhead::WorldObjectSearcher<Warhead::AnyDeadUnitSpellTargetInRangeCheck> searcher(caster, result, check);
                 Cell::VisitWorldObjects(caster, searcher, max_range);
                 if (!result)
                     Cell::VisitGridObjects(caster, searcher, max_range);
@@ -1698,6 +1720,7 @@ void AddSC_hunter_spell_scripts()
     new spell_hun_masters_call();
     new spell_hun_misdirection();
     new spell_hun_misdirection_proc();
+    RegisterSpellScript(spell_hun_pet_cower);
     new spell_hun_pet_carrion_feeder();
     new spell_hun_pet_heart_of_the_phoenix();
     new spell_hun_piercing_shots();

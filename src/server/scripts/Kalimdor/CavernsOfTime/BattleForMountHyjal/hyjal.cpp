@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -89,7 +89,7 @@ class npc_jaina_proudmoore : public CreatureScript
                         break;
                     case GOSSIP_ACTION_INFO_DEF:
                         Debug = !Debug;
-                        TC_LOG_DEBUG("scripts", "HyjalAI - Debug mode has been toggled");
+                        LOG_DEBUG("scripts", "HyjalAI - Debug mode has been toggled");
                         break;
                 }
                 return true;
@@ -161,7 +161,7 @@ class npc_thrall : public CreatureScript
                         break;
                     case GOSSIP_ACTION_INFO_DEF:
                         Debug = !Debug;
-                        TC_LOG_DEBUG("scripts", "HyjalAI - Debug mode has been toggled");
+                        LOG_DEBUG("scripts", "HyjalAI - Debug mode has been toggled");
                         break;
                 }
                 return true;

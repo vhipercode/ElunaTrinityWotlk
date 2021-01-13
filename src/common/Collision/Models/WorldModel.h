@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -33,7 +33,7 @@ namespace VMAP
     struct LocationInfo;
     enum class ModelIgnoreFlags : uint32;
 
-    class TC_COMMON_API MeshTriangle
+    class WH_COMMON_API MeshTriangle
     {
         public:
             MeshTriangle() : idx0(0), idx1(0), idx2(0) { }
@@ -44,7 +44,7 @@ namespace VMAP
             uint32 idx2;
     };
 
-    class TC_COMMON_API WmoLiquid
+    class WH_COMMON_API WmoLiquid
     {
         public:
             WmoLiquid(uint32 width, uint32 height, G3D::Vector3 const& corner, uint32 type);
@@ -70,7 +70,7 @@ namespace VMAP
     };
 
     /*! holding additional info for WMO group files */
-    class TC_COMMON_API GroupModel
+    class WH_COMMON_API GroupModel
     {
         public:
             GroupModel() : iBound(), iMogpFlags(0), iGroupWMOID(0), iLiquid(nullptr) { }
@@ -103,7 +103,7 @@ namespace VMAP
     };
 
     /*! Holds a model (converted M2 or WMO) in its original coordinate space */
-    class TC_COMMON_API WorldModel
+    class WH_COMMON_API WorldModel
     {
         public:
             WorldModel(): Flags(0), RootWMOID(0) { }

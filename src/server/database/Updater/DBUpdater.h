@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -33,7 +33,7 @@ namespace boost
     }
 }
 
-class TC_DATABASE_API UpdateException : public std::exception
+class WH_DATABASE_API UpdateException : public std::exception
 {
 public:
     UpdateException(std::string const& msg) : _msg(msg) { }
@@ -63,7 +63,7 @@ private:
 };
 
 template <class T>
-class TC_DATABASE_API DBUpdater
+class WH_DATABASE_API DBUpdater
 {
 public:
     using Path = boost::filesystem::path;

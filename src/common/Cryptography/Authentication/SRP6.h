@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -15,8 +15,8 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TRINITY_SRP6_H
-#define TRINITY_SRP6_H
+#ifndef WARHEAD_SRP6_H
+#define WARHEAD_SRP6_H
 
 #include "AuthDefines.h"
 #include "BigNumber.h"
@@ -26,9 +26,9 @@
 #include <array>
 #include <optional>
 
-namespace Trinity::Crypto
+namespace Warhead::Crypto
 {
-    class TC_COMMON_API SRP6
+    class WH_COMMON_API SRP6
     {
         public:
             static constexpr size_t SALT_LENGTH = 32;

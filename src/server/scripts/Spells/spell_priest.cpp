@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -315,7 +315,7 @@ class spell_pri_circle_of_healing : public SpellScriptLoader
 
                 if (targets.size() > maxTargets)
                 {
-                    targets.sort(Trinity::HealthPctOrderPred());
+                    targets.sort(Warhead::HealthPctOrderPred());
                     targets.resize(maxTargets);
                 }
             }
@@ -404,7 +404,7 @@ class spell_pri_divine_hymn : public SpellScriptLoader
 
                 if (targets.size() > maxTargets)
                 {
-                    targets.sort(Trinity::HealthPctOrderPred());
+                    targets.sort(Warhead::HealthPctOrderPred());
                     targets.resize(maxTargets);
                 }
             }
@@ -582,7 +582,7 @@ class spell_pri_hymn_of_hope : public SpellScriptLoader
 
                 if (targets.size() > maxTargets)
                 {
-                    targets.sort(Trinity::PowerPctOrderPred(POWER_MANA));
+                    targets.sort(Warhead::PowerPctOrderPred(POWER_MANA));
                     targets.resize(maxTargets);
                 }
             }
@@ -897,7 +897,7 @@ class spell_pri_mind_sear : public SpellScriptLoader
 
             void FilterTargets(std::list<WorldObject*>& unitList)
             {
-                unitList.remove_if(Trinity::ObjectGUIDCheck(GetCaster()->GetChannelObjectGuid()));
+                unitList.remove_if(Warhead::ObjectGUIDCheck(GetCaster()->GetChannelObjectGuid()));
             }
 
             void Register() override

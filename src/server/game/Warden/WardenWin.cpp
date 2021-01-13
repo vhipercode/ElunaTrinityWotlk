@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -17,6 +17,7 @@
 
 #include "WardenWin.h"
 #include "Common.h"
+#include "GameConfig.h"
 #include "ByteBuffer.h"
 #include "Containers.h"
 #include "CryptoRandom.h"
@@ -32,7 +33,6 @@
 #include "Util.h"
 #include "WardenModuleWin.h"
 #include "WardenCheckMgr.h"
-#include "World.h"
 #include "WorldPacket.h"
 #include "WorldSession.h"
 
@@ -43,6 +43,16 @@ static constexpr char _luaEvalPostfix[] = ",'GUILD')end";
 
 static_assert((sizeof(_luaEvalPrefix)-1 + sizeof(_luaEvalMidfix)-1 + sizeof(_luaEvalPostfix)-1 + WARDEN_MAX_LUA_CHECK_LENGTH) == 255);
 
+std::string const GetWardenCategoryCountConfig(WardenCheckCategory category)
+{
+    switch (category)
+    {
+        case INJECT_CHECK_CATEGORY: return "Warden.NumInjectionChecks";
+        case LUA_CHECK_CATEGORY:    return "Warden.NumLuaSandboxChecks";
+        case MODDED_CHECK_CATEGORY: return "Warden.NumClientModChecks";
+        default:                    return "";
+    }
+}
 
 WardenWin::WardenWin() : Warden(), _serverTicks(0)
 {
@@ -50,7 +60,7 @@ WardenWin::WardenWin() : Warden(), _serverTicks(0)
     {
         auto& [checks, checksIt] = _checks[category];
         checks = sWardenCheckMgr->GetAvailableChecks(category);
-        Trinity::Containers::RandomShuffle(checks);
+        Warhead::Containers::RandomShuffle(checks);
         checksIt = checks.begin();
     }
 }
@@ -59,7 +69,7 @@ void WardenWin::Init(WorldSession* session, SessionKey const& K)
 {
     _session = session;
     // Generate Warden Key
-    SessionKeyGenerator<Trinity::Crypto::SHA1> WK(K);
+    SessionKeyGenerator<Warhead::Crypto::SHA1> WK(K);
     WK.Generate(_inputKey.data(), _inputKey.size());
     WK.Generate(_outputKey.data(), _outputKey.size());
 
@@ -67,16 +77,16 @@ void WardenWin::Init(WorldSession* session, SessionKey const& K)
 
     _inputCrypto.Init(_inputKey);
     _outputCrypto.Init(_outputKey);
-    TC_LOG_DEBUG("warden", "Server side warden for client %u initializing...", session->GetAccountId());
-    TC_LOG_DEBUG("warden", "C->S Key: %s", ByteArrayToHexStr(_inputKey).c_str());
-    TC_LOG_DEBUG("warden", "S->C Key: %s", ByteArrayToHexStr(_outputKey).c_str());
-    TC_LOG_DEBUG("warden", "  Seed: %s", ByteArrayToHexStr(_seed).c_str());
-    TC_LOG_DEBUG("warden", "Loading Module...");
+    LOG_DEBUG("warden", "Server side warden for client %u initializing...", session->GetAccountId());
+    LOG_DEBUG("warden", "C->S Key: %s", ByteArrayToHexStr(_inputKey).c_str());
+    LOG_DEBUG("warden", "S->C Key: %s", ByteArrayToHexStr(_outputKey).c_str());
+    LOG_DEBUG("warden", "  Seed: %s", ByteArrayToHexStr(_seed).c_str());
+    LOG_DEBUG("warden", "Loading Module...");
 
     MakeModuleForClient();
 
-    TC_LOG_DEBUG("warden", "Module Key: %s", ByteArrayToHexStr(_module->Key).c_str());
-    TC_LOG_DEBUG("warden", "Module ID: %s", ByteArrayToHexStr(_module->Id).c_str());
+    LOG_DEBUG("warden", "Module Key: %s", ByteArrayToHexStr(_module->Key).c_str());
+    LOG_DEBUG("warden", "Module ID: %s", ByteArrayToHexStr(_module->Id).c_str());
     RequestModule();
 }
 
@@ -90,7 +100,7 @@ void WardenWin::InitializeModuleForClient(ClientWardenModule& module)
 
 void WardenWin::InitializeModule()
 {
-    TC_LOG_DEBUG("warden", "Initialize module");
+    LOG_DEBUG("warden", "Initialize module");
 
     // Create packet structure
     WardenInitModuleRequest Request;
@@ -147,7 +157,7 @@ void WardenWin::InitializeModule()
 
 void WardenWin::RequestHash()
 {
-    TC_LOG_DEBUG("warden", "Request hash");
+    LOG_DEBUG("warden", "Request hash");
 
     // Create packet structure
     WardenHashRequest Request;
@@ -165,16 +175,16 @@ void WardenWin::RequestHash()
 void WardenWin::HandleHashResult(ByteBuffer &buff)
 {
     // Verify key
-    Trinity::Crypto::SHA1::Digest response;
+    Warhead::Crypto::SHA1::Digest response;
     buff.read(response);
     if (response != Module.ClientKeySeedHash)
     {
         char const* penalty = ApplyPenalty(nullptr);
-        TC_LOG_WARN("warden", "%s failed hash reply. Action: %s", _session->GetPlayerInfo().c_str(), penalty);
+        LOG_WARN("warden", "%s failed hash reply. Action: %s", _session->GetPlayerInfo().c_str(), penalty);
         return;
     }
 
-    TC_LOG_DEBUG("warden", "Request hash reply: succeed");
+    LOG_DEBUG("warden", "Request hash reply: succeed");
 
     // Change keys here
     _inputKey = Module.ClientKeySeed;
@@ -195,7 +205,7 @@ static constexpr uint8 GetCheckPacketBaseSize(WardenCheckType type)
         case MPQ_CHECK: return 1;
         case PAGE_CHECK_A: return (4 + 1);
         case PAGE_CHECK_B: return (4 + 1);
-        case MODULE_CHECK: return (4 + Trinity::Crypto::HMAC_SHA1::DIGEST_LENGTH);
+        case MODULE_CHECK: return (4 + Warhead::Crypto::HMAC_SHA1::DIGEST_LENGTH);
         case MEM_CHECK: return (1 + 4 + 1);
         default: return 0;
     }
@@ -213,7 +223,7 @@ static uint16 GetCheckPacketSize(WardenCheck const& check)
 
 void WardenWin::RequestChecks()
 {
-    TC_LOG_DEBUG("warden", "Request data from %s (account %u) - loaded: %u", _session->GetPlayerName().c_str(), _session->GetAccountId(), _session->GetPlayer() && !_session->PlayerLoading());
+    LOG_DEBUG("warden", "Request data from %s (account %u) - loaded: %u", _session->GetPlayerName().c_str(), _session->GetAccountId(), _session->GetPlayer() && !_session->PlayerLoading());
 
     // If all checks for a category are done, fill its todo list again
     for (WardenCheckCategory category : EnumUtils::Iterate<WardenCheckCategory>())
@@ -221,8 +231,8 @@ void WardenWin::RequestChecks()
         auto& [checks, checksIt] = _checks[category];
         if ((checksIt == checks.end()) && !checks.empty())
         {
-            TC_LOG_DEBUG("warden", "Finished all %s checks, re-shuffling", EnumUtils::ToConstant(category));
-            Trinity::Containers::RandomShuffle(checks);
+            LOG_DEBUG("warden", "Finished all %s checks, re-shuffling", EnumUtils::ToConstant(category));
+            Warhead::Containers::RandomShuffle(checks);
             checksIt = checks.begin();
         }
     }
@@ -237,7 +247,7 @@ void WardenWin::RequestChecks()
     for (WardenCheckCategory category : EnumUtils::Iterate<WardenCheckCategory>())
     {
         auto& [checks, checksIt] = _checks[category];
-        for (uint32 i = 0, n = sWorld->getIntConfig(GetWardenCategoryCountConfig(category)); i < n; ++i)
+        for (uint32 i = 0, n = CONF_GET_INT(GetWardenCategoryCountConfig(category)); i < n; ++i)
         {
             if (checksIt == checks.end()) // all checks were already sent, list will be re-filled on next Update() run
                 break;
@@ -245,14 +255,14 @@ void WardenWin::RequestChecks()
         }
     }
 
-    Trinity::Containers::RandomShuffle(_currentChecks);
+    Warhead::Containers::RandomShuffle(_currentChecks);
 
     uint16 expectedSize = 4;
-    Trinity::Containers::EraseIf(_currentChecks,
+    Warhead::Containers::EraseIf(_currentChecks,
         [&expectedSize](uint16 id)
         {
             uint8 const thisSize = GetCheckPacketSize(sWardenCheckMgr->GetCheckData(id));
-            if ((expectedSize + thisSize) > 500) // warden packets are truncated to 512 bytes clientside
+            if ((expectedSize + thisSize) > 450) // warden packets are truncated to 512 bytes clientside
                 return true;
             expectedSize += thisSize;
             return false;
@@ -323,9 +333,9 @@ void WardenWin::RequestChecks()
             }
             case MODULE_CHECK:
             {
-                std::array<uint8, 4> seed = Trinity::Crypto::GetRandomBytes<4>();
+                std::array<uint8, 4> seed = Warhead::Crypto::GetRandomBytes<4>();
                 buff.append(seed);
-                buff.append(Trinity::Crypto::HMAC_SHA1::GetDigestOf(seed, check.Str));
+                buff.append(Warhead::Crypto::HMAC_SHA1::GetDigestOf(seed, check.Str));
                 break;
             }
             /*case PROC_CHECK:
@@ -354,13 +364,13 @@ void WardenWin::RequestChecks()
 
     if (buff.size() == expectedSize)
     {
-        TC_LOG_DEBUG("warden", "Finished building warden packet, size is %zu bytes", buff.size());
-        TC_LOG_DEBUG("warden", "Sent checks: %s", idstring().c_str());
+        LOG_DEBUG("warden", "Finished building warden packet, size is %zu bytes", buff.size());
+        LOG_DEBUG("warden", "Sent checks: %s", idstring().c_str());
     }
     else
     {
-        TC_LOG_WARN("warden", "Finished building warden packet, size is %zu bytes, but expected %u bytes!", buff.size(), expectedSize);
-        TC_LOG_WARN("warden", "Sent checks: %s", idstring().c_str());
+        LOG_WARN("warden", "Finished building warden packet, size is %zu bytes, but expected %u bytes!", buff.size(), expectedSize);
+        LOG_WARN("warden", "Sent checks: %s", idstring().c_str());
     }
 
     // Encrypt with warden RC4 key
@@ -375,7 +385,7 @@ void WardenWin::RequestChecks()
 
 void WardenWin::HandleCheckResult(ByteBuffer &buff)
 {
-    TC_LOG_DEBUG("warden", "Handle data");
+    LOG_DEBUG("warden", "Handle data");
 
     _dataSent = false;
     _clientResponseTimer = 0;
@@ -389,7 +399,7 @@ void WardenWin::HandleCheckResult(ByteBuffer &buff)
     {
         buff.rfinish();
         char const* penalty = ApplyPenalty(nullptr);
-        TC_LOG_WARN("warden", "%s sends manipulated warden packet. Action: %s", _session->GetPlayerInfo().c_str(), penalty);
+        LOG_WARN("warden", "%s sends manipulated warden packet. Action: %s", _session->GetPlayerInfo().c_str(), penalty);
         return;
     }
 
@@ -397,7 +407,7 @@ void WardenWin::HandleCheckResult(ByteBuffer &buff)
     {
         buff.rfinish();
         char const* penalty = ApplyPenalty(nullptr);
-        TC_LOG_WARN("warden", "%s failed checksum. Action: %s", _session->GetPlayerInfo().c_str(), penalty);
+        LOG_WARN("warden", "%s failed checksum. Action: %s", _session->GetPlayerInfo().c_str(), penalty);
         return;
     }
 
@@ -409,7 +419,7 @@ void WardenWin::HandleCheckResult(ByteBuffer &buff)
         if (result == 0x00)
         {
             char const* penalty = ApplyPenalty(nullptr);
-            TC_LOG_WARN("warden", "%s failed timing check. Action: %s", _session->GetPlayerInfo().c_str(), penalty);
+            LOG_WARN("warden", "%s failed timing check. Action: %s", _session->GetPlayerInfo().c_str(), penalty);
             return;
         }
 
@@ -419,10 +429,10 @@ void WardenWin::HandleCheckResult(ByteBuffer &buff)
         uint32 ticksNow = GameTime::GetGameTimeMS();
         uint32 ourTicks = newClientTicks + (ticksNow - _serverTicks);
 
-        TC_LOG_DEBUG("warden", "Server tick count now:    %u", ticksNow);
-        TC_LOG_DEBUG("warden", "Server tick count at req: %u", _serverTicks);
-        TC_LOG_DEBUG("warden", "Client ticks in response: %u", newClientTicks);
-        TC_LOG_DEBUG("warden", "Round trip response time: %u ms", ourTicks - newClientTicks);
+        LOG_DEBUG("warden", "Server tick count now:    %u", ticksNow);
+        LOG_DEBUG("warden", "Server tick count at req: %u", _serverTicks);
+        LOG_DEBUG("warden", "Client ticks in response: %u", newClientTicks);
+        LOG_DEBUG("warden", "Round trip response time: %u ms", ourTicks - newClientTicks);
     }
 
     uint16 checkFailed = 0;
@@ -439,7 +449,7 @@ void WardenWin::HandleCheckResult(ByteBuffer &buff)
 
                 if (Mem_Result != 0)
                 {
-                    TC_LOG_DEBUG("warden", "RESULT MEM_CHECK not 0x00, CheckId %u account Id %u", id, _session->GetAccountId());
+                    LOG_DEBUG("warden", "RESULT MEM_CHECK not 0x00, CheckId %u account Id %u", id, _session->GetAccountId());
                     checkFailed = id;
                     continue;
                 }
@@ -452,14 +462,14 @@ void WardenWin::HandleCheckResult(ByteBuffer &buff)
 
                 if (response != expected)
                 {
-                    TC_LOG_DEBUG("warden", "RESULT MEM_CHECK fail CheckId %u account Id %u", id, _session->GetAccountId());
-                    TC_LOG_DEBUG("warden", "Expected: %s", ByteArrayToHexStr(expected).c_str());
-                    TC_LOG_DEBUG("warden", "Got:      %s", ByteArrayToHexStr(response).c_str());
+                    LOG_DEBUG("warden", "RESULT MEM_CHECK fail CheckId %u account Id %u", id, _session->GetAccountId());
+                    LOG_DEBUG("warden", "Expected: %s", ByteArrayToHexStr(expected).c_str());
+                    LOG_DEBUG("warden", "Got:      %s", ByteArrayToHexStr(response).c_str());
                     checkFailed = id;
                     continue;
                 }
 
-                TC_LOG_DEBUG("warden", "RESULT MEM_CHECK passed CheckId %u account Id %u", id, _session->GetAccountId());
+                LOG_DEBUG("warden", "RESULT MEM_CHECK passed CheckId %u account Id %u", id, _session->GetAccountId());
                 break;
             }
             case PAGE_CHECK_A:
@@ -469,12 +479,12 @@ void WardenWin::HandleCheckResult(ByteBuffer &buff)
             {
                 if (buff.read<uint8>() != 0xE9)
                 {
-                    TC_LOG_DEBUG("warden", "RESULT %s fail, CheckId %u account Id %u", EnumUtils::ToConstant(check.Type), id, _session->GetAccountId());
+                    LOG_DEBUG("warden", "RESULT %s fail, CheckId %u account Id %u", EnumUtils::ToConstant(check.Type), id, _session->GetAccountId());
                     checkFailed = id;
                     continue;
                 }
 
-                TC_LOG_DEBUG("warden", "RESULT %s passed CheckId %u account Id %u", EnumUtils::ToConstant(check.Type), id, _session->GetAccountId());
+                LOG_DEBUG("warden", "RESULT %s passed CheckId %u account Id %u", EnumUtils::ToConstant(check.Type), id, _session->GetAccountId());
                 break;
             }
             case LUA_EVAL_CHECK:
@@ -483,7 +493,7 @@ void WardenWin::HandleCheckResult(ByteBuffer &buff)
                 if (result == 0)
                     buff.read_skip(buff.read<uint8>()); // discard attached string
 
-                TC_LOG_DEBUG("warden", "LUA_EVAL_CHECK CheckId %u account Id %u got in-warden dummy response (%u)", id, _session->GetAccountId(), result);
+                LOG_DEBUG("warden", "LUA_EVAL_CHECK CheckId %u account Id %u got in-warden dummy response (%u)", id, _session->GetAccountId(), result);
                 break;
             }
             case MPQ_CHECK:
@@ -493,22 +503,22 @@ void WardenWin::HandleCheckResult(ByteBuffer &buff)
 
                 if (Mpq_Result != 0)
                 {
-                    TC_LOG_DEBUG("warden", "RESULT MPQ_CHECK not 0x00 account id %u", _session->GetAccountId());
+                    LOG_DEBUG("warden", "RESULT MPQ_CHECK not 0x00 account id %u", _session->GetAccountId());
                     checkFailed = id;
                     continue;
                 }
 
                 std::vector<uint8> result;
-                result.resize(Trinity::Crypto::SHA1::DIGEST_LENGTH);
+                result.resize(Warhead::Crypto::SHA1::DIGEST_LENGTH);
                 buff.read(result.data(), result.size());
                 if (result != sWardenCheckMgr->GetCheckResult(id)) // SHA1
                 {
-                    TC_LOG_DEBUG("warden", "RESULT MPQ_CHECK fail, CheckId %u account Id %u", id, _session->GetAccountId());
+                    LOG_DEBUG("warden", "RESULT MPQ_CHECK fail, CheckId %u account Id %u", id, _session->GetAccountId());
                     checkFailed = id;
                     continue;
                 }
 
-                TC_LOG_DEBUG("warden", "RESULT MPQ_CHECK passed, CheckId %u account Id %u", id, _session->GetAccountId());
+                LOG_DEBUG("warden", "RESULT MPQ_CHECK passed, CheckId %u account Id %u", id, _session->GetAccountId());
                 break;
             }
             default:                                        // Should never happen
@@ -520,11 +530,11 @@ void WardenWin::HandleCheckResult(ByteBuffer &buff)
     {
         WardenCheck const& check = sWardenCheckMgr->GetCheckData(checkFailed);
         char const* penalty = ApplyPenalty(&check);
-        TC_LOG_WARN("warden", "%s failed Warden check %u (%s). Action: %s", _session->GetPlayerInfo().c_str(), checkFailed, EnumUtils::ToConstant(check.Type), penalty);
+        LOG_WARN("warden", "%s failed Warden check %u (%s). Action: %s", _session->GetPlayerInfo().c_str(), checkFailed, EnumUtils::ToConstant(check.Type), penalty);
     }
 
     // Set hold off timer, minimum timer should at least be 1 second
-    uint32 holdOff = sWorld->getIntConfig(CONFIG_WARDEN_CLIENT_CHECK_HOLDOFF);
+    uint32 holdOff = CONF_GET_INT("Warden.ClientCheckHoldOff");
     _checkTimer = (holdOff < 1 ? 1 : holdOff) * IN_MILLISECONDS;
 }
 

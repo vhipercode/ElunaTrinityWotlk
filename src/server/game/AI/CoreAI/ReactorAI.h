@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TRINITY_REACTORAI_H
-#define TRINITY_REACTORAI_H
+#ifndef WARHEAD_REACTORAI_H
+#define WARHEAD_REACTORAI_H
 
 #include "CreatureAI.h"
 
-class TC_GAME_API ReactorAI : public CreatureAI
+class WH_GAME_API ReactorAI : public CreatureAI
 {
     public:
         explicit ReactorAI(Creature* creature) : CreatureAI(creature) { }

@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -122,7 +122,7 @@ enum LootSlotType
     LOOT_SLOT_TYPE_OWNER        = 4                         // ignore binding confirmation and etc, for single player looting
 };
 
-struct TC_GAME_API LootItem
+struct WH_GAME_API LootItem
 {
     uint32  itemid;
     uint32  randomSuffix;
@@ -200,7 +200,7 @@ struct LootView;
 ByteBuffer& operator<<(ByteBuffer& b, LootItem const& li);
 ByteBuffer& operator<<(ByteBuffer& b, LootView const& lv);
 
-struct TC_GAME_API Loot
+struct WH_GAME_API Loot
 {
     friend ByteBuffer& operator<<(ByteBuffer& b, LootView const& lv);
 

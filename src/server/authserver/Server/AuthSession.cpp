@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -75,9 +75,9 @@ static_assert(sizeof(sAuthLogonChallenge_C) == (1 + 1 + 2 + 4 + 1 + 1 + 1 + 2 + 
 typedef struct AUTH_LOGON_PROOF_C
 {
     uint8   cmd;
-    Trinity::Crypto::SRP6::EphemeralKey A;
-    Trinity::Crypto::SHA1::Digest clientM;
-    Trinity::Crypto::SHA1::Digest crc_hash;
+    Warhead::Crypto::SRP6::EphemeralKey A;
+    Warhead::Crypto::SHA1::Digest clientM;
+    Warhead::Crypto::SHA1::Digest crc_hash;
     uint8   number_of_keys;
     uint8   securityFlags;
 } sAuthLogonProof_C;
@@ -87,7 +87,7 @@ typedef struct AUTH_LOGON_PROOF_S
 {
     uint8   cmd;
     uint8   error;
-    Trinity::Crypto::SHA1::Digest M2;
+    Warhead::Crypto::SHA1::Digest M2;
     uint32  AccountFlags;
     uint32  SurveyId;
     uint16  LoginFlags;
@@ -98,7 +98,7 @@ typedef struct AUTH_LOGON_PROOF_S_OLD
 {
     uint8   cmd;
     uint8   error;
-    Trinity::Crypto::SHA1::Digest M2;
+    Warhead::Crypto::SHA1::Digest M2;
     uint32  unk2;
 } sAuthLogonProof_S_Old;
 static_assert(sizeof(sAuthLogonProof_S_Old) == (1 + 1 + 20 + 4));
@@ -107,7 +107,7 @@ typedef struct AUTH_RECONNECT_PROOF_C
 {
     uint8   cmd;
     uint8   R1[16];
-    Trinity::Crypto::SHA1::Digest R2, R3;
+    Warhead::Crypto::SHA1::Digest R2, R3;
     uint8   number_of_keys;
 } sAuthReconnectProof_C;
 static_assert(sizeof(sAuthReconnectProof_C) == (1 + 16 + 20 + 20 + 1));
@@ -166,7 +166,7 @@ _status(STATUS_CHALLENGE), _build(0), _expversion(0) { }
 void AuthSession::Start()
 {
     std::string ip_address = GetRemoteIpAddress().to_string();
-    TC_LOG_TRACE("session", "Accepted connection from %s", ip_address.c_str());
+    LOG_TRACE("session", "Accepted connection from %s", ip_address.c_str());
 
     LoginDatabasePreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_SEL_IP_INFO);
     stmt->setString(0, ip_address);
@@ -204,7 +204,7 @@ void AuthSession::CheckIpCallback(PreparedQueryResult result)
             pkt << uint8(0x00);
             pkt << uint8(WOW_FAIL_BANNED);
             SendPacket(pkt);
-            TC_LOG_DEBUG("session", "[AuthSession::CheckIpCallback] Banned ip '%s:%d' tries to login!", GetRemoteIpAddress().to_string().c_str(), GetRemotePort());
+            LOG_DEBUG("session", "[AuthSession::CheckIpCallback] Banned ip '%s:%d' tries to login!", GetRemoteIpAddress().to_string().c_str(), GetRemotePort());
             return;
         }
     }
@@ -284,7 +284,7 @@ bool AuthSession::HandleLogonChallenge()
         return false;
 
     std::string login((char const*)challenge->I, challenge->I_len);
-    TC_LOG_DEBUG("server.authserver", "[AuthChallenge] '%s'", login.c_str());
+    LOG_DEBUG("server.authserver", "[AuthChallenge] '%s'", login.c_str());
 
     _build = challenge->build;
     _expversion = uint8(AuthHelper::IsPostBCAcceptedClientBuild(_build) ? POST_BC_EXP_FLAG : (AuthHelper::IsPreBCAcceptedClientBuild(_build) ? PRE_BC_EXP_FLAG : NO_VALID_EXP_FLAG));
@@ -331,7 +331,7 @@ void AuthSession::LogonChallengeCallback(PreparedQueryResult result)
     // If the IP is 'locked', check that the player comes indeed from the correct IP address
     if (_accountInfo.IsLockedToIP)
     {
-        TC_LOG_DEBUG("server.authserver", "[AuthChallenge] Account '%s' is locked to IP - '%s' is logging in from '%s'", _accountInfo.Login.c_str(), _accountInfo.LastIP.c_str(), ipAddress.c_str());
+        LOG_DEBUG("server.authserver", "[AuthChallenge] Account '%s' is locked to IP - '%s' is logging in from '%s'", _accountInfo.Login.c_str(), _accountInfo.LastIP.c_str(), ipAddress.c_str());
         if (_accountInfo.LastIP != ipAddress)
         {
             pkt << uint8(WOW_FAIL_LOCKED_ENFORCED);
@@ -344,12 +344,12 @@ void AuthSession::LogonChallengeCallback(PreparedQueryResult result)
         if (IpLocationRecord const* location = sIPLocation->GetLocationRecord(ipAddress))
             _ipCountry = location->CountryCode;
 
-        TC_LOG_DEBUG("server.authserver", "[AuthChallenge] Account '%s' is not locked to ip", _accountInfo.Login.c_str());
+        LOG_DEBUG("server.authserver", "[AuthChallenge] Account '%s' is not locked to ip", _accountInfo.Login.c_str());
         if (_accountInfo.LockCountry.empty() || _accountInfo.LockCountry == "00")
-            TC_LOG_DEBUG("server.authserver", "[AuthChallenge] Account '%s' is not locked to country", _accountInfo.Login.c_str());
+            LOG_DEBUG("server.authserver", "[AuthChallenge] Account '%s' is not locked to country", _accountInfo.Login.c_str());
         else if (!_ipCountry.empty())
         {
-            TC_LOG_DEBUG("server.authserver", "[AuthChallenge] Account '%s' is locked to country: '%s' Player country is '%s'", _accountInfo.Login.c_str(), _accountInfo.LockCountry.c_str(), _ipCountry.c_str());
+            LOG_DEBUG("server.authserver", "[AuthChallenge] Account '%s' is locked to country: '%s' Player country is '%s'", _accountInfo.Login.c_str(), _accountInfo.LockCountry.c_str(), _ipCountry.c_str());
             if (_ipCountry != _accountInfo.LockCountry)
             {
                 pkt << uint8(WOW_FAIL_UNLOCKABLE_LOCK);
@@ -366,14 +366,14 @@ void AuthSession::LogonChallengeCallback(PreparedQueryResult result)
         {
             pkt << uint8(WOW_FAIL_BANNED);
             SendPacket(pkt);
-            TC_LOG_INFO("server.authserver.banned", "'%s:%d' [AuthChallenge] Banned account %s tried to login!", ipAddress.c_str(), port, _accountInfo.Login.c_str());
+            LOG_INFO("server.authserver.banned", "'%s:%d' [AuthChallenge] Banned account %s tried to login!", ipAddress.c_str(), port, _accountInfo.Login.c_str());
             return;
         }
         else
         {
             pkt << uint8(WOW_FAIL_SUSPENDED);
             SendPacket(pkt);
-            TC_LOG_INFO("server.authserver.banned", "'%s:%d' [AuthChallenge] Temporarily banned account %s tried to login!", ipAddress.c_str(), port, _accountInfo.Login.c_str());
+            LOG_INFO("server.authserver.banned", "'%s:%d' [AuthChallenge] Temporarily banned account %s tried to login!", ipAddress.c_str(), port, _accountInfo.Login.c_str());
             return;
         }
     }
@@ -386,11 +386,11 @@ void AuthSession::LogonChallengeCallback(PreparedQueryResult result)
         _totpSecret = fields[9].GetBinary();
         if (auto const& secret = sSecretMgr->GetSecret(SECRET_TOTP_MASTER_KEY))
         {
-            bool success = Trinity::Crypto::AEDecrypt<Trinity::Crypto::AES>(*_totpSecret, *secret);
+            bool success = Warhead::Crypto::AEDecrypt<Warhead::Crypto::AES>(*_totpSecret, *secret);
             if (!success)
             {
                 pkt << uint8(WOW_FAIL_DB_BUSY);
-                TC_LOG_ERROR("server.authserver", "[AuthChallenge] Account '%s' has invalid ciphertext for TOTP token key stored", _accountInfo.Login.c_str());
+                LOG_ERROR("server.authserver", "[AuthChallenge] Account '%s' has invalid ciphertext for TOTP token key stored", _accountInfo.Login.c_str());
                 SendPacket(pkt);
                 return;
             }
@@ -399,8 +399,8 @@ void AuthSession::LogonChallengeCallback(PreparedQueryResult result)
 
     _srp6.emplace(
         _accountInfo.Login,
-        fields[10].GetBinary<Trinity::Crypto::SRP6::SALT_LENGTH>(),
-        fields[11].GetBinary<Trinity::Crypto::SRP6::VERIFIER_LENGTH>()
+        fields[10].GetBinary<Warhead::Crypto::SRP6::SALT_LENGTH>(),
+        fields[11].GetBinary<Warhead::Crypto::SRP6::VERIFIER_LENGTH>()
     );
 
     // Fill the response packet with the result
@@ -435,7 +435,7 @@ void AuthSession::LogonChallengeCallback(PreparedQueryResult result)
         if (securityFlags & 0x04)               // Security token input
             pkt << uint8(1);
 
-        TC_LOG_DEBUG("server.authserver", "'%s:%d' [AuthChallenge] account %s is using '%s' locale (%u)",
+        LOG_DEBUG("server.authserver", "'%s:%d' [AuthChallenge] account %s is using '%s' locale (%u)",
             ipAddress.c_str(), port, _accountInfo.Login.c_str(), _localizationName.c_str(), GetLocaleByName(_localizationName));
 
         _status = STATUS_LOGON_PROOF;
@@ -449,7 +449,7 @@ void AuthSession::LogonChallengeCallback(PreparedQueryResult result)
 // Logon Proof command handler
 bool AuthSession::HandleLogonProof()
 {
-    TC_LOG_DEBUG("server.authserver", "Entering _HandleLogonProof");
+    LOG_DEBUG("server.authserver", "Entering _HandleLogonProof");
     _status = STATUS_CLOSED;
 
     // Read the packet
@@ -459,7 +459,7 @@ bool AuthSession::HandleLogonProof()
     if (_expversion == NO_VALID_EXP_FLAG)
     {
         // Check if we have the appropriate patch on the disk
-        TC_LOG_DEBUG("network", "Client with invalid version, patching is not implemented");
+        LOG_DEBUG("network", "Client with invalid version, patching is not implemented");
         return false;
     }
 
@@ -477,7 +477,7 @@ bool AuthSession::HandleLogonProof()
             GetReadBuffer().ReadCompleted(sizeof(size) + size);
 
             uint32 incomingToken = atoi(token.c_str());
-            tokenSuccess = Trinity::Crypto::TOTP::ValidateToken(*_totpSecret, incomingToken);
+            tokenSuccess = Warhead::Crypto::TOTP::ValidateToken(*_totpSecret, incomingToken);
             memset(_totpSecret->data(), 0, _totpSecret->size());
         }
         else if (!sentToken && !_totpSecret)
@@ -502,7 +502,7 @@ bool AuthSession::HandleLogonProof()
             return true;
         }
 
-        TC_LOG_DEBUG("server.authserver", "'%s:%d' User '%s' successfully authenticated", GetRemoteIpAddress().to_string().c_str(), GetRemotePort(), _accountInfo.Login.c_str());
+        LOG_DEBUG("server.authserver", "'%s:%d' User '%s' successfully authenticated", GetRemoteIpAddress().to_string().c_str(), GetRemotePort(), _accountInfo.Login.c_str());
 
         // Update the sessionkey, last_ip, last login time and reset number of failed logins in the account table for this account
         // No SQL injection (escaped user name) and IP address as received by socket
@@ -516,7 +516,7 @@ bool AuthSession::HandleLogonProof()
         LoginDatabase.DirectExecute(stmt);
 
         // Finish SRP6 and send the final result to the client
-        Trinity::Crypto::SHA1::Digest M2 = Trinity::Crypto::SRP6::GetSessionVerifier(logonProof->A, logonProof->clientM, _sessionKey);
+        Warhead::Crypto::SHA1::Digest M2 = Warhead::Crypto::SRP6::GetSessionVerifier(logonProof->A, logonProof->clientM, _sessionKey);
 
         ByteBuffer packet;
         if (_expversion & POST_BC_EXP_FLAG)                 // 2.x and 3.x clients
@@ -555,7 +555,7 @@ bool AuthSession::HandleLogonProof()
         packet << uint16(0);    // LoginFlags, 1 has account message
         SendPacket(packet);
 
-        TC_LOG_INFO("server.authserver.hack", "'%s:%d' [AuthChallenge] account %s tried to login with invalid password!",
+        LOG_INFO("server.authserver.hack", "'%s:%d' [AuthChallenge] account %s tried to login with invalid password!",
             GetRemoteIpAddress().to_string().c_str(), GetRemotePort(), _accountInfo.Login.c_str());
 
         uint32 MaxWrongPassCount = sConfigMgr->GetIntDefault("WrongPass.MaxCount", 0);
@@ -590,7 +590,7 @@ bool AuthSession::HandleLogonProof()
                     stmt->setUInt32(1, WrongPassBanTime);
                     LoginDatabase.Execute(stmt);
 
-                    TC_LOG_DEBUG("server.authserver", "'%s:%d' [AuthChallenge] account %s got banned for '%u' seconds because it failed to authenticate '%u' times",
+                    LOG_DEBUG("server.authserver", "'%s:%d' [AuthChallenge] account %s got banned for '%u' seconds because it failed to authenticate '%u' times",
                         GetRemoteIpAddress().to_string().c_str(), GetRemotePort(), _accountInfo.Login.c_str(), WrongPassBanTime, _accountInfo.FailedLogins);
                 }
                 else
@@ -600,7 +600,7 @@ bool AuthSession::HandleLogonProof()
                     stmt->setUInt32(1, WrongPassBanTime);
                     LoginDatabase.Execute(stmt);
 
-                    TC_LOG_DEBUG("server.authserver", "'%s:%d' [AuthChallenge] IP got banned for '%u' seconds because account %s failed to authenticate '%u' times",
+                    LOG_DEBUG("server.authserver", "'%s:%d' [AuthChallenge] IP got banned for '%u' seconds because account %s failed to authenticate '%u' times",
                         GetRemoteIpAddress().to_string().c_str(), GetRemotePort(), WrongPassBanTime, _accountInfo.Login.c_str(), _accountInfo.FailedLogins);
                 }
             }
@@ -619,7 +619,7 @@ bool AuthSession::HandleReconnectChallenge()
         return false;
 
     std::string login((char const*)challenge->I, challenge->I_len);
-    TC_LOG_DEBUG("server.authserver", "[ReconnectChallenge] '%s'", login.c_str());
+    LOG_DEBUG("server.authserver", "[ReconnectChallenge] '%s'", login.c_str());
 
     _build = challenge->build;
     _expversion = uint8(AuthHelper::IsPostBCAcceptedClientBuild(_build) ? POST_BC_EXP_FLAG : (AuthHelper::IsPreBCAcceptedClientBuild(_build) ? PRE_BC_EXP_FLAG : NO_VALID_EXP_FLAG));
@@ -659,7 +659,7 @@ void AuthSession::ReconnectChallengeCallback(PreparedQueryResult result)
 
     _accountInfo.LoadResult(fields);
     _sessionKey = fields[9].GetBinary<SESSION_KEY_LENGTH>();
-    Trinity::Crypto::GetRandomBytes(_reconnectProof);
+    Warhead::Crypto::GetRandomBytes(_reconnectProof);
     _status = STATUS_RECONNECT_PROOF;
 
     pkt << uint8(WOW_SUCCESS);
@@ -671,7 +671,7 @@ void AuthSession::ReconnectChallengeCallback(PreparedQueryResult result)
 
 bool AuthSession::HandleReconnectProof()
 {
-    TC_LOG_DEBUG("server.authserver", "Entering _HandleReconnectProof");
+    LOG_DEBUG("server.authserver", "Entering _HandleReconnectProof");
     _status = STATUS_CLOSED;
 
     sAuthReconnectProof_C *reconnectProof = reinterpret_cast<sAuthReconnectProof_C*>(GetReadBuffer().GetReadPointer());
@@ -682,7 +682,7 @@ bool AuthSession::HandleReconnectProof()
     BigNumber t1;
     t1.SetBinary(reconnectProof->R1, 16);
 
-    Trinity::Crypto::SHA1 sha;
+    Warhead::Crypto::SHA1 sha;
     sha.UpdateData(_accountInfo.Login);
     sha.UpdateData(t1.ToByteArray<16>());
     sha.UpdateData(_reconnectProof);
@@ -711,7 +711,7 @@ bool AuthSession::HandleReconnectProof()
     }
     else
     {
-        TC_LOG_ERROR("server.authserver.hack", "'%s:%d' [ERROR] user %s tried to login, but session is invalid.", GetRemoteIpAddress().to_string().c_str(),
+        LOG_ERROR("server.authserver.hack", "'%s:%d' [ERROR] user %s tried to login, but session is invalid.", GetRemoteIpAddress().to_string().c_str(),
             GetRemotePort(), _accountInfo.Login.c_str());
         return false;
     }
@@ -719,7 +719,7 @@ bool AuthSession::HandleReconnectProof()
 
 bool AuthSession::HandleRealmList()
 {
-    TC_LOG_DEBUG("server.authserver", "Entering _HandleRealmList");
+    LOG_DEBUG("server.authserver", "Entering _HandleRealmList");
 
     LoginDatabasePreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_SEL_REALM_CHARACTER_COUNTS);
     stmt->setUInt32(0, _accountInfo.Id);
@@ -829,13 +829,13 @@ void AuthSession::RealmListCallback(PreparedQueryResult result)
     _status = STATUS_AUTHED;
 }
 
-bool AuthSession::VerifyVersion(uint8 const* a, int32 aLength, Trinity::Crypto::SHA1::Digest const& versionProof, bool isReconnect)
+bool AuthSession::VerifyVersion(uint8 const* a, int32 aLength, Warhead::Crypto::SHA1::Digest const& versionProof, bool isReconnect)
 {
     if (!sConfigMgr->GetBoolDefault("StrictVersionCheck", false))
         return true;
 
-    Trinity::Crypto::SHA1::Digest zeros;
-    Trinity::Crypto::SHA1::Digest const* versionHash = nullptr;
+    Warhead::Crypto::SHA1::Digest zeros;
+    Warhead::Crypto::SHA1::Digest const* versionHash = nullptr;
     if (!isReconnect)
     {
         RealmBuildInfo const* buildInfo = sRealmList->GetBuildInfo(_build);
@@ -856,7 +856,7 @@ bool AuthSession::VerifyVersion(uint8 const* a, int32 aLength, Trinity::Crypto::
     else
         versionHash = &zeros;
 
-    Trinity::Crypto::SHA1 version;
+    Warhead::Crypto::SHA1 version;
     version.UpdateData(a, aLength);
     version.UpdateData(*versionHash);
     version.Finalize();

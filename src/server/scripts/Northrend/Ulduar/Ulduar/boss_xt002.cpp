@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -505,7 +505,6 @@ struct npc_pummeller : public ScriptedAI
             return;
         }
 
-
         if (Creature* xt002 = _instance->GetCreature(BOSS_XT002))
             xt002->AI()->JustSummoned(me);
 
@@ -615,7 +614,6 @@ private:
     bool _boomed;
     TaskScheduler _scheduler;
 };
-
 
 struct npc_life_spark : public ScriptedAI
 {
@@ -793,7 +791,7 @@ class spell_xt002_heart_overload_periodic : public SpellScript
         if (possibleCreatures.empty())
             return nullptr;
 
-        return Trinity::Containers::SelectRandomContainerElement(possibleCreatures);
+        return Warhead::Containers::SelectRandomContainerElement(possibleCreatures);
     }
 
     void HandleScript(SpellEffIndex /*effIndex*/)

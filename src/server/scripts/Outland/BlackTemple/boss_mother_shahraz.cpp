@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -14,7 +14,6 @@
  * You should have received a copy of the GNU General Public License along
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -200,7 +199,7 @@ class spell_mother_shahraz_fatal_attraction : public SpellScript
 
     void FilterTargets(std::list<WorldObject*>& targets)
     {
-        targets.remove_if(Trinity::UnitAuraCheck(true, SPELL_SABER_LASH_IMMUNITY));
+        targets.remove_if(Warhead::UnitAuraCheck(true, SPELL_SABER_LASH_IMMUNITY));
     }
 
     void SetDest(SpellDestination& dest)

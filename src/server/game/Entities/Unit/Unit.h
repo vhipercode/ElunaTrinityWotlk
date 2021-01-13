@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -95,7 +95,7 @@ enum MovementGeneratorType : uint8;
 
 typedef std::list<Unit*> UnitList;
 
-class TC_GAME_API DispelableAura
+class WH_GAME_API DispelableAura
 {
     public:
         DispelableAura(Aura* aura, int32 dispelChance, uint8 dispelCharges);
@@ -274,8 +274,8 @@ enum UnitMoveType
 
 #define MAX_MOVE_TYPE     9
 
-TC_GAME_API extern float baseMoveSpeed[MAX_MOVE_TYPE];
-TC_GAME_API extern float playerBaseMoveSpeed[MAX_MOVE_TYPE];
+WH_GAME_API extern float baseMoveSpeed[MAX_MOVE_TYPE];
+WH_GAME_API extern float playerBaseMoveSpeed[MAX_MOVE_TYPE];
 
 enum CombatRating
 {
@@ -390,7 +390,7 @@ struct CleanDamage
 struct CalcDamageInfo;
 struct SpellNonMeleeDamage;
 
-class TC_GAME_API DamageInfo
+class WH_GAME_API DamageInfo
 {
     private:
         Unit* const m_attacker;
@@ -433,7 +433,7 @@ class TC_GAME_API DamageInfo
         uint32 GetHitMask() const;
 };
 
-class TC_GAME_API HealInfo
+class WH_GAME_API HealInfo
 {
     private:
         Unit* const _healer;
@@ -462,7 +462,7 @@ class TC_GAME_API HealInfo
         uint32 GetHitMask() const;
 };
 
-class TC_GAME_API ProcEventInfo
+class WH_GAME_API ProcEventInfo
 {
     public:
         ProcEventInfo(Unit* actor, Unit* actionTarget, Unit* procTarget, uint32 typeMask,
@@ -527,7 +527,7 @@ struct CalcDamageInfo
 };
 
 // Spell damage info structure based on structure sending in SMSG_SPELLNONMELEEDAMAGELOG opcode
-struct TC_GAME_API SpellNonMeleeDamage
+struct WH_GAME_API SpellNonMeleeDamage
 {
     SpellNonMeleeDamage(Unit* _attacker, Unit* _target, uint32 _SpellID, uint32 _schoolMask)
         : target(_target), attacker(_attacker), SpellID(_SpellID), damage(0), overkill(0), schoolMask(_schoolMask),
@@ -635,7 +635,7 @@ enum ActionBarIndex
 
 #define MAX_UNIT_ACTION_BAR_INDEX (ACTION_BAR_INDEX_END-ACTION_BAR_INDEX_START)
 
-struct TC_GAME_API CharmInfo
+struct WH_GAME_API CharmInfo
 {
     public:
         explicit CharmInfo(Unit* unit);
@@ -731,7 +731,7 @@ struct PositionUpdateInfo
 #define ATTACK_DISPLAY_DELAY 200
 #define MAX_PLAYER_STEALTH_DETECT_RANGE 30.0f               // max distance for detection targets by player
 
-class TC_GAME_API Unit : public WorldObject
+class WH_GAME_API Unit : public WorldObject
 {
     public:
         typedef std::set<Unit*> AttackerSet;
@@ -888,11 +888,11 @@ class TC_GAME_API Unit : public WorldObject
         void UpdateDisplayPower();
         uint32 GetPower(Powers power) const { return GetUInt32Value(UNIT_FIELD_POWER1   +power); }
         uint32 GetMaxPower(Powers power) const { return GetUInt32Value(UNIT_FIELD_MAXPOWER1+power); }
-        void SetPower(Powers power, uint32 val);
+        void SetPower(Powers power, uint32 val, bool withPowerUpdate = true);
         void SetMaxPower(Powers power, uint32 val);
         inline void SetFullPower(Powers power) { SetPower(power, GetMaxPower(power)); }
         // returns the change in power
-        int32 ModifyPower(Powers power, int32 val);
+        int32 ModifyPower(Powers power, int32 val, bool withPowerUpdate = true);
 
         uint32 GetAttackTime(WeaponAttackType att) const;
         void SetAttackTime(WeaponAttackType att, uint32 val) { SetFloatValue(UNIT_FIELD_BASEATTACKTIME+att, val*m_modAttackSpeedPct[att]); }
@@ -1639,6 +1639,7 @@ class TC_GAME_API Unit : public WorldObject
         virtual bool CanFly() const = 0;
         bool IsFlying() const   { return m_movementInfo.HasMovementFlag(MOVEMENTFLAG_FLYING | MOVEMENTFLAG_DISABLE_GRAVITY); }
         bool IsFalling() const;
+        virtual bool CanEnterWater() const = 0;
         virtual bool CanSwim() const;
 
         float GetHoverOffset() const
@@ -1844,7 +1845,7 @@ class TC_GAME_API Unit : public WorldObject
         bool _isIgnoringCombat;
 };
 
-namespace Trinity
+namespace Warhead
 {
     // Binary predicate for sorting Units based on percent value of a power
     class PowerPctOrderPred

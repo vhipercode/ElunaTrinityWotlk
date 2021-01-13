@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -636,13 +636,7 @@ struct GameObjectTemplateAddon : public GameObjectOverride
     std::array<uint32, 4> artKits = {};
 };
 
-struct GameObjectLocale
-{
-    std::vector<std::string> Name;
-    std::vector<std::string> CastBarCaption;
-};
-
-struct TC_GAME_API QuaternionData
+struct WH_GAME_API QuaternionData
 {
     float x, y, z, w;
 

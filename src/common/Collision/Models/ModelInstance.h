@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -39,7 +39,7 @@ namespace VMAP
         MOD_HAS_BOUND = 1<<2
     };
 
-    class TC_COMMON_API ModelSpawn
+    class WH_COMMON_API ModelSpawn
     {
         public:
             //mapID, tileX, tileY, Flags, ID, Pos, Rot, Scale, Bound_lo, Bound_hi, name
@@ -60,7 +60,7 @@ namespace VMAP
             static bool writeToFile(FILE* rw, ModelSpawn const& spawn);
     };
 
-    class TC_COMMON_API ModelInstance: public ModelSpawn
+    class WH_COMMON_API ModelInstance: public ModelSpawn
     {
         public:
             ModelInstance(): iInvScale(0.0f), iModel(nullptr) { }

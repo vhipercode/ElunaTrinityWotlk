@@ -1,4 +1,4 @@
-# This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+# This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
 #
 # This file is free software; as a special exception the author gives
 # unlimited permission to copy and/or distribute it, with or without
@@ -34,15 +34,9 @@ add_executable(authserver
   ${PRIVATE_SOURCES}
 )
 
-if(NOT WIN32)
-  set_target_properties(authserver PROPERTIES
-    COMPILE_DEFINITIONS _TRINITY_REALM_CONFIG="${CONF_DIR}/authserver.conf"
-  )
-endif()
-
 target_link_libraries(authserver
   PRIVATE
-    trinity-core-interface
+    warhead-core-interface
   PUBLIC
     shared)
 
@@ -63,30 +57,13 @@ set_target_properties(authserver
       FOLDER
         "server")
 
-if(COPY_CONF AND WIN32)
-  if("${CMAKE_MAKE_PROGRAM}" MATCHES "MSBuild")
-    add_custom_command(TARGET authserver
-      POST_BUILD
-      COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/authserver.conf.dist ${CMAKE_BINARY_DIR}/bin/$(ConfigurationName)/
-    )
-  elseif(MINGW)
-    add_custom_command(TARGET authserver
-      POST_BUILD
-      COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/authserver.conf.dist ${CMAKE_BINARY_DIR}/bin/
-    )
-  endif()
-endif()
+# Install config
+CopyDefaultConfig(authserver)
 
 if(UNIX)
   install(TARGETS authserver DESTINATION bin)
-  if(COPY_CONF)
-    install(FILES  authserver.conf.dist DESTINATION ${CONF_DIR})
-  endif()
 elseif(WIN32)
   install(TARGETS authserver DESTINATION "${CMAKE_INSTALL_PREFIX}")
-  if(COPY_CONF)
-    install(FILES authserver.conf.dist DESTINATION "${CMAKE_INSTALL_PREFIX}")
-  endif()
 endif()
 
 # Generate precompiled header

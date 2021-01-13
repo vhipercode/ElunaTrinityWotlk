@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -15,8 +15,8 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TRINITY_FORMULAS_H
-#define TRINITY_FORMULAS_H
+#ifndef WARHEAD_FORMULAS_H
+#define WARHEAD_FORMULAS_H
 
 #include "DBCStores.h"
 #include "Creature.h"
@@ -25,9 +25,9 @@
 #include "Player.h"
 #include "ScriptMgr.h"
 #include "SharedDefines.h"
-#include "World.h"
+#include "GameConfig.h"
 
-namespace Trinity
+namespace Warhead
 {
     namespace Honor
     {
@@ -42,7 +42,7 @@ namespace Trinity
         {
             return uint32(ceil(hk_honor_at_level_f(level, multiplier)));
         }
-    } // namespace Trinity::Honor
+    } // namespace Warhead::Honor
 
     namespace XP
     {
@@ -132,7 +132,7 @@ namespace Trinity
                     nBaseExp = 580;
                     break;
                 default:
-                    TC_LOG_ERROR("misc", "BaseGain: Unsupported content level %u", content);
+                    LOG_ERROR("misc", "BaseGain: Unsupported content level %u", content);
                     nBaseExp = 45;
                     break;
             }
@@ -157,10 +157,10 @@ namespace Trinity
                     baseGain = 0;
             }
 
-            if (sWorld->getIntConfig(CONFIG_MIN_CREATURE_SCALED_XP_RATIO))
+            if (CONF_GET_INT("MinCreatureScaledXPRatio"))
             {
                 // Use mob level instead of player level to avoid overscaling on gain in a min is enforced
-                uint32 baseGainMin = (mob_level * 5 + nBaseExp) * sWorld->getIntConfig(CONFIG_MIN_CREATURE_SCALED_XP_RATIO) / 100;
+                uint32 baseGainMin = (mob_level * 5 + nBaseExp) * CONF_GET_INT("MinCreatureScaledXPRatio") / 100;
                 baseGain = std::max(baseGainMin, baseGain);
             }
 
@@ -193,7 +193,7 @@ namespace Trinity
                     xpMod *= creature->GetCreatureTemplate()->ModExperience;
                 }
 
-                xpMod *= isBattleGround ? sWorld->getRate(RATE_XP_BG_KILL) : sWorld->getRate(RATE_XP_KILL);
+                xpMod *= isBattleGround ? CONF_GET_FLOAT("Rate.XP.BattlegroundKill") : CONF_GET_FLOAT("Rate.XP.Kill");
                 if (creature && creature->m_PlayerDamageReq) // if players dealt less than 50% of the damage and were credited anyway (due to CREATURE_FLAG_EXTRA_NO_PLAYER_DAMAGE_REQ), scale XP gained appropriately (linear scaling)
                     xpMod *= 1.0f - 2.0f * creature->m_PlayerDamageReq / creature->GetMaxHealth();
 
@@ -237,7 +237,7 @@ namespace Trinity
             sScriptMgr->OnGroupRateCalculation(rate, count, isRaid);
             return rate;
         }
-    } // namespace Trinity::XP
-} // namespace Trinity
+    } // namespace Warhead::XP
+} // namespace Warhead
 
 #endif

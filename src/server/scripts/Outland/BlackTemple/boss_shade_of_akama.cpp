@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -197,7 +197,6 @@ Position const BrokenWP[18] =
 static float const MIDDLE_OF_ROOM    = 400.0f;
 static float const FACE_THE_DOOR     = 0.08726646f;
 static float const FACE_THE_PLATFORM = 3.118662f;
-
 
 struct boss_shade_of_akama : public BossAI
 {
@@ -794,7 +793,6 @@ struct npc_ashtongue_defender : public ScriptedAI
         _events.ScheduleEvent(EVENT_DEBILITATING_STRIKE, 10s, 16s);
         _events.ScheduleEvent(EVENT_WINDFURY, 8s, 12s);
     }
-
 
     void UpdateAI(uint32 diff) override
     {

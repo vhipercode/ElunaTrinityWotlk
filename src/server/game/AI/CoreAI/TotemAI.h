@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -15,8 +15,8 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TRINITY_TOTEMAI_H
-#define TRINITY_TOTEMAI_H
+#ifndef WARHEAD_TOTEMAI_H
+#define WARHEAD_TOTEMAI_H
 
 #include "CreatureAI.h"
 #include "PassiveAI.h"
@@ -25,7 +25,7 @@
 class Creature;
 class Totem;
 
-class TC_GAME_API TotemAI : public NullCreatureAI
+class WH_GAME_API TotemAI : public NullCreatureAI
 {
     public:
         explicit TotemAI(Creature* creature);

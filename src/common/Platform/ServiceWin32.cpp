@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -19,6 +19,7 @@
 
 #include "Common.h"
 #include "Log.h"
+#include "SystemLog.h"
 #include <cstring>
 #include <windows.h>
 #include <winsvc.h>
@@ -114,7 +115,7 @@ bool WinServiceInstall()
         CloseServiceHandle(serviceControlManager);
     }
 
-    printf("Service installed\n");
+    SYS_LOG_INFO("Service installed");
     return true;
 }
 
@@ -254,7 +255,7 @@ bool WinServiceRun()
 
     if (!StartServiceCtrlDispatcher(serviceTable))
     {
-        TC_LOG_ERROR("server.worldserver", "StartService Failed. Error [%u]", uint32(::GetLastError()));
+        LOG_ERROR("server.worldserver", "StartService Failed. Error [%u]", uint32(::GetLastError()));
         return false;
     }
     return true;

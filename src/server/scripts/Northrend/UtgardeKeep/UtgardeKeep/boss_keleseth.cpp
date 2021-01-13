@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -367,7 +367,6 @@ class spell_frost_tomb : public SpellScriptLoader
             return new spell_frost_tomb_AuraScript();
         }
 };
-
 
 class achievement_on_the_rocks : public AchievementCriteriaScript
 {

@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -1635,8 +1635,8 @@ class spell_q11010_q11102_q11023_choose_loc : public SpellScriptLoader
                 Unit* caster = GetCaster();
                 // Check for player that is in 65 y range
                 std::list<Player*> playerList;
-                Trinity::AnyPlayerInObjectRangeCheck checker(caster, 65.0f);
-                Trinity::PlayerListSearcher<Trinity::AnyPlayerInObjectRangeCheck> searcher(caster, playerList, checker);
+                Warhead::AnyPlayerInObjectRangeCheck checker(caster, 65.0f);
+                Warhead::PlayerListSearcher<Warhead::AnyPlayerInObjectRangeCheck> searcher(caster, playerList, checker);
                 Cell::VisitWorldObjects(caster, searcher, 65.0f);
                 for (std::list<Player*>::const_iterator itr = playerList.begin(); itr != playerList.end(); ++itr)
                     // Check if found player target is on fly mount or using flying form
@@ -2131,7 +2131,6 @@ class spell_q13264_q13276_q13288_q13289_bloated_abom_feign_death : public AuraSc
         AfterEffectRemove += AuraEffectApplyFn(spell_q13264_q13276_q13288_q13289_bloated_abom_feign_death::HandleRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
     }
 };
-
 
 class spell_q13264_q13276_q13288_q13289_area_restrict_abom : public SpellScript
 {

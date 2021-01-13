@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -15,14 +15,14 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TRINITY_GUARDAI_H
-#define TRINITY_GUARDAI_H
+#ifndef WARHEAD_GUARDAI_H
+#define WARHEAD_GUARDAI_H
 
 #include "ScriptedCreature.h"
 
 class Creature;
 
-class TC_GAME_API GuardAI : public ScriptedAI
+class WH_GAME_API GuardAI : public ScriptedAI
 {
     public:
         explicit GuardAI(Creature* creature);

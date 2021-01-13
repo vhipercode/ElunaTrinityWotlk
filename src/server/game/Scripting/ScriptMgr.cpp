@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -83,7 +83,7 @@ struct is_script_database_bound<AreaTriggerScript>
 
 template<>
 struct is_script_database_bound<BattlefieldScript>
-        : std::true_type { };
+    : std::true_type { };
 
 template<>
 struct is_script_database_bound<BattlegroundScript>
@@ -291,7 +291,7 @@ public:
     {
         // See if the script is using the same memory as another script. If this happens, it means that
         // someone forgot to allocate new memory for a script.
-        TC_LOG_ERROR("scripts", "Script '%s' has same memory pointer as '%s'.",
+        LOG_ERROR("scripts", "Script '%s' has same memory pointer as '%s'.",
             first->GetName().c_str(), second->GetName().c_str());
     }
 };
@@ -814,7 +814,7 @@ public:
         else
         {
             // The script uses a script name from database, but isn't assigned to anything.
-            TC_LOG_ERROR("sql.sql", "Script '%s' exists in the core, but the database does not assign it to any creature.",
+            LOG_ERROR("sql.sql", "Script '%s' exists in the core, but the database does not assign it to any creature.",
                 script->GetName().c_str());
 
             // Avoid calling "delete script;" because we are currently in the script constructor
@@ -876,17 +876,17 @@ class ScriptRegistrySwapHooks<CommandScript, Base>
 public:
     void BeforeReleaseContext(std::string const& /*context*/) final override
     {
-        Trinity::ChatCommands::InvalidateCommandMap();
+        Warhead::ChatCommands::InvalidateCommandMap();
     }
 
     void BeforeSwapContext(bool /*initialize*/) override
     {
-        Trinity::ChatCommands::InvalidateCommandMap();
+        Warhead::ChatCommands::InvalidateCommandMap();
     }
 
     void BeforeUnload() final override
     {
-        Trinity::ChatCommands::InvalidateCommandMap();
+        Warhead::ChatCommands::InvalidateCommandMap();
     }
 };
 
@@ -1034,7 +1034,7 @@ void ScriptMgr::Initialize()
 
     LoadDatabase();
 
-    TC_LOG_INFO("server.loading", "Loading C++ scripts");
+    LOG_INFO("server.loading", "Loading C++ scripts");
 
     FillSpellSummary();
 
@@ -1075,11 +1075,11 @@ void ScriptMgr::Initialize()
         if (scriptName.empty())
             continue;
 
-        TC_LOG_ERROR("sql.sql", "Script '%s' is referenced by the database, but does not exist in the core!", scriptName.c_str());
+        LOG_ERROR("sql.sql", "Script '%s' is referenced by the database, but does not exist in the core!", scriptName.c_str());
     }
 
-    TC_LOG_INFO("server.loading", ">> Loaded %u C++ scripts in %u ms",
-        GetScriptCount(), GetMSTimeDiffToNow(oldMSTime));
+    LOG_INFO("server.loading", ">> Loaded %u C++ scripts in %u ms", GetScriptCount(), GetMSTimeDiffToNow(oldMSTime));
+    LOG_INFO("server.loading", "");
 }
 
 void ScriptMgr::SetScriptContext(std::string const& context)
@@ -1107,7 +1107,7 @@ void ScriptMgr::ReleaseScriptContext(std::string const& context)
 std::shared_ptr<ModuleReference>
     ScriptMgr::AcquireModuleReferenceOfScriptName(std::string const& scriptname) const
 {
-#ifdef TRINITY_API_USE_DYNAMIC_LINKING
+#ifdef WARHEAD_API_USE_DYNAMIC_LINKING
     // Returns the reference to the module of the given scriptname
     return ScriptReloadMgr::AcquireModuleReferenceOfContext(
         sScriptRegistryCompositum->GetScriptContextOfScriptName(scriptname));
@@ -1116,7 +1116,7 @@ std::shared_ptr<ModuleReference>
     // Something went wrong when this function is used in
     // a static linked context.
     WPAbort();
-#endif // #ifndef TRINITY_API_USE_DYNAMIC_LINKING
+#endif // #ifndef WARHEAD_API_USE_DYNAMIC_LINKING
 }
 
 void ScriptMgr::Unload()
@@ -1709,13 +1709,13 @@ OutdoorPvP* ScriptMgr::CreateOutdoorPvP(uint32 scriptId)
     return tmpscript->GetOutdoorPvP();
 }
 
-Trinity::ChatCommands::ChatCommandTable ScriptMgr::GetChatCommands()
+Warhead::ChatCommands::ChatCommandTable ScriptMgr::GetChatCommands()
 {
-    Trinity::ChatCommands::ChatCommandTable table;
+    Warhead::ChatCommands::ChatCommandTable table;
 
     FOR_SCRIPTS(CommandScript, itr, end)
     {
-        Trinity::ChatCommands::ChatCommandTable cmds = itr->second->GetCommands();
+        Warhead::ChatCommands::ChatCommandTable cmds = itr->second->GetCommands();
         std::move(cmds.begin(), cmds.end(), std::back_inserter(table));
     }
 
@@ -1928,6 +1928,11 @@ void ScriptMgr::OnShutdown()
     sEluna->OnShutdown();
 #endif
     FOREACH_SCRIPT(WorldScript)->OnShutdown();
+}
+
+void ScriptMgr::OnLoadCustomScripts()
+{
+    FOREACH_SCRIPT(WorldScript)->OnLoadCustomScripts();
 }
 
 bool ScriptMgr::OnCriteriaCheck(uint32 scriptId, Player* source, Unit* target)
@@ -2189,10 +2194,25 @@ void ScriptMgr::OnMovieComplete(Player* player, uint32 movieId)
     FOREACH_SCRIPT(PlayerScript)->OnMovieComplete(player, movieId);
 }
 
+void ScriptMgr::OnPlayerAfterSetVisibleItemSlot(Player* player, uint8 slot, Item* item)
+{
+    FOREACH_SCRIPT(PlayerScript)->OnPlayerAfterSetVisibleItemSlot(player, slot, item);
+}
+
+void ScriptMgr::OnPlayerAfterMoveItemFromInventory(Player* player, Item* it, uint8 bag, uint8 slot, bool update)
+{
+    FOREACH_SCRIPT(PlayerScript)->OnPlayerAfterMoveItemFromInventory(player, it, bag, slot, update);
+}
+
 // Account
 void ScriptMgr::OnAccountLogin(uint32 accountId)
 {
     FOREACH_SCRIPT(AccountScript)->OnAccountLogin(accountId);
+}
+
+void ScriptMgr::OnAccountLogout(uint32 accountId)
+{
+    FOREACH_SCRIPT(AccountScript)->OnAccountLogout(accountId);
 }
 
 void ScriptMgr::OnFailedAccountLogin(uint32 accountId)
@@ -2229,12 +2249,12 @@ void ScriptMgr::OnGuildAddMember(Guild* guild, Player* player, uint8& plRank)
     FOREACH_SCRIPT(GuildScript)->OnAddMember(guild, player, plRank);
 }
 
-void ScriptMgr::OnGuildRemoveMember(Guild* guild, Player* player, bool isDisbanding, bool isKicked)
+void ScriptMgr::OnGuildRemoveMember(Guild* guild, Player* player, ObjectGuid guid, bool isDisbanding, bool isKicked)
 {
 #ifdef ELUNA
     sEluna->OnRemoveMember(guild, player, isDisbanding);
 #endif
-    FOREACH_SCRIPT(GuildScript)->OnRemoveMember(guild, player, isDisbanding, isKicked);
+    FOREACH_SCRIPT(GuildScript)->OnRemoveMember(guild, player, guid, isDisbanding, isKicked);
 }
 
 void ScriptMgr::OnGuildMOTDChanged(Guild* guild, const std::string& newMotd)
@@ -2388,6 +2408,69 @@ void ScriptMgr::ModifyVehiclePassengerExitPos(Unit* passenger, Vehicle* vehicle,
     FOREACH_SCRIPT(CreatureScript)->ModifyVehiclePassengerExitPos(passenger, vehicle, pos);
 }
 
+// BGScript
+void ScriptMgr::OnBattlegroundStart(Battleground* bg)
+{
+    FOREACH_SCRIPT(BGScript)->OnBattlegroundStart(bg);
+}
+
+void ScriptMgr::OnBattlegroundEnd(Battleground* bg, uint32 winner)
+{
+    FOREACH_SCRIPT(BGScript)->OnBattlegroundEnd(bg, winner);
+}
+
+void ScriptMgr::OnBattlegroundUpdate(Battleground* bg, uint32 diff)
+{
+    FOREACH_SCRIPT(BGScript)->OnBattlegroundUpdate(bg, diff);
+}
+
+void ScriptMgr::OnBattlegroundAddPlayer(Battleground* bg, Player* player)
+{
+    FOREACH_SCRIPT(BGScript)->OnBattlegroundAddPlayer(bg, player);
+}
+
+void ScriptMgr::OnBattlegroundBeforeAddPlayer(Battleground* bg, Player* player)
+{
+    FOREACH_SCRIPT(BGScript)->OnBattlegroundBeforeAddPlayer(bg, player);
+}
+
+void ScriptMgr::OnBattlegroundRemovePlayerAtLeave(Battleground* bg, ObjectGuid guid, bool transport, bool sendPacket)
+{
+    FOREACH_SCRIPT(BGScript)->OnBattlegroundRemovePlayerAtLeave(bg, guid, transport, sendPacket);
+}
+
+void ScriptMgr::OnQueueAddGroup(BattlegroundQueue* queue, GroupQueueInfo* ginfo, uint32& index, Player* leader, Group* grp, PvPDifficultyEntry const* bracketEntry, bool isPremade)
+{
+    FOREACH_SCRIPT(BGScript)->OnQueueAddGroup(queue, ginfo, index, leader, grp, bracketEntry, isPremade);
+}
+
+bool ScriptMgr::CanFillPlayersToBG(BattlegroundQueue* queue, Battleground* bg, const int32 aliFree, const int32 hordeFree, BattlegroundBracketId bracket_id)
+{
+    bool ret = true;
+
+    FOR_SCRIPTS_RET(BGScript, itr, end, ret) // return true by default if not scripts
+        if (!itr->second->CanFillPlayersToBG(queue, bg, aliFree, hordeFree, bracket_id))
+            ret = false; // we change ret value only when scripts return false
+
+    return ret;
+}
+
+void ScriptMgr::OnCheckNormalMatch(BattlegroundQueue* queue, uint32& Coef, Battleground* bgTemplate, BattlegroundBracketId bracket_id, uint32& minPlayers, uint32& maxPlayers)
+{
+    FOREACH_SCRIPT(BGScript)->OnCheckNormalMatch(queue, Coef, bgTemplate, bracket_id, minPlayers, maxPlayers);
+}
+
+// MiscScript
+void ScriptMgr::OnMirrorImageDisplayItem(const Item* item, uint32& display)
+{
+    FOREACH_SCRIPT(MiscScript)->OnMirrorImageDisplayItem(item, display);
+}
+
+void ScriptMgr::OnItemDelFromDB(CharacterDatabaseTransaction trans, ObjectGuid::LowType itemGuid)
+{
+    FOREACH_SCRIPT(MiscScript)->OnItemDelFromDB(trans, itemGuid);
+}
+
 SpellScriptLoader::SpellScriptLoader(char const* name)
     : ScriptObject(name)
 {
@@ -2422,10 +2505,10 @@ WorldMapScript::WorldMapScript(char const* name, uint32 mapId)
     : ScriptObject(name), MapScript<Map>(sMapStore.LookupEntry(mapId))
 {
     if (!GetEntry())
-        TC_LOG_ERROR("scripts", "Invalid WorldMapScript for %u; no such map ID.", mapId);
+        LOG_ERROR("scripts", "Invalid WorldMapScript for %u; no such map ID.", mapId);
 
     if (GetEntry() && !GetEntry()->IsWorldMap())
-        TC_LOG_ERROR("scripts", "WorldMapScript for map %u is invalid.", mapId);
+        LOG_ERROR("scripts", "WorldMapScript for map %u is invalid.", mapId);
 
     ScriptRegistry<WorldMapScript>::Instance()->AddScript(this);
 }
@@ -2434,10 +2517,10 @@ InstanceMapScript::InstanceMapScript(char const* name, uint32 mapId)
     : ScriptObject(name), MapScript<InstanceMap>(sMapStore.LookupEntry(mapId))
 {
     if (!GetEntry())
-        TC_LOG_ERROR("scripts", "Invalid InstanceMapScript for %u; no such map ID.", mapId);
+        LOG_ERROR("scripts", "Invalid InstanceMapScript for %u; no such map ID.", mapId);
 
     if (GetEntry() && !GetEntry()->IsDungeon())
-        TC_LOG_ERROR("scripts", "InstanceMapScript for map %u is invalid.", mapId);
+        LOG_ERROR("scripts", "InstanceMapScript for map %u is invalid.", mapId);
 
     ScriptRegistry<InstanceMapScript>::Instance()->AddScript(this);
 }
@@ -2446,10 +2529,10 @@ BattlegroundMapScript::BattlegroundMapScript(char const* name, uint32 mapId)
     : ScriptObject(name), MapScript<BattlegroundMap>(sMapStore.LookupEntry(mapId))
 {
     if (!GetEntry())
-        TC_LOG_ERROR("scripts", "Invalid BattlegroundMapScript for %u; no such map ID.", mapId);
+        LOG_ERROR("scripts", "Invalid BattlegroundMapScript for %u; no such map ID.", mapId);
 
     if (GetEntry() && !GetEntry()->IsBattleground())
-        TC_LOG_ERROR("scripts", "BattlegroundMapScript for map %u is invalid.", mapId);
+        LOG_ERROR("scripts", "BattlegroundMapScript for map %u is invalid.", mapId);
 
     ScriptRegistry<BattlegroundMapScript>::Instance()->AddScript(this);
 }
@@ -2583,31 +2666,45 @@ GroupScript::GroupScript(char const* name)
     ScriptRegistry<GroupScript>::Instance()->AddScript(this);
 }
 
+BGScript::BGScript(char const* name)
+    : ScriptObject(name)
+{
+    ScriptRegistry<BGScript>::Instance()->AddScript(this);
+}
+
+MiscScript::MiscScript(char const* name)
+    : ScriptObject(name)
+{
+    ScriptRegistry<MiscScript>::Instance()->AddScript(this);
+}
+
 // Specialize for each script type class like so:
-template class TC_GAME_API ScriptRegistry<SpellScriptLoader>;
-template class TC_GAME_API ScriptRegistry<ServerScript>;
-template class TC_GAME_API ScriptRegistry<WorldScript>;
-template class TC_GAME_API ScriptRegistry<FormulaScript>;
-template class TC_GAME_API ScriptRegistry<WorldMapScript>;
-template class TC_GAME_API ScriptRegistry<InstanceMapScript>;
-template class TC_GAME_API ScriptRegistry<BattlegroundMapScript>;
-template class TC_GAME_API ScriptRegistry<ItemScript>;
-template class TC_GAME_API ScriptRegistry<CreatureScript>;
-template class TC_GAME_API ScriptRegistry<GameObjectScript>;
-template class TC_GAME_API ScriptRegistry<AreaTriggerScript>;
-template class TC_GAME_API ScriptRegistry<BattlefieldScript>;
-template class TC_GAME_API ScriptRegistry<BattlegroundScript>;
-template class TC_GAME_API ScriptRegistry<OutdoorPvPScript>;
-template class TC_GAME_API ScriptRegistry<CommandScript>;
-template class TC_GAME_API ScriptRegistry<WeatherScript>;
-template class TC_GAME_API ScriptRegistry<AuctionHouseScript>;
-template class TC_GAME_API ScriptRegistry<ConditionScript>;
-template class TC_GAME_API ScriptRegistry<VehicleScript>;
-template class TC_GAME_API ScriptRegistry<DynamicObjectScript>;
-template class TC_GAME_API ScriptRegistry<TransportScript>;
-template class TC_GAME_API ScriptRegistry<AchievementCriteriaScript>;
-template class TC_GAME_API ScriptRegistry<PlayerScript>;
-template class TC_GAME_API ScriptRegistry<GuildScript>;
-template class TC_GAME_API ScriptRegistry<GroupScript>;
-template class TC_GAME_API ScriptRegistry<UnitScript>;
-template class TC_GAME_API ScriptRegistry<AccountScript>;
+template class WH_GAME_API ScriptRegistry<SpellScriptLoader>;
+template class WH_GAME_API ScriptRegistry<ServerScript>;
+template class WH_GAME_API ScriptRegistry<WorldScript>;
+template class WH_GAME_API ScriptRegistry<FormulaScript>;
+template class WH_GAME_API ScriptRegistry<WorldMapScript>;
+template class WH_GAME_API ScriptRegistry<InstanceMapScript>;
+template class WH_GAME_API ScriptRegistry<BattlegroundMapScript>;
+template class WH_GAME_API ScriptRegistry<ItemScript>;
+template class WH_GAME_API ScriptRegistry<CreatureScript>;
+template class WH_GAME_API ScriptRegistry<GameObjectScript>;
+template class WH_GAME_API ScriptRegistry<AreaTriggerScript>;
+template class WH_GAME_API ScriptRegistry<BattlefieldScript>;
+template class WH_GAME_API ScriptRegistry<BattlegroundScript>;
+template class WH_GAME_API ScriptRegistry<OutdoorPvPScript>;
+template class WH_GAME_API ScriptRegistry<CommandScript>;
+template class WH_GAME_API ScriptRegistry<WeatherScript>;
+template class WH_GAME_API ScriptRegistry<AuctionHouseScript>;
+template class WH_GAME_API ScriptRegistry<ConditionScript>;
+template class WH_GAME_API ScriptRegistry<VehicleScript>;
+template class WH_GAME_API ScriptRegistry<DynamicObjectScript>;
+template class WH_GAME_API ScriptRegistry<TransportScript>;
+template class WH_GAME_API ScriptRegistry<AchievementCriteriaScript>;
+template class WH_GAME_API ScriptRegistry<PlayerScript>;
+template class WH_GAME_API ScriptRegistry<GuildScript>;
+template class WH_GAME_API ScriptRegistry<GroupScript>;
+template class WH_GAME_API ScriptRegistry<UnitScript>;
+template class WH_GAME_API ScriptRegistry<AccountScript>;
+template class WH_GAME_API ScriptRegistry<BGScript>;
+template class WH_GAME_API ScriptRegistry<MiscScript>;

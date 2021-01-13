@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -45,7 +45,6 @@ enum Spells
     SPELL_WATERBOLT         = 37138,
     SPELL_SUBMERGE          = 37550,
     SPELL_EMERGE            = 20568,
-
 
     // Ambusher spells
     SPELL_SPREAD_SHOT       = 37790,

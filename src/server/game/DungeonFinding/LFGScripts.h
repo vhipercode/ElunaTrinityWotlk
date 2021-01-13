@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -29,7 +29,7 @@ class Group;
 namespace lfg
 {
 
-class TC_GAME_API LFGPlayerScript : public PlayerScript
+class WH_GAME_API LFGPlayerScript : public PlayerScript
 {
     public:
         LFGPlayerScript();
@@ -40,7 +40,7 @@ class TC_GAME_API LFGPlayerScript : public PlayerScript
         void OnMapChanged(Player* player) override;
 };
 
-class TC_GAME_API LFGGroupScript : public GroupScript
+class WH_GAME_API LFGGroupScript : public GroupScript
 {
     public:
         LFGGroupScript();

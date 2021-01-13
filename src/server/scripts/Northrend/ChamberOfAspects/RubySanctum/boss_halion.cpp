@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -1853,7 +1853,7 @@ class spell_halion_spawn_living_embers : public SpellScriptLoader
             void SelectMeteorFlames(std::list<WorldObject*>& unitList)
             {
                 if (!unitList.empty())
-                    Trinity::Containers::RandomResize(unitList, 10);
+                    Warhead::Containers::RandomResize(unitList, 10);
             }
 
             void HandleScript(SpellEffIndex /* effIndex */)
@@ -1900,8 +1900,6 @@ class spell_halion_blazing_aura : public SpellScriptLoader
             return new spell_halion_blazing_aura_SpellScript();
         }
 };
-
-
 
 void AddSC_boss_halion()
 {

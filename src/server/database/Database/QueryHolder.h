@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -21,7 +21,7 @@
 #include "SQLOperation.h"
 #include <vector>
 
-class TC_DATABASE_API SQLQueryHolderBase
+class WH_DATABASE_API SQLQueryHolderBase
 {
     friend class SQLQueryHolderTask;
     private:
@@ -47,7 +47,7 @@ public:
     }
 };
 
-class TC_DATABASE_API SQLQueryHolderTask : public SQLOperation
+class WH_DATABASE_API SQLQueryHolderTask : public SQLOperation
 {
     private:
         std::shared_ptr<SQLQueryHolderBase> m_holder;
@@ -63,7 +63,7 @@ class TC_DATABASE_API SQLQueryHolderTask : public SQLOperation
         QueryResultHolderFuture GetFuture() { return m_result.get_future(); }
 };
 
-class TC_DATABASE_API SQLQueryHolderCallback
+class WH_DATABASE_API SQLQueryHolderCallback
 {
 public:
     SQLQueryHolderCallback(std::shared_ptr<SQLQueryHolderBase>&& holder, QueryResultHolderFuture&& future)

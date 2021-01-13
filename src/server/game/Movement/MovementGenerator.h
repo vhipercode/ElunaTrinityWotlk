@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -15,8 +15,8 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TRINITY_MOVEMENTGENERATOR_H
-#define TRINITY_MOVEMENTGENERATOR_H
+#ifndef WARHEAD_MOVEMENTGENERATOR_H
+#define WARHEAD_MOVEMENTGENERATOR_H
 
 #include "Define.h"
 #include "FactoryHolder.h"
@@ -43,7 +43,7 @@ enum MovementGeneratorFlags : uint16
     MOVEMENTGENERATOR_FLAG_TRANSITORY = MOVEMENTGENERATOR_FLAG_SPEED_UPDATE_PENDING | MOVEMENTGENERATOR_FLAG_INTERRUPTED
 };
 
-class TC_GAME_API MovementGenerator
+class WH_GAME_API MovementGenerator
 {
     public:
         MovementGenerator() : Mode(0), Priority(0), Flags(MOVEMENTGENERATOR_FLAG_NONE), BaseUnitState(0) { }

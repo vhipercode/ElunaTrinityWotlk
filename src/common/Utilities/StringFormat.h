@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -15,12 +15,13 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TRINITYCORE_STRING_FORMAT_H
-#define TRINITYCORE_STRING_FORMAT_H
+#ifndef _STRING_FORMAT_H_
+#define _STRING_FORMAT_H_
 
-#include "fmt/printf.h"
+#include "Common.h"
+#include <fmt/printf.h>
 
-namespace Trinity
+namespace Warhead
 {
     /// Default TC string format function.
     template<typename Format, typename... Args>
@@ -48,6 +49,17 @@ namespace Trinity
     {
         return fmt.empty();
     }
+}
+
+namespace Warhead::String
+{
+    WH_COMMON_API std::string Trim(std::string& str);
+    WH_COMMON_API std::string TrimLeft(std::string& str);
+    WH_COMMON_API std::string TrimLeftInPlace(std::string& str);
+    WH_COMMON_API std::string TrimRight(std::string& str);
+    WH_COMMON_API std::string TrimRightInPlace(std::string& str);
+    WH_COMMON_API std::string Replace(std::string& str, std::string const& from, std::string const& to);
+    WH_COMMON_API std::string ReplaceInPlace(std::string& str, std::string const& from, std::string const& to);
 }
 
 #endif

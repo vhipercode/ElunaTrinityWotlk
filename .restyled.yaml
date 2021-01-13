@@ -1,0 +1,60 @@
+enabled: true
+
+exclude:
+  - ".github/workflows/**/*"
+  - "dep/**"
+  - "contrib/**"
+
+changed_paths:
+  maximum: 1000
+  outcome: error
+
+remote_files: []
+
+auto: false
+
+commit_template: |
+  [Restyler] ${restyler.name}
+
+pull_requests: true
+
+comments: false
+
+statuses:
+  differences: true
+  no_differences: true
+  error: true
+
+request_review: none
+
+labels:
+  - restyled
+
+ignore_labels:
+  - restyled-ignore
+
+restylers_version: stable
+
+restylers:
+  - clang-format:
+      enabled: false
+  - astyle:
+      arguments: [
+        "-A1", # --style=allman / --style=bsd / --style=break / -A1
+        "-xV", # --attach-closing-while / -xV
+        "-N",  # --indent-namespaces / -N
+        "-Y",  # --indent-col1-comments / -Y
+        "-p",  # --pad-oper / -p
+        "-xg", # --pad-comma / -xg
+        "-k1", # --align-pointer=type / -k1
+        "-W1", # --align-reference=type / -W1
+        "-O",  # --keep-one-line-blocks / -O
+        "-xM", # --align-method-colon / -xM
+        "-xj", # --remove-braces / -xj
+        "-H",  # --pad-header / -H
+        "-xf", # --attach-return-type / -xf
+        "-xh", # --attach-return-type-decl / -xh
+        "-xy", # --close-templates / -xy
+        "-xC200" # --max-code-length=# / -xC#
+        ]
+  - "*"

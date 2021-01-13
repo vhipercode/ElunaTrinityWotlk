@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -27,7 +27,7 @@
 class ByteBuffer;
 struct FactionTemplateEntry;
 
-class TC_GAME_API PlayerTaxi
+class WH_GAME_API PlayerTaxi
 {
     public:
         PlayerTaxi() : m_flightMasterFactionId(0) { m_taximask.fill(0); }

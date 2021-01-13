@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -129,7 +129,6 @@ enum Actions
     ACTION_ACQUIRE_TARGET
 };
 
-
 /* Room side checking logic */
 static AreaBoundary* const livingSide = new RectangleBoundary(2633.84f, 2750.49f, -3434.0f, -3360.78f);
 static AreaBoundary* const deadSide = new RectangleBoundary(2633.84f, 2750.49f, -3360.78f, -3285.0f);
@@ -165,7 +164,6 @@ static Player* FindEligibleTarget(Creature const* me, bool isGateOpen)
 
     return nullptr;
 }
-
 
 /* Wave data */
 typedef std::pair<uint32, uint8> GothikWaveEntry; // (npcEntry, npcCount)
@@ -290,7 +288,6 @@ const GothikWaveData waves25 =
         {{NPC_LIVE_RIDER, 1}, {NPC_LIVE_KNIGHT, 2}, {NPC_LIVE_TRAINEE, 3}},
     0}
 };
-
 
 // GUID of first trigger NPC (used as offset for guid checks)
 // 0-1 are living side soul triggers, 2-3 are spectral side soul triggers, 4 is living rider spawn trigger, 5-7 are living other spawn trigger, 8-12 are skull pile triggers
@@ -445,7 +442,7 @@ class boss_gothik : public CreatureScript
                         {
                             if (RAID_MODE(waves10,waves25).size() <= _waveCount) // bounds check
                             {
-                                TC_LOG_INFO("scripts", "GothikAI: Wave count %d is out of range for difficulty %d.", _waveCount, GetDifficulty());
+                                LOG_INFO("scripts", "GothikAI: Wave count %d is out of range for difficulty %d.", _waveCount, GetDifficulty());
                                 break;
                             }
 
@@ -978,7 +975,7 @@ class spell_gothik_shadow_bolt_volley : public SpellScriptLoader
 
             void FilterTargets(std::list<WorldObject*>& targets)
             {
-                targets.remove_if(Trinity::UnitAuraCheck(false, SPELL_SHADOW_MARK));
+                targets.remove_if(Warhead::UnitAuraCheck(false, SPELL_SHADOW_MARK));
             }
 
             void Register() override

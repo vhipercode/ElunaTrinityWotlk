@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -25,6 +25,7 @@
 #include "Battleground.h"
 #include "CreatureTextMgr.h"
 #include "GameObject.h"
+#include "GameConfig.h"
 #include "GameTime.h"
 #include "Log.h"
 #include "MapManager.h"
@@ -417,13 +418,13 @@ bool BattlefieldWG::SetupBattlefield()
 
     InitStalker(BATTLEFIELD_WG_NPC_STALKER, WintergraspStalkerPos);
 
-    m_MaxPlayer = sWorld->getIntConfig(CONFIG_WINTERGRASP_PLR_MAX);
-    m_IsEnabled = sWorld->getBoolConfig(CONFIG_WINTERGRASP_ENABLE);
-    m_MinPlayer = sWorld->getIntConfig(CONFIG_WINTERGRASP_PLR_MIN);
-    m_MinLevel = sWorld->getIntConfig(CONFIG_WINTERGRASP_PLR_MIN_LVL);
-    m_BattleTime = sWorld->getIntConfig(CONFIG_WINTERGRASP_BATTLETIME) * MINUTE * IN_MILLISECONDS;
-    m_NoWarBattleTime = sWorld->getIntConfig(CONFIG_WINTERGRASP_NOBATTLETIME) * MINUTE * IN_MILLISECONDS;
-    m_RestartAfterCrash = sWorld->getIntConfig(CONFIG_WINTERGRASP_RESTART_AFTER_CRASH) * MINUTE * IN_MILLISECONDS;
+    m_MaxPlayer = CONF_GET_INT("Wintergrasp.PlayerMax");
+    m_IsEnabled = CONF_GET_BOOL("Wintergrasp.Enable");
+    m_MinPlayer = CONF_GET_INT("Wintergrasp.PlayerMin");
+    m_MinLevel = CONF_GET_INT("Wintergrasp.PlayerMinLvl");
+    m_BattleTime = CONF_GET_INT("Wintergrasp.BattleTimer") * MINUTE * IN_MILLISECONDS;
+    m_NoWarBattleTime = CONF_GET_INT("Wintergrasp.NoBattleTimer") * MINUTE * IN_MILLISECONDS;
+    m_RestartAfterCrash = CONF_GET_INT("Wintergrasp.CrashRestartTimer") * MINUTE * IN_MILLISECONDS;
 
     m_TimeForAcceptInvite = 20;
     m_StartGroupingTimer = 15 * MINUTE * IN_MILLISECONDS;
@@ -481,7 +482,6 @@ bool BattlefieldWG::SetupBattlefield()
         graveyard->SetTextId(WGGraveyard[i].TextID);
         m_GraveyardList[i] = graveyard;
     }
-
 
     Workshops.resize(WG_MAX_WORKSHOP);
     // Spawn workshop creatures and gameobjects
@@ -576,8 +576,7 @@ void BattlefieldWG::OnBattleStart()
         m_titansRelicGUID = relic->GetGUID();
     }
     else
-        TC_LOG_ERROR("bg.battlefield", "WG: Failed to spawn titan relic.");
-
+        LOG_ERROR("bg.battlefield", "WG: Failed to spawn titan relic.");
 
     // Update tower visibility and update faction
     for (auto itr = CanonList.begin(); itr != CanonList.end(); ++itr)
@@ -810,7 +809,7 @@ uint8 BattlefieldWG::GetSpiritGraveyardId(uint32 areaId) const
         case AREA_THE_CHILLED_QUAGMIRE:
             return BATTLEFIELD_WG_GY_HORDE;
         default:
-            TC_LOG_ERROR("bg.battlefield", "BattlefieldWG::GetSpiritGraveyardId: Unexpected Area Id %u", areaId);
+            LOG_ERROR("bg.battlefield", "BattlefieldWG::GetSpiritGraveyardId: Unexpected Area Id %u", areaId);
             break;
     }
 
@@ -1499,7 +1498,7 @@ void BfWGGameObjectBuilding::Destroyed()
             if (_wg->GetRelic())
                 _wg->GetRelic()->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_IN_USE | GO_FLAG_NOT_SELECTABLE);
             else
-                TC_LOG_ERROR("bg.battlefield.wg", "Titan Relic not found.");
+                LOG_ERROR("bg.battlefield.wg", "Titan Relic not found.");
             break;
         default:
             break;

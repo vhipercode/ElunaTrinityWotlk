@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -225,7 +225,6 @@ class at_trigger_the_beast_movement : public AreaTriggerScript
 public:
     at_trigger_the_beast_movement() : AreaTriggerScript("at_trigger_the_beast_movement") { }
 
-
     bool OnTrigger(Player* player, const AreaTriggerEntry* /*at*/) override
     {
         if (player->IsGameMaster())
@@ -245,7 +244,6 @@ class at_the_beast_room : public AreaTriggerScript
 {
 public:
     at_the_beast_room() : AreaTriggerScript("at_the_beast_room") { }
-
 
     bool OnTrigger(Player* player, const AreaTriggerEntry* /*at*/) override
     {

@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -15,8 +15,8 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __TRINITY_ACHIEVEMENTMGR_H
-#define __TRINITY_ACHIEVEMENTMGR_H
+#ifndef __WARHEAD_ACHIEVEMENTMGR_H
+#define __WARHEAD_ACHIEVEMENTMGR_H
 
 #include "DatabaseEnvFwd.h"
 #include "DBCEnums.h"
@@ -220,7 +220,7 @@ struct AchievementCriteriaData
     bool Meets(uint32 criteria_id, Player const* source, WorldObject const* target, uint32 miscValue1 = 0, uint32 miscValue2 = 0) const;
 };
 
-struct TC_GAME_API AchievementCriteriaDataSet
+struct WH_GAME_API AchievementCriteriaDataSet
 {
         AchievementCriteriaDataSet() : criteria_id(0) { }
         typedef std::vector<AchievementCriteriaData> Storage;
@@ -246,14 +246,6 @@ struct AchievementReward
 
 typedef std::unordered_map<uint32, AchievementReward> AchievementRewards;
 
-struct AchievementRewardLocale
-{
-    std::vector<std::string> Subject;
-    std::vector<std::string> Text;
-};
-
-typedef std::unordered_map<uint32, AchievementRewardLocale> AchievementRewardLocales;
-
 struct CompletedAchievementData
 {
     time_t date;
@@ -270,7 +262,7 @@ enum ProgressType
     PROGRESS_HIGHEST
 };
 
-class TC_GAME_API AchievementMgr
+class WH_GAME_API AchievementMgr
 {
     public:
         AchievementMgr(Player* player);
@@ -314,7 +306,7 @@ class TC_GAME_API AchievementMgr
         TimedAchievementMap m_timedAchievements;      // Criteria id/time left in MS
 };
 
-class TC_GAME_API AchievementGlobalMgr
+class WH_GAME_API AchievementGlobalMgr
 {
         AchievementGlobalMgr() { }
         ~AchievementGlobalMgr() { }
@@ -356,12 +348,6 @@ class TC_GAME_API AchievementGlobalMgr
             return iter != m_achievementRewards.end() ? &iter->second : nullptr;
         }
 
-        AchievementRewardLocale const* GetAchievementRewardLocale(AchievementEntry const* achievement) const
-        {
-            AchievementRewardLocales::const_iterator iter = m_achievementRewardLocales.find(achievement->ID);
-            return iter != m_achievementRewardLocales.end() ? &iter->second : nullptr;
-        }
-
         AchievementCriteriaDataSet const* GetCriteriaDataSet(AchievementCriteriaEntry const* achievementCriteria) const
         {
             AchievementCriteriaDataMap::const_iterator iter = m_criteriaDataMap.find(achievementCriteria->ID);
@@ -376,7 +362,6 @@ class TC_GAME_API AchievementGlobalMgr
         void LoadAchievementReferenceList();
         void LoadCompletedAchievements();
         void LoadRewards();
-        void LoadRewardLocales();
         AchievementEntry const* GetAchievement(uint32 achievementId) const;
         AchievementCriteriaEntry const* GetAchievementCriteria(uint32 achievementId) const;
     private:
@@ -404,7 +389,6 @@ class TC_GAME_API AchievementGlobalMgr
         std::unordered_map<uint32 /*achievementId*/, SystemTimePoint /*completionTime*/> _allCompletedAchievements;
 
         AchievementRewards m_achievementRewards;
-        AchievementRewardLocales m_achievementRewardLocales;
 
         friend class UnitTestDataLoader;
 };

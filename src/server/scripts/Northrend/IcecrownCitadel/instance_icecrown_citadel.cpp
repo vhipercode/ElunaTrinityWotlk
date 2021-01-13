@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -98,6 +98,7 @@ DoorData const doorData[] =
     { GO_DOODAD_ICECROWN_ROOSTPORTCULLIS_03,  DATA_VALITHRIA_DREAMWALKER, DOOR_TYPE_SPAWN_HOLE },
     { GO_DOODAD_ICECROWN_ROOSTPORTCULLIS_04,  DATA_VALITHRIA_DREAMWALKER, DOOR_TYPE_SPAWN_HOLE },
     { GO_SINDRAGOSA_ENTRANCE_DOOR,            DATA_SINDRAGOSA,            DOOR_TYPE_ROOM },
+    { GO_SINDRAGOSA_ENTRANCE_DOOR,            DATA_SINDRAGOSA_GAUNTLET,   DOOR_TYPE_PASSAGE },
     { GO_SINDRAGOSA_SHORTCUT_ENTRANCE_DOOR,   DATA_SINDRAGOSA,            DOOR_TYPE_PASSAGE },
     { GO_SINDRAGOSA_SHORTCUT_EXIT_DOOR,       DATA_SINDRAGOSA,            DOOR_TYPE_PASSAGE },
     { GO_ICE_WALL,                            DATA_SINDRAGOSA,            DOOR_TYPE_ROOM },
@@ -326,6 +327,9 @@ class instance_icecrown_citadel : public InstanceMapScript
                         creature->SetCorpseDelay(0);
                         creature->SetReactState(REACT_PASSIVE);
                         break;
+                    case NPC_SINDRAGOSA_GAUNTLET:
+                        SindragosaGauntletGUID = creature->GetGUID();
+                        break;
                     default:
                         break;
                 }
@@ -503,6 +507,12 @@ class instance_icecrown_citadel : public InstanceMapScript
             {
                 switch (go->GetEntry())
                 {
+                    case GO_SPIRIT_ALARM_1:
+                    case GO_SPIRIT_ALARM_2:
+                    case GO_SPIRIT_ALARM_3:
+                    case GO_SPIRIT_ALARM_4:
+                        SetPositionTraps(go);
+                        break;
                     case GO_DOODAD_ICECROWN_ICEWALL02:
                     case GO_ICEWALL:
                     case GO_LORD_MARROWGAR_S_ENTRANCE:
@@ -827,6 +837,8 @@ class instance_icecrown_citadel : public InstanceMapScript
                         return ArthasPlatformGUID;
                     case DATA_TERENAS_MENETHIL:
                         return TerenasMenethilGUID;
+                    case NPC_SINDRAGOSA_GAUNTLET:
+                        return SindragosaGauntletGUID;
                     default:
                         break;
                 }
@@ -1323,7 +1335,7 @@ class instance_icecrown_citadel : public InstanceMapScript
                         if (stalkers.empty())
                             return;
 
-                        stalkers.sort(Trinity::ObjectDistanceOrderPred(teleporter));
+                        stalkers.sort(Warhead::ObjectDistanceOrderPred(teleporter));
                         stalkers.front()->CastSpell(nullptr, SPELL_ARTHAS_TELEPORTER_CEREMONY, false);
                         stalkers.pop_front();
                         for (std::list<Creature*>::iterator itr = stalkers.begin(); itr != stalkers.end(); ++itr)
@@ -1465,7 +1477,7 @@ class instance_icecrown_citadel : public InstanceMapScript
                             terenas->GetCreatureListWithEntryInGrid(triggers, NPC_WORLD_TRIGGER_INFINITE_AOI, 100.0f);
                             if (!triggers.empty())
                             {
-                                triggers.sort(Trinity::ObjectDistanceOrderPred(terenas, false));
+                                triggers.sort(Warhead::ObjectDistanceOrderPred(terenas, false));
                                 Unit* visual = triggers.front();
                                 visual->CastSpell(visual, SPELL_FROSTMOURNE_TELEPORT_VISUAL, true);
                             }
@@ -1480,6 +1492,34 @@ class instance_icecrown_citadel : public InstanceMapScript
                     default:
                         break;
                 }
+            }
+
+            void SetPositionTraps(GameObject* go)
+            {
+                std::vector<Position> trapPositions;
+
+                switch (go->GetEntry())
+                {
+                case GO_SPIRIT_ALARM_1:
+                    trapPositions = { { -160.96f, 2210.46f, 35.24f, 0.0f }, {-176.27f, 2201.93f, 35.24f, 0.0f}, {-207.83f, 2207.38f, 35.24f, 0.0f} };
+                    break;
+                case GO_SPIRIT_ALARM_2:
+                    trapPositions = { {-178.41f, 2225.11f, 35.24f, 0.0f}, {-195.23f, 2221.55f, 35.24f, 0.0f}, {-209.94f, 2250.34f, 37.99f, 0.0f}, };
+                    break;
+                case GO_SPIRIT_ALARM_3:
+                    trapPositions = { {-289.80f, 2216.60f, 42.39f, 0.0f}, {-317.76f, 2216.11f, 42.57f, 0.0f}, {-301.07f, 2216.62f, 42.0f, 0.0f}, };
+                    break;
+                case GO_SPIRIT_ALARM_4:
+                    trapPositions = { {-276.07f, 2206.76f, 42.57f, 0.0f}, {-304.44f, 2199.11f, 41.99f, 0.0f}, {-292.82f, 2204.61f, 42.02f, 0.0f} };
+                    break;
+                default:
+                    break;
+                }
+
+                if (trapPositions.empty())
+                    return;
+
+                go->Relocate(Warhead::Containers::SelectRandomContainerElement(trapPositions));
             }
 
         protected:
@@ -1536,6 +1576,7 @@ class instance_icecrown_citadel : public InstanceMapScript
             ObjectGuid FrozenBolvarGUID;
             ObjectGuid PillarsChainedGUID;
             ObjectGuid PillarsUnchainedGUID;
+            ObjectGuid SindragosaGauntletGUID;
             Team TeamInInstance;
             uint32 ColdflameJetsState;
             uint32 UpperSpireTeleporterActiveState;

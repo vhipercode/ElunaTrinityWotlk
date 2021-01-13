@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ * This file is part of the WarheadCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -15,13 +15,13 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __TRINITY_SECRETMGR_H__
-#define __TRINITY_SECRETMGR_H__
+#ifndef __WARHEAD_SECRETMGR_H__
+#define __WARHEAD_SECRETMGR_H__
 
 #include "BigNumber.h"
 #include "Common.h"
-#include "LogCommon.h"
 #include "Optional.h"
+#include "Log.h"
 #include <array>
 #include <mutex>
 #include <string>
@@ -34,7 +34,7 @@ enum Secrets : uint32
     NUM_SECRETS
 };
 
-class TC_SHARED_API SecretMgr
+class WH_SHARED_API SecretMgr
 {
     private:
         SecretMgr() {}
